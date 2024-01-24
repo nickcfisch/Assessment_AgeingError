@@ -137,13 +137,25 @@ Get_Data<-function(OM=NA,              #Operating model from which to model
   set.seed(dat_seed)
   #Getting Data
   Obs_Catch<-Obs_Index<-NA
-  Obs_Catch_Comp_noAE<-matrix(NA,nrow=length(fyear_dat:lyear_dat),ncol=length(OM$fage:OM$lage))
+  Obs_Catch_Comp<-Obs_Catch_Comp_noAE<-matrix(0,nrow=length(fyear_dat:lyear_dat),ncol=length(OM$fage:OM$lage))
+  Obs_Catch_Comp_wiY<-matrix(0,nrow=length(OM$fage:OM$lage),ncol=length(OM$fage:OM$lage))
   for (d in fyear_dat:lyear_dat){
     Obs_Catch[d-(fyear_dat-1)]<-rlnorm(1, meanlog=log(sum(OM$Caa[d,]*OM$Waa)), sdlog=sd_catch)
-    Obs_Catch_Comp_noAE[d-(fyear_dat-1),]<-rmultinom(n=1,size=N_Comp[d], prob=OM$Caa[d,])
     Obs_Index[d-(fyear_dat-1)]<-rlnorm(1, meanlog=log(sum(OM$Naa[d,]*((1-exp(-OM$Zaa[d,]))/OM$Zaa[d,])*OM$Sel*OM$Waa)*q_index), sdlog=sd_index)
-  }
-  Obs_Catch_Comp<-Obs_Catch_Comp_noAE%*%AE_mat  #Getting observed data with Ageing error
+    Obs_Catch_Comp_noAE[d-(fyear_dat-1),]<-rmultinom(n=1,size=N_Comp[d], prob=OM$Caa[d,])
+    
+    #Getting observed data with Ageing error
+    #Another sampler is needed to get data in integers, as oppposed to commented out line below
+    for (a in OM$fage:OM$lage){
+     if(Obs_Catch_Comp_noAE[d-(fyear_dat-1),a]>0){
+       Obs_Catch_Comp_wiY[a,]<-rmultinom(1,size=Obs_Catch_Comp_noAE[d-(fyear_dat-1),a],prob=AE_mat[a,])
+     }
+    }
+     Obs_Catch_Comp[d-(fyear_dat-1),]<-colSums(Obs_Catch_Comp_wiY)
+   }
+  
+  #This would be data with ageing error but in decimals. 
+#  Obs_Catch_Comp<-Obs_Catch_Comp_noAE%*%AE_mat  #Getting observed data with Ageing error
   
   return(list(OM=OM,dat_seed=dat_seed,sd_catch=sd_catch,N_Comp=N_Comp,q_index=q_index,sd_index=sd_index,fyear_dat=fyear_dat,lyear_dat=lyear_dat,
               Obs_Catch=Obs_Catch,

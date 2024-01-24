@@ -138,23 +138,23 @@ Get_Data<-function(OM=NA,              #Operating model from which to model
   #Getting Data
   Obs_Catch<-Obs_Index<-NA
   Obs_Catch_Comp<-Obs_Catch_Comp_noAE<-matrix(0,nrow=length(fyear_dat:lyear_dat),ncol=length(OM$fage:OM$lage))
-  Obs_Catch_Comp_wiY<-matrix(0,nrow=length(OM$fage:OM$lage),ncol=length(OM$fage:OM$lage))
+  Obs_Catch_Comp_wiY<-array(0,dim=c(length(fyear_dat:lyear_dat),length(OM$fage:OM$lage),length(OM$fage:OM$lage)))
   for (d in fyear_dat:lyear_dat){
     Obs_Catch[d-(fyear_dat-1)]<-rlnorm(1, meanlog=log(sum(OM$Caa[d,]*OM$Waa)), sdlog=sd_catch)
     Obs_Index[d-(fyear_dat-1)]<-rlnorm(1, meanlog=log(sum(OM$Naa[d,]*((1-exp(-OM$Zaa[d,]))/OM$Zaa[d,])*OM$Sel*OM$Waa)*q_index), sdlog=sd_index)
     Obs_Catch_Comp_noAE[d-(fyear_dat-1),]<-rmultinom(n=1,size=N_Comp[d], prob=OM$Caa[d,])
     
     #Getting observed data with Ageing error
-    #Another sampler is needed to get data in integers, as oppposed to commented out line below
-    for (a in OM$fage:OM$lage){
+    #Another sampler is needed to get data in integers, as opposed to commented out line below
+    for (a in 1:length(OM$fage:OM$lage)){
      if(Obs_Catch_Comp_noAE[d-(fyear_dat-1),a]>0){
-       Obs_Catch_Comp_wiY[a,]<-rmultinom(1,size=Obs_Catch_Comp_noAE[d-(fyear_dat-1),a],prob=AE_mat[a,])
+       Obs_Catch_Comp_wiY[d-(fyear_dat-1),a,]<-rmultinom(1,size=Obs_Catch_Comp_noAE[d-(fyear_dat-1),a],prob=AE_mat[a,])
      }
     }
-     Obs_Catch_Comp[d-(fyear_dat-1),]<-colSums(Obs_Catch_Comp_wiY)
+     Obs_Catch_Comp[d-(fyear_dat-1),]<-colSums(Obs_Catch_Comp_wiY[d-(fyear_dat-1),,])
    }
   
-  #This would be data with ageing error but in decimals. 
+  #This would be *expected* data with ageing error but in decimals. 
 #  Obs_Catch_Comp<-Obs_Catch_Comp_noAE%*%AE_mat  #Getting observed data with Ageing error
   
   return(list(OM=OM,dat_seed=dat_seed,sd_catch=sd_catch,N_Comp=N_Comp,q_index=q_index,sd_index=sd_index,fyear_dat=fyear_dat,lyear_dat=lyear_dat,
@@ -206,21 +206,13 @@ for(s in 2:Nsim){
   lines(1:101,Flatfish_runs[[s]]$SSB/Flatfish_runs[[s]]$SSB0, col="grey50")
 }
 
-#Ok looking at some CIs of the intervals
+#Ok looking at Inner 75% and inner 95% of simulations
 plot(1:101,apply(Flatfish_Depl,2,quantile,probs=0.975), type="l", lty=2, ylim=c(0,2), las=1, xlab="Year", ylab="SSB/SSB0", main="Flatfish")
 lines(1:101,apply(Flatfish_Depl,2,median),lty=1)
 lines(1:101,apply(Flatfish_Depl,2,quantile,probs=0.025),lty=2)
 lines(1:101,apply(Flatfish_Depl,2,quantile,probs=0.875),lty=3)
 lines(1:101,apply(Flatfish_Depl,2,quantile,probs=0.125),lty=3)
 legend("top", c("Median","Inner 75%","Inner 95%"), lwd=1, lty=c(1,3,2))
-
-#Using HPDs
-library(coda)
-plot(1:101,HPDinterval(as.mcmc(Flatfish_Depl), prob=0.95)[,1], type="l", lty=2, ylim=c(0,2), las=1, xlab="Year", ylab="SSB/SSB0", main="Flatfish")
-lines(1:101,apply(Flatfish_Depl,2,median),lty=1)
-lines(1:101,HPDinterval(as.mcmc(Flatfish_Depl), prob=0.95)[,2],lty=2)
-lines(1:101,HPDinterval(as.mcmc(Flatfish_Depl), prob=0.75)[,1],lty=3)
-lines(1:101,HPDinterval(as.mcmc(Flatfish_Depl), prob=0.75)[,2],lty=3)
 
 #############################
 #Getting Data from OM

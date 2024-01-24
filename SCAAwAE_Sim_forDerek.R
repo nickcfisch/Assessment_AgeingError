@@ -143,6 +143,8 @@ Get_Data<-function(OM=NA,              #Operating model from which to model
     Obs_Catch[d-(fyear_dat-1)]<-rlnorm(1, meanlog=log(sum(OM$Caa[d,]*OM$Waa)), sdlog=sd_catch)
     Obs_Index[d-(fyear_dat-1)]<-rlnorm(1, meanlog=log(sum(OM$Naa[d,]*((1-exp(-OM$Zaa[d,]))/OM$Zaa[d,])*OM$Sel*OM$Waa)*q_index), sdlog=sd_index)
     Obs_Catch_Comp_noAE[d-(fyear_dat-1),]<-rmultinom(n=1,size=N_Comp[d], prob=OM$Caa[d,])
+    #I think this code would be equivalent to the more kludgy and inefficient code below, but we won't run into efficiency issues so commented out in favor of double sampler
+#    Obs_Catch_Comp[d-(fyear_dat-1),]<-rmultinom(n=1,size=N_Comp[d], prob=(OM$Caa%*%AE_mat)[d,])
     
     #Getting observed data with Ageing error
     #Another sampler is needed to get data in integers, as opposed to commented out line below

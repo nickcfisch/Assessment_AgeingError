@@ -225,12 +225,8 @@ sd_index<-0.5
 fyear_dat<-26
 lyear_dat<-100
 AE_mat<-diag(length(Flatfish_runs[[s]]$fage:Flatfish_runs[[s]]$lage)) #TRUE ageing error matrix for sampling model
-progress_bar<-TRUE
 for (s in 1:N_sim){
   Flatfish_wdat[[s]]<-Get_Data(OM=Flatfish_runs[[s]],AE_mat=AE_mat,dat_seed=s,fyear_dat=fyear_dat,lyear_dat=lyear_dat,sd_catch=sd_catch,N_Comp=N_comp,q_index=0.0001,sd_index=sd_index)
-  if(progress_bar==TRUE){
-    plot(rep(1,length(1:s)), pch=16)
-  }
 }
 
 #save(Flatfish_wdat,file=paste0(wd,"/Flatfish_wdat.RData"))

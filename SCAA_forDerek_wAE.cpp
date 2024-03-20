@@ -65,9 +65,15 @@ Type objective_function<Type>::operator() ()
   PARAMETER(log_sd_catch);           //Log sd for catch
   PARAMETER(log_sd_index);           //Log sd for index
 
-  PARAMETER(Sel_logis_k);         //logistic selectivity slope parameter 
-  PARAMETER(Sel_logis_midpt);     //logistic selectivity midpoint parameter
-    
+//  PARAMETER(Sel_logis_k);         //logistic selectivity slope parameter 
+//  PARAMETER(Sel_logis_midpt);     //logistic selectivity midpoint parameter
+  PARAMETER(B1);                     //Double normal sel pars
+  PARAMETER(B2);     
+  PARAMETER(B3);         
+  PARAMETER(B4);     
+  PARAMETER(B5);         
+  PARAMETER(B6);     
+
   PARAMETER_VECTOR(log_fint);       //Log scale fishing intensities (fully selected fishing mortalities)
   //---------------------------------------------------------------------------------------------
 
@@ -108,6 +114,15 @@ Type objective_function<Type>::operator() ()
   vector<Type> lxo(ages.size());                           //Unfished numbers at age, (fage,lage)
   Type SSB0;                                               //Unfished spawning biomass
        
+//Double normal stuff   
+  Type peak2; 
+  Type t1; 
+  Type t2; 
+  vector<Type> j1(ages.size());
+  vector<Type> j2(ages.size());
+  vector<Type> asc(ages.size());
+  vector<Type> dsc(ages.size());
+  
   //Likelihood components
   Type L1;
   Type L2;
@@ -130,8 +145,31 @@ Type objective_function<Type>::operator() ()
 ///////////////////////////
 //FISHERY SELECTIVITY
 ///////////////////////////
-  for(j=0;j<=lage;j++){
-   fishery_sel(j)=1/(1+exp(-log(19)*(Laa(j)-exp(Sel_logis_midpt))/exp(Sel_logis_k)));   //Logistic Selectivity, stock synthesis version
+
+//Logistic selectivity
+//  for(j=0;j<=lage;j++){
+//   fishery_sel(j)=1/(1+exp(-log(19)*(Laa(j)-exp(Sel_logis_midpt))/exp(Sel_logis_k)));   //Mean length at age Logistic Selectivity, stock synthesis version
+//   fishery_sel(j)=1/(1+exp(-log(19)*(int(j)-exp(Sel_logis_midpt))/exp(Sel_logis_k)));   //Age-based Logistic Selectivity, stock synthesis version
+//  }
+  
+  //Double Normal
+  Type Amin=fage;
+  Type Amax=lage;
+
+  for(j=0;j<=ages.size()-1;j++){
+   peak2=B1+1+((0.99*Amax-B1-1)/(1+exp(-B2)));
+   t1=exp(-pow(Amin-B1,2)/exp(B3));
+   t2=exp(-pow(Amax-peak2,2)/exp(B4));
+  
+   j1(j)=pow((1+exp(-20*((int(j)-B1)/(1+fabs(int(j)-B1))))),-1);
+   j2(j)=pow((1+exp(-20*((int(j)-peak2)/(1+fabs(int(j)-peak2))))),-1);
+
+   //Long form
+   asc(j)=pow(1+exp(-B5),-1)+(1-pow(1+exp(-B5),-1))*((exp(-pow(int(j)-B1,2)/exp(B3))-t1)/(1-t1));
+   dsc(j)=1+(pow(1+exp(-B6),-1)-1)*((exp(-(int(j)-peak2)/exp(B4))-1)/(t2-1));
+
+   //Actual Sel
+   fishery_sel(j)=asc(j)*(1-j1(j))+j1(j)*((1-j2(j))+j2(j)*dsc(j));
   }
   
 //////////////////////
@@ -257,6 +295,12 @@ Type objective_function<Type>::operator() ()
   REPORT(sd_catch);
   REPORT(sd_index);
   REPORT(log_recruit_devs);
+  REPORT(B1);                     //Double normal sel pars
+  REPORT(B2);     
+  REPORT(B3);         
+  REPORT(B4);     
+  REPORT(B5);         
+  REPORT(B6);     
 
   REPORT(fishery_sel);
   REPORT(N0_age);

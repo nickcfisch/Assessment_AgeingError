@@ -49,7 +49,11 @@ SimPop<-function(seed=1,                         #seed to start random number ge
   Mat<-1/(1+exp(Mat_slope*(Laa-Mat_50)))
   
   #Fishery Selectivity 
-  Sel<-1/(1+exp(-log(19)*(Laa-Sel_50)/Sel_slope))
+#  Sel<-1/(1+exp(-log(19)*(Laa-Sel_50)/Sel_slope))         #Logistic based on mean length at age
+#  Sel<-1/(1+exp(-log(19)*((fage:lage)-Sel_50)/Sel_slope))  #Logistic based on age
+  
+  #Double Normal
+  Sel<-1/(1+exp(-log(19)*(Laa-Sel_50)/Sel_slope))      
   
   #Fishing intensity, starts in year 25
   k_int<-0.15

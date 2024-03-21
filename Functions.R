@@ -17,6 +17,12 @@ SimPop<-function(seed=1,                         #seed to start random number ge
                  Mat_slope=-0.9,                 #Mat param2, Slope for logistic function of maturity
                  Sel_50=15.9,                    #Sel param1, Age at which 50% selectivity occurs
                  Sel_slope=3.3,                  #Sel param2, Slope for logistic function of selectivity
+                 B1=2.667,                       #Double normal selectivity parameters
+                 B2=-15.885,
+                 B3=0.4,
+                 B4=1.372,
+                 B5=-4.010,
+                 B6=0.375,
                  R0=exp(16),                     #Unfished recruitment 
                  h=0.59,                         #Steepness
                  sd_rec=0.73,                    #Recruitment SD
@@ -53,7 +59,17 @@ SimPop<-function(seed=1,                         #seed to start random number ge
 #  Sel<-1/(1+exp(-log(19)*((fage:lage)-Sel_50)/Sel_slope))  #Logistic based on age
   
   #Double Normal
-  Sel<-1/(1+exp(-log(19)*(Laa-Sel_50)/Sel_slope))      
+  Amin<-fage
+  Amax<-lage
+  age<-Amin:Amax
+  peak2<-B1+1+((0.99*Amax-B1-1)/(1+exp(-B2)))
+  t1<-exp(-(Amin-B1)^2/exp(B3))
+  t2<-exp(-(Amax-peak2)^2/exp(B4))
+  j1<-(1+exp(-20*((age-B1)/(1+abs(age-B1)))))^-1
+  j2<-(1+exp(-20*((age-peak2)/(1+abs(age-peak2)))))^-1
+  asc<-(1+exp(-B5))^-1+(1-(1+exp(-B5))^-1)*((exp(-(age-B1)^2/exp(B3))-t1)/(1-t1))
+  dsc<-1+(((1+exp(-B6))^-1)-1)*((exp(-(age-peak2)/exp(B4))-1)/(t2-1))
+  Sel<-asc*(1-j1)+j1*((1-j2)+j2*dsc)
   
   #Fishing intensity, starts in year 25
   k_int<-0.15
@@ -98,8 +114,9 @@ SimPop<-function(seed=1,                         #seed to start random number ge
   
   Caa<-Faa/Zaa*Naa[1:lyear,]*(1-exp(-Zaa))
   
-  return(list(fage=fage,lage=lage,seed=seed,fyear=fyear,lyear=lyear,Linf=Linf,a3=a3,L1=L1,BK=BK,Weight_scaling=Weight_scaling,Weight_allometry=Weight_allometry,Mref=Mref,
-              Mat_50=Mat_50,Mat_slope=Mat_slope,Sel_50=Sel_50,Sel_slope=Sel_slope,R0=R0,h=h,sd_rec=sd_rec,fint=fint,fhigh=fhigh,flow=flow,stochastic=stochastic,
+  return(list(fage=fage,lage=lage,seed=seed,fyear=fyear,lyear=lyear,Linf=Linf,a3=a3,L1=L1,BK=BK,Weight_scaling=Weight_scaling,
+              Weight_allometry=Weight_allometry,Mref=Mref,Mat_50=Mat_50,Mat_slope=Mat_slope,Sel_50=Sel_50,Sel_slope=Sel_slope,
+              B1=B1,B2=B2,B3=B3,B4=B4,B5=B5,B6=B6,R0=R0,h=h,sd_rec=sd_rec,fint=fint,fhigh=fhigh,flow=flow,stochastic=stochastic,
               lrecdevs=lrecdevs,
               Laa=Laa,
               Waa=Waa,
@@ -230,6 +247,12 @@ sim_Fn <- function(OM_text, N_sim, AE_mat){
                 log_sd_index=log(OM$sd_index),
                 Sel_logis_k=log(runif(1,min=OM$OM$Sel_slope-OM$OM$Sel_slope*0.35,max=OM$OM$Sel_slope+OM$OM$Sel_slope*0.35)),
                 Sel_logis_midpt=log(runif(1,min=OM$OM$Sel_50-OM$OM$Sel_50*0.35,max=OM$OM$Sel_50+OM$OM$Sel_50*0.35)),
+                B1=runif(1,min=OM$OM$B1-OM$OM$B1*0.35,max=OM$OM$B1+OM$OM$B1*0.35),                       #Double normal selectivity parameters
+                B2=runif(1,min=OM$OM$B2-OM$OM$B2*0.35,max=OM$OM$B2+OM$OM$B2*0.35),
+                B3=runif(1,min=OM$OM$B3-OM$OM$B3*0.35,max=OM$OM$B3+OM$OM$B3*0.35),
+                B4=runif(1,min=OM$OM$B4-OM$OM$B4*0.35,max=OM$OM$B4+OM$OM$B4*0.35),
+                B5=runif(1,min=OM$OM$B5-OM$OM$B5*0.35,max=OM$OM$B5+OM$OM$B5*0.35),
+                B6=runif(1,min=OM$OM$B6-OM$OM$B6*0.35,max=OM$OM$B6+OM$OM$B6*0.35),
                 log_fint=log(runif(length(OM$OM$F_int[26:100]),min=OM$OM$F_int[26:100]-OM$OM$F_int[26:100]*0.35,max=OM$OM$F_int[26:100]+OM$OM$F_int[26:100]*0.35)))  
     
     ################
@@ -243,8 +266,8 @@ sim_Fn <- function(OM_text, N_sim, AE_mat){
                 log_sd_catch=factor(NA),
                 log_sd_index=factor(NA))
     
-    lower_bounds<-c(-5,-20,rep(-10,dat$lage),rep(-10,dat$lyear), 0, 5, -5,-5,-5,-5,-5,rep(-10,dat$lyear))
-    upper_bounds<-c( 2,  1,rep( 10,dat$lage),rep( 10,dat$lyear), 1, 25, 2, 2, 2, 5, 5,rep(  0,dat$lyear))
+    lower_bounds<-c(-5,-20,rep(-10,dat$lage),rep(-10,dat$lyear), 0, 5, -5,-5,-5,-5,-5, -10,-10,-10,-10,-10,-10,rep(-10,dat$lyear))
+    upper_bounds<-c( 2,  1,rep( 10,dat$lage),rep( 10,dat$lyear), 1, 25, 2, 2, 2, 5, 5,  20, 20, 20, 20, 20, 20,rep(  0,dat$lyear))
     
     reffects=c("log_recruit_devs","log_recruit_devs_init")
     l<-lower_bounds[-which(parm_names %in% c(names(fixed),reffects))]

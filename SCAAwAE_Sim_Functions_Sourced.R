@@ -30,6 +30,12 @@ for (s in 1:Nsim){
                              Mat_slope=-0.065, #(Sedar 43, 2015) p. 64
                              Sel_50=28.9, #need to update!!!! maybe average across all fleets, dome shaped in Sedar 43
                              Sel_slope=7, #need to update!!!! maybe average across all fleets
+                             B1=2.667,                       #Double normal selectivity parameters
+                             B2=-15.885,
+                             B3=0.4,
+                             B4=1.372,
+                             B5=-4.010,
+                             B6=0.375,
                              R0=exp(9.7608), #(Sedar 43, 2015) p. 64
                              h=0.4593, #(Sedar 43, 2015) p. 64
                              sd_rec=0.3582, #(Sedar 43, 2015) p. 64

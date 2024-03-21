@@ -245,14 +245,14 @@ sim_Fn <- function(OM_text, N_sim, AE_mat){
                 log_sigma_rec=log(OM$OM$sd_rec),
                 log_sd_catch=log(OM$sd_catch),
                 log_sd_index=log(OM$sd_index),
-                Sel_logis_k=log(runif(1,min=OM$OM$Sel_slope-OM$OM$Sel_slope*0.35,max=OM$OM$Sel_slope+OM$OM$Sel_slope*0.35)),
-                Sel_logis_midpt=log(runif(1,min=OM$OM$Sel_50-OM$OM$Sel_50*0.35,max=OM$OM$Sel_50+OM$OM$Sel_50*0.35)),
-                B1=runif(1,min=OM$OM$B1-OM$OM$B1*0.35,max=OM$OM$B1+OM$OM$B1*0.35),                       #Double normal selectivity parameters
-                B2=runif(1,min=OM$OM$B2-OM$OM$B2*0.35,max=OM$OM$B2+OM$OM$B2*0.35),
-                B3=runif(1,min=OM$OM$B3-OM$OM$B3*0.35,max=OM$OM$B3+OM$OM$B3*0.35),
-                B4=runif(1,min=OM$OM$B4-OM$OM$B4*0.35,max=OM$OM$B4+OM$OM$B4*0.35),
-                B5=runif(1,min=OM$OM$B5-OM$OM$B5*0.35,max=OM$OM$B5+OM$OM$B5*0.35),
-                B6=runif(1,min=OM$OM$B6-OM$OM$B6*0.35,max=OM$OM$B6+OM$OM$B6*0.35),
+#                Sel_logis_k=log(runif(1,min=OM$OM$Sel_slope-OM$OM$Sel_slope*0.35,max=OM$OM$Sel_slope+OM$OM$Sel_slope*0.35)),
+#                Sel_logis_midpt=log(runif(1,min=OM$OM$Sel_50-OM$OM$Sel_50*0.35,max=OM$OM$Sel_50+OM$OM$Sel_50*0.35)),
+                B1=runif(1,min=OM$OM$B1-abs(OM$OM$B1)*0.35,max=OM$OM$B1+abs(OM$OM$B1)*0.35),                       #Double normal selectivity parameters
+                B2=runif(1,min=OM$OM$B2-abs(OM$OM$B2)*0.35,max=OM$OM$B2+abs(OM$OM$B2)*0.35),
+                B3=runif(1,min=OM$OM$B3-abs(OM$OM$B3)*0.35,max=OM$OM$B3+abs(OM$OM$B3)*0.35),
+                B4=runif(1,min=OM$OM$B4-abs(OM$OM$B4)*0.35,max=OM$OM$B4+abs(OM$OM$B4)*0.35),
+                B5=runif(1,min=OM$OM$B5-abs(OM$OM$B5)*0.35,max=OM$OM$B5+abs(OM$OM$B5)*0.35),
+                B6=runif(1,min=OM$OM$B6-abs(OM$OM$B6)*0.35,max=OM$OM$B6+abs(OM$OM$B6)*0.35),
                 log_fint=log(runif(length(OM$OM$F_int[26:100]),min=OM$OM$F_int[26:100]-OM$OM$F_int[26:100]*0.35,max=OM$OM$F_int[26:100]+OM$OM$F_int[26:100]*0.35)))  
     
     ################

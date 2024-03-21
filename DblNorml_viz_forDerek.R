@@ -2,14 +2,14 @@
 #Double-normal selectivity
 
 Amin<-0
-Amax<-15
+Amax<-10
 age<-Amin:Amax
-B1 <- 2.667
-B2 <- -15.885
-B3 <- 0.4
-B4 <- 1.372
-B5 <- -4.010
-B6 <- 0.375
+B1 <- 3.9849
+B2 <- -12.2733
+B3 <- 0.7495
+B4 <- 1.8189
+B5 <- -16.9019
+B6 <- -4.0479
 
 peak2<-B1+1+((0.99*Amax-B1-1)/(1+exp(-B2)))
 t1<-exp(-(Amin-B1)^2/exp(B3))

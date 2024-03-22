@@ -18,7 +18,7 @@ SimPop<-function(seed=1,                         #seed to start random number ge
                  Sel_50=15.9,                    #Sel param1, Age at which 50% selectivity occurs
                  Sel_slope=3.3,                  #Sel param2, Slope for logistic function of selectivity
                  B1=4.2623060,                   #Double normal selectivity parameters
-                 B2=-1.9183504,
+                 B2=-1.9183504,                  #Nicks best approximation of trigger selectivity
                  B3=0.9908788,
                  B4=0.4789121,
                  B5=-15.7304389,
@@ -267,8 +267,8 @@ sim_Fn <- function(OM_text, N_sim, AE_mat){
                 log_sd_index=factor(NA))
     
     #Bounds, need to be updated if you go back to logistic selectivity
-    lower_bounds<-c(-5,-20,rep(-10,dat$lage),rep(-10,dat$lyear), 0, 5, -5,-5,-5, -10,-10,-10,-10,-10,-10,rep(-10,dat$lyear))
-    upper_bounds<-c( 2,  1,rep( 10,dat$lage),rep( 10,dat$lyear), 1, 25, 2, 2, 2,  20, 20, 20, 20, 20, 20,rep(  0,dat$lyear))
+    lower_bounds<-c(-5,-20,rep(-10,dat$lage),rep(-10,dat$lyear), 0, 5, -5,-5,-5,  0,-15, 0, 0,-20,-15,rep(-10,dat$lyear))
+    upper_bounds<-c( 2,  1,rep( 10,dat$lage),rep( 10,dat$lyear), 1, 25, 2, 2, 2, 40,  3,10,10,  7, 17,rep(  0,dat$lyear))
     
     reffects=c("log_recruit_devs","log_recruit_devs_init")
     l<-lower_bounds[-which(parm_names %in% c(names(fixed),reffects))]

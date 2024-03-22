@@ -31,7 +31,7 @@ for (s in 1:Nsim){
                              Sel_50=28.9, # logistic selectivity, not used
                              Sel_slope=7, # logistic selectivity, not used
                              B1=4.2623060,                   #Double normal selectivity parameters
-                             B2=-1.9183504,
+                             B2=-1.9183504,                  #Nicks best approximation of trigger selectivity
                              B3=0.9908788,
                              B4=0.4789121,
                              B5=-15.7304389,

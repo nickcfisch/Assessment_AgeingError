@@ -3,7 +3,7 @@
 #############################
 SimPop<-function(seed=1,                         #seed to start random number generation for reproducibility
                  fage=0,                         #first age of population
-                 lage=15,                        #last age/plus group of population
+                 lage=10,                        #last age/plus group of population
                  fyear=1,                        #first year of population
                  lyear=100,                      #last year of population
                  Linf=25,                        #asymptotic size 
@@ -17,12 +17,12 @@ SimPop<-function(seed=1,                         #seed to start random number ge
                  Mat_slope=-0.9,                 #Mat param2, Slope for logistic function of maturity
                  Sel_50=15.9,                    #Sel param1, Age at which 50% selectivity occurs
                  Sel_slope=3.3,                  #Sel param2, Slope for logistic function of selectivity
-                 B1=2.667,                       #Double normal selectivity parameters
-                 B2=-15.885,
-                 B3=0.4,
-                 B4=1.372,
-                 B5=-4.010,
-                 B6=0.375,
+                 B1=4.2623060,                   #Double normal selectivity parameters
+                 B2=-1.9183504,
+                 B3=0.9908788,
+                 B4=0.4789121,
+                 B5=-15.7304389,
+                 B6=-13.3039320,
                  R0=exp(16),                     #Unfished recruitment 
                  h=0.59,                         #Steepness
                  sd_rec=0.73,                    #Recruitment SD
@@ -52,7 +52,7 @@ SimPop<-function(seed=1,                         #seed to start random number ge
   Maa<-rep(Mref,length(fage:lage))    #Constant M
   
   #Maturity
-  Mat<-1/(1+exp(Mat_slope*(Laa-Mat_50)))
+  Mat<-0.5/(1+exp(Mat_slope*(Laa-Mat_50)))   #Changed mat to max at 0.5 to account for 50% females
   
   #Fishery Selectivity 
 #  Sel<-1/(1+exp(-log(19)*(Laa-Sel_50)/Sel_slope))         #Logistic based on mean length at age
@@ -135,9 +135,9 @@ SimPop<-function(seed=1,                         #seed to start random number ge
 }
 
 
-#############################
+#########################################################################
 #Data simulator, function which simulates data from a population model
-#############################
+#########################################################################
 Get_Data<-function(OM=NA,              #Operating model from which to model
                    dat_seed=1,         #seed to start random number generation for reproducibility
                    fyear_dat=26,       #first year that has data
@@ -148,7 +148,7 @@ Get_Data<-function(OM=NA,              #Operating model from which to model
                    q_index=0.0001,     #Catchability of fishery index 
                    sd_index=0.25,      #standard deviation of fishery index
                    #TRUE Ageing error matrix, if identity (diag), then no ageing error. This needs to have dimension length(fage:lage)*length(fage:lage)
-                   AE_mat=diag(15))    #Given your true age i (row), this matrix defines the probability that you will be classified age j (column)
+                   AE_mat=diag(11))    #Given your true age i (row), this matrix defines the probability that you will be classified age j (column), #REMEMBER THIS NEEDS TO BE IN THE NUMBER OF AGES IN YOUR MODEL
 {
   
   set.seed(dat_seed)
@@ -184,9 +184,9 @@ Get_Data<-function(OM=NA,              #Operating model from which to model
 }
 
 
-#############################
-#Getting Data from OM and applying Age Error to OM
-#############################
+####################################################################
+#Getting Data from OM and applying Age Error the composition data
+####################################################################
 OM_Err <- function(OM_text, AE_mat){
   N_sim<-100
   OM_wdat<-list()
@@ -195,29 +195,29 @@ OM_Err <- function(OM_text, AE_mat){
   sd_index<-0.5
   fyear_dat<-26
   lyear_dat<-100
-  AE_mat<-diag(length(Flatfish_runs[[s]]$fage:Flatfish_runs[[s]]$lage)) #TRUE ageing error matrix for sampling model
+  AE_mat<-diag(length(Trigger_runs[[s]]$fage:Trigger_runs[[s]]$lage)) #TRUE ageing error matrix for sampling model
   for (s in 1:N_sim){
-    OM_wdat[[s]]<-Get_Data(OM=Flatfish_runs[[s]],AE_mat=AE_mat,dat_seed=s,fyear_dat=fyear_dat,lyear_dat=lyear_dat,sd_catch=sd_catch,N_Comp=N_comp,q_index=0.0001,sd_index=sd_index)
+    OM_wdat[[s]]<-Get_Data(OM=Trigger_runs[[s]],AE_mat=AE_mat,dat_seed=s,fyear_dat=fyear_dat,lyear_dat=lyear_dat,sd_catch=sd_catch,N_Comp=N_comp,q_index=0.0001,sd_index=sd_index)
   }
   
   save(OM_wdat,file=paste0(wd,"/",OM_text,".RData"))
 }
 
 
-#############################
-#EM with ageing error
-#############################
+#################################################
+#EM including ageing error matrix ageing error
+#################################################
 sim_Fn <- function(OM_text, N_sim, AE_mat){
   load(paste0(wd,"/",OM_text,".RData"))
   
-  Flatfish_OM<-OM_wdat
+  Trigger_OM<-OM_wdat
   
   #Doing N Simulations
   N_sim<-1:N_sim
   res_list<-list()
   for (s in N_sim){
     
-    OM<-Flatfish_OM[[s]]
+    OM<-Trigger_OM[[s]]
     
     dat<-list(fyear=OM$OM$fyear, lyear=75, fage=OM$OM$fage, lage=OM$OM$lage, 
               years=OM$OM$fyear:75, ages=OM$OM$fage:OM$OM$lage,
@@ -266,8 +266,9 @@ sim_Fn <- function(OM_text, N_sim, AE_mat){
                 log_sd_catch=factor(NA),
                 log_sd_index=factor(NA))
     
-    lower_bounds<-c(-5,-20,rep(-10,dat$lage),rep(-10,dat$lyear), 0, 5, -5,-5,-5,-5,-5, -10,-10,-10,-10,-10,-10,rep(-10,dat$lyear))
-    upper_bounds<-c( 2,  1,rep( 10,dat$lage),rep( 10,dat$lyear), 1, 25, 2, 2, 2, 5, 5,  20, 20, 20, 20, 20, 20,rep(  0,dat$lyear))
+    #Bounds, need to be updated if you go back to logistic selectivity
+    lower_bounds<-c(-5,-20,rep(-10,dat$lage),rep(-10,dat$lyear), 0, 5, -5,-5,-5, -10,-10,-10,-10,-10,-10,rep(-10,dat$lyear))
+    upper_bounds<-c( 2,  1,rep( 10,dat$lage),rep( 10,dat$lyear), 1, 25, 2, 2, 2,  20, 20, 20, 20, 20, 20,rep(  0,dat$lyear))
     
     reffects=c("log_recruit_devs","log_recruit_devs_init")
     l<-lower_bounds[-which(parm_names %in% c(names(fixed),reffects))]

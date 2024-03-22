@@ -9,14 +9,14 @@ wd<-"C:/Users/Derek.Chamberlin/Work/Research/GT_Simulation/Assessment_AgeingErro
 
 source(paste0(wd,"/Functions.R"))
 
-#Example for Gray Triggerfish-like life-history, don't change list name
-#For Flatfish, fmsy is 0.27, MSY is 5240.563 (*0.85= 4454.479), and fhigh which reaches 0.85*MSY is 0.5425, flow is 0.1259
+#Example for Gray Triggerfish-like life-history
+#For Triggerfish, fmsy is XX, MSY is XX, SSBmsy is XX
 Nsim<-100
-Flatfish_runs<-list()
+Trigger_runs<-list()
 for (s in 1:Nsim){
-  Flatfish_runs[[s]]<-SimPop(seed=s,
+  Trigger_runs[[s]]<-SimPop(seed=s,
                              fage=0,
-                             lage=15, #(Sedar 43, 2015)  p. 10
+                             lage=10, #(Sedar 43, 2015)  p. 10
                              fyear=1,
                              lyear=100,
                              Linf=58.97, #(Sedar 43, 2015) p. 64
@@ -28,14 +28,14 @@ for (s in 1:Nsim){
                              Mref=0.28, #(Sedar 43, 2015) p. 32
                              Mat_50=31.0, #(Sedar 43, 2015) p. 64
                              Mat_slope=-0.065, #(Sedar 43, 2015) p. 64
-                             Sel_50=28.9, #need to update!!!! maybe average across all fleets, dome shaped in Sedar 43
-                             Sel_slope=7, #need to update!!!! maybe average across all fleets
-                             B1=2.667,                       #Double normal selectivity parameters
-                             B2=-15.885,
-                             B3=0.4,
-                             B4=1.372,
-                             B5=-4.010,
-                             B6=0.375,
+                             Sel_50=28.9, # logistic selectivity, not used
+                             Sel_slope=7, # logistic selectivity, not used
+                             B1=4.2623060,                   #Double normal selectivity parameters
+                             B2=-1.9183504,
+                             B3=0.9908788,
+                             B4=0.4789121,
+                             B5=-15.7304389,
+                             B6=-13.3039320,
                              R0=exp(9.7608), #(Sedar 43, 2015) p. 64
                              h=0.4593, #(Sedar 43, 2015) p. 64
                              sd_rec=0.3582, #(Sedar 43, 2015) p. 64
@@ -46,23 +46,23 @@ for (s in 1:Nsim){
                              stochastic=TRUE)
 }
 
-#save(Flatfish_runs, file=paste0(wd,"/Flatfish_Base.RData"))
+#save(Trigger_runs, file=paste0(wd,"/Trigger_Base.RData"))
 
 #Looking at some plots of population
-plot(1:101,Flatfish_runs[[1]]$SSB/Flatfish_runs[[1]]$SSB0, ylim=c(0,2.75), las=1, xlab="Year", ylab="SSB/SSB0", main="Flatfish", type="l", col="grey50")
-Flatfish_Depl<-matrix(NA, nrow=Nsim,ncol=101)
-Flatfish_Depl[1,]<-Flatfish_runs[[1]]$SSB/Flatfish_runs[[1]]$SSB0
+plot(1:101,Trigger_runs[[1]]$SSB/Trigger_runs[[1]]$SSB0, ylim=c(0,1.25), las=1, xlab="Year", ylab="SSB/SSB0", main="Flatfish", type="l", col="grey50")
+Trigger_Depl<-matrix(NA, nrow=Nsim,ncol=101)
+Trigger_Depl[1,]<-Trigger_runs[[1]]$SSB/Trigger_runs[[1]]$SSB0
 for(s in 2:Nsim){
-  Flatfish_Depl[s,]<-Flatfish_runs[[s]]$SSB/Flatfish_runs[[s]]$SSB0
-  lines(1:101,Flatfish_runs[[s]]$SSB/Flatfish_runs[[s]]$SSB0, col="grey50")
+  Trigger_Depl[s,]<-Trigger_runs[[s]]$SSB/Trigger_runs[[s]]$SSB0
+  lines(1:101,Trigger_runs[[s]]$SSB/Trigger_runs[[s]]$SSB0, col="grey50")
 }
 
 #Ok looking at Inner 75% and inner 95% of simulations
-plot(1:101,apply(Flatfish_Depl,2,quantile,probs=0.975), type="l", lty=2, ylim=c(0,2), las=1, xlab="Year", ylab="SSB/SSB0", main="Flatfish")
-lines(1:101,apply(Flatfish_Depl,2,median),lty=1)
-lines(1:101,apply(Flatfish_Depl,2,quantile,probs=0.025),lty=2)
-lines(1:101,apply(Flatfish_Depl,2,quantile,probs=0.875),lty=3)
-lines(1:101,apply(Flatfish_Depl,2,quantile,probs=0.125),lty=3)
+plot(1:101,apply(Trigger_Depl,2,quantile,probs=0.975), type="l", lty=2, ylim=c(0,2), las=1, xlab="Year", ylab="SSB/SSB0", main="Flatfish")
+lines(1:101,apply(Trigger_Depl,2,median),lty=1)
+lines(1:101,apply(Trigger_Depl,2,quantile,probs=0.025),lty=2)
+lines(1:101,apply(Trigger_Depl,2,quantile,probs=0.875),lty=3)
+lines(1:101,apply(Trigger_Depl,2,quantile,probs=0.125),lty=3)
 legend("top", c("Median","Inner 75%","Inner 95%"), lwd=1, lty=c(1,3,2))
 
 
@@ -79,7 +79,7 @@ compile("SCAA_forDerek_wAE.cpp")
 
 #Ageing Error Definitions
 {
-  AE_mat<-diag(length(Flatfish_runs[[s]]$fage:Flatfish_runs[[s]]$lage))
+  AE_mat<-diag(length(Trigger_runs[[s]]$fage:Trigger_runs[[s]]$lage))
   AE_mat_constant <- AE_mat
   AE_mat_linear <- AE_mat
   AE_mat_curvilinear <- AE_mat

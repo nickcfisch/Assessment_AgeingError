@@ -205,7 +205,7 @@ OM_Err <- function(OM_text, AE_mat){
 
 
 #################################################
-#EM including ageing error matrix ageing error
+#EM including ageing error matrix 
 #################################################
 sim_Fn <- function(OM_text, N_sim, AE_mat){
   load(paste0(wd,"/",OM_text,".RData"))

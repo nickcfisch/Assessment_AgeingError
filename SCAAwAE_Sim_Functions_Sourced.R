@@ -10,7 +10,7 @@ wd<-"C:/Users/Derek.Chamberlin/Work/Research/GT_Simulation/Assessment_AgeingErro
 source(paste0(wd,"/Functions.R"))
 
 #Example for Gray Triggerfish-like life-history
-#For Triggerfish, fmsy is XX, MSY is XX, SSBmsy is XX
+#For Triggerfish, based on stochastic runs, fmsy is 0.268, MSY is 2969, SSBmsy is 10046
 Nsim<-100
 Trigger_runs<-list()
 for (s in 1:Nsim){

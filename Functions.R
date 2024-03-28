@@ -5,7 +5,7 @@ SimPop<-function(seed=1,                         #seed to start random number ge
                  fage=0,                         #first age of population
                  lage=10,                        #last age/plus group of population
                  fyear=1,                        #first year of population
-                 lyear=100,                      #last year of population
+                 lyear=94,                      #last year of population
                  Linf=25,                        #asymptotic size 
                  a3=0.5,                         #SS-like parameterization of growth, a3 parameter
                  L1=10,                          #ditto^ L1 param
@@ -30,6 +30,8 @@ SimPop<-function(seed=1,                         #seed to start random number ge
                  fint=0.25,                      #fully-selected fishing mortality to set each year if fishing mortality is constant
                  fhigh=0.25,                     #F high for fishing mortality ramp if const_F is false
                  flow=0.25,                      #F low for fishing mortality ramp if const_F is false
+                 F_man=FALSE,                    #Set F manually
+                 F_val=F_val,                    #Vector of F value to manually set F
                  stochastic=TRUE){               #Stochastic recruitment? If false then model is deterministic
   
   set.seed(seed)
@@ -81,6 +83,13 @@ SimPop<-function(seed=1,                         #seed to start random number ge
     F_int[fyear:25]<-0
     F_int[26:85]<-fhigh/length(26:85)*(1:length(26:85))
     F_int[86:lyear]<-F_int[85]+(flow-fhigh)/length(86:lyear)*(1:length(86:lyear))
+  }
+  
+  if (F_man==TRUE){
+    F_int[fyear:25]<-0
+    F_int[26:lyear]<-F_val
+  } else if (F_man==FALSE){
+    
   }
   
   #Now Pop Stuff
@@ -141,10 +150,10 @@ SimPop<-function(seed=1,                         #seed to start random number ge
 Get_Data<-function(OM=NA,              #Operating model from which to model
                    dat_seed=1,         #seed to start random number generation for reproducibility
                    fyear_dat=26,       #first year that has data
-                   lyear_dat=100,      #last year with data
+                   lyear_dat=94,      #last year with data
                    sd_catch=0.05,      #SD of catch data
                    #Composition sample size in each year (vector of length(fyear:lyear)). If zero then no comp data for that year
-                   N_Comp=c(rep(0,25),30,rep(0,9),40,rep(0,9),50,rep(0,4),60,rep(0,4),70,rep(0,4),80,rep(0,4),90,rep(0,4),rep(100,30)),
+                   N_Comp=c(rep(0,25),30,rep(0,9),40,rep(0,9),50,rep(0,4),60,rep(0,4),70,rep(0,4),80,rep(0,4),90,rep(0,4),rep(100,24)),
                    q_index=0.0001,     #Catchability of fishery index 
                    sd_index=0.25,      #standard deviation of fishery index
                    #TRUE Ageing error matrix, if identity (diag), then no ageing error. This needs to have dimension length(fage:lage)*length(fage:lage)
@@ -190,16 +199,15 @@ Get_Data<-function(OM=NA,              #Operating model from which to model
 OM_Err <- function(OM_text, AE_mat){
   N_sim<-100
   OM_wdat<-list()
-  N_comp<-c(rep(0,25),30,rep(0,9),40,rep(0,9),50,rep(0,4),60,rep(0,4),70,rep(0,4),80,rep(0,4),90,rep(0,4),rep(100,30))
+  N_comp<-c(rep(0,25),30,rep(0,9),40,rep(0,9),50,rep(0,4),60,rep(0,4),70,rep(0,4),80,rep(0,4),90,rep(0,4),rep(100,24))
   sd_catch<-0.05
   sd_index<-0.5
   fyear_dat<-26
-  lyear_dat<-100
-  AE_mat<-diag(length(Trigger_runs[[s]]$fage:Trigger_runs[[s]]$lage)) #TRUE ageing error matrix for sampling model
+  lyear_dat<-94
+  AE_mat<-diag(length(Triggerfish_runs[[s]]$fage:Triggerfish_runs[[s]]$lage)) #TRUE ageing error matrix for sampling model
   for (s in 1:N_sim){
-    OM_wdat[[s]]<-Get_Data(OM=Trigger_runs[[s]],AE_mat=AE_mat,dat_seed=s,fyear_dat=fyear_dat,lyear_dat=lyear_dat,sd_catch=sd_catch,N_Comp=N_comp,q_index=0.0001,sd_index=sd_index)
+    OM_wdat[[s]]<-Get_Data(OM=Triggerfish_runs[[s]],AE_mat=AE_mat,dat_seed=s,fyear_dat=fyear_dat,lyear_dat=lyear_dat,sd_catch=sd_catch,N_Comp=N_comp,q_index=0.0001,sd_index=sd_index)
   }
-  
   save(OM_wdat,file=paste0(wd,"/",OM_text,".RData"))
 }
 
@@ -209,18 +217,18 @@ OM_Err <- function(OM_text, AE_mat){
 #################################################
 sim_Fn <- function(OM_text, N_sim, AE_mat){
   load(paste0(wd,"/",OM_text,".RData"))
-  
-  Trigger_OM<-OM_wdat
-  
+
+  Triggerfish_OM<-OM_wdat
+
   #Doing N Simulations
   N_sim<-1:N_sim
   res_list<-list()
   for (s in N_sim){
     
-    OM<-Trigger_OM[[s]]
+    OM<-Triggerfish_OM[[s]]
     
-    dat<-list(fyear=OM$OM$fyear, lyear=75, fage=OM$OM$fage, lage=OM$OM$lage, 
-              years=OM$OM$fyear:75, ages=OM$OM$fage:OM$OM$lage,
+    dat<-list(fyear=OM$OM$fyear, lyear=69, fage=OM$OM$fage, lage=OM$OM$lage, 
+              years=OM$OM$fyear:69, ages=OM$OM$fage:OM$OM$lage,
               obs_harv=OM$Obs_Catch,
               obs_index=OM$Obs_Index,
               obs_fishery_comp=OM$Obs_Catch_Comp/rowSums(OM$Obs_Catch_Comp),
@@ -253,8 +261,8 @@ sim_Fn <- function(OM_text, N_sim, AE_mat){
                 B4=runif(1,min=OM$OM$B4-abs(OM$OM$B4)*0.35,max=OM$OM$B4+abs(OM$OM$B4)*0.35),
                 B5=runif(1,min=OM$OM$B5-abs(OM$OM$B5)*0.35,max=OM$OM$B5+abs(OM$OM$B5)*0.35),
                 B6=runif(1,min=OM$OM$B6-abs(OM$OM$B6)*0.35,max=OM$OM$B6+abs(OM$OM$B6)*0.35),
-                log_fint=log(runif(length(OM$OM$F_int[26:100]),min=OM$OM$F_int[26:100]-OM$OM$F_int[26:100]*0.35,max=OM$OM$F_int[26:100]+OM$OM$F_int[26:100]*0.35)))  
-    
+                log_fint=log(runif(length(OM$OM$F_int[26:94]),min=OM$OM$F_int[26:94]-OM$OM$F_int[26:94]*0.35,max=OM$OM$F_int[26:94]+OM$OM$F_int[26:94]*0.35)))  
+
     ################
     #TMB stuff
     ################

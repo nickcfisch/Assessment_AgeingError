@@ -1,0 +1,17 @@
+﻿Scenario_#,OM,EM
+1,GT_OM_perf_wdat,AE_mat
+2,GT_OM_perf_wdat,AE_mat_constant
+3,GT_OM_perf_wdat,AE_mat_linear
+4,GT_OM_perf_wdat,AE_mat_curvilinear
+5,GT_OM_constant_wdat,AE_mat
+6,GT_OM_constant_wdat,AE_mat_constant
+7,GT_OM_constant_wdat,AE_mat_linear
+8,GT_OM_constant_wdat,AE_mat_curvilinear
+9,GT_OM_linear_wdat,AE_mat
+10,GT_OM_linear_wdat,AE_mat_constant
+11,GT_OM_linear_wdat,AE_mat_linear
+12,GT_OM_linear_wdat,AE_mat_curvilinear
+13,GT_OM_curvilinear_wdat,AE_mat
+14,GT_OM_curvilinear_wdat,AE_mat_constant
+15,GT_OM_curvilinear_wdat,AE_mat_linear
+16,GT_OM_curvilinear_wdat,AE_mat_curvilinear

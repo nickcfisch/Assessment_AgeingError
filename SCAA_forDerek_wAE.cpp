@@ -90,7 +90,6 @@ Type objective_function<Type>::operator() ()
   vector<Type> fishery_sel(ages.size());                   //Fishery selectivity (fage,lage)
 
   vector<Type> Maa(ages.size());                      //Natural mortality vector
-  matrix<Type> M(years.size(),ages.size());                //Instantaneous natural mortality matrix
   matrix<Type> Sel(years.size(),ages.size());              //Selectivity
   matrix<Type> F(years.size(),ages.size());                //Instantaneous fishing mortality matrix
   matrix<Type> Z(years.size(),ages.size());                //Total mortality matrix
@@ -116,8 +115,6 @@ Type objective_function<Type>::operator() ()
        
 //Double normal stuff   
   Type peak2; 
-  Type t1; 
-  Type t2; 
   vector<Type> j1(ages.size());
   vector<Type> j2(ages.size());
   vector<Type> asc(ages.size());
@@ -153,20 +150,16 @@ Type objective_function<Type>::operator() ()
 //  }
   
   //Double Normal
-  Type Amin=fage;
   Type Amax=lage;
 
   for(j=0;j<=ages.size()-1;j++){
    peak2=B1+1+((0.99*Amax-B1-1)/(1+exp(-B2)));
-   t1=exp(-pow(Amin-B1,2)/exp(B3));
-   t2=exp(-pow(Amax-peak2,2)/exp(B4));
   
    j1(j)=pow((1+exp(-20*((int(j)-B1)/(1+fabs(int(j)-B1))))),-1);
    j2(j)=pow((1+exp(-20*((int(j)-peak2)/(1+fabs(int(j)-peak2))))),-1);
-
-   //Long form
-   asc(j)=pow(1+exp(-B5),-1)+(1-pow(1+exp(-B5),-1))*((exp(-pow(int(j)-B1,2)/exp(B3))-t1)/(1-t1));
-   dsc(j)=1+(pow(1+exp(-B6),-1)-1)*((exp(-(int(j)-peak2)/exp(B4))-1)/(t2-1));
+   
+   asc(j)=exp(-pow((int(j)-B1),2)/exp(B3));
+   dsc(j)=exp(-pow((int(j)-peak2),2)/exp(B4));
 
    //Actual Sel
    fishery_sel(j)=asc(j)*(1-j1(j))+j1(j)*((1-j2(j))+j2(j)*dsc(j));
@@ -307,7 +300,6 @@ Type objective_function<Type>::operator() ()
   REPORT(Laa);
   REPORT(lxo);
   REPORT(F);
-  REPORT(M);
   REPORT(N);
   REPORT(spbiomass);
   ADREPORT(spbiomass);

@@ -17,12 +17,12 @@ SimPop<-function(seed=1,                         #seed to start random number ge
                  Mat_slope=-0.9,                 #Mat param2, Slope for logistic function of maturity
                  Sel_50=15.9,                    #Sel param1, Age at which 50% selectivity occurs
                  Sel_slope=3.3,                  #Sel param2, Slope for logistic function of selectivity
-                 B1=4.2623060,                   #Double normal selectivity parameters
-                 B2=-1.9183504,                  #Nicks best approximation of trigger selectivity
-                 B3=0.9908788,
-                 B4=0.4789121,
-                 B5=-15.7304389,
-                 B6=-13.3039320,
+                 B1=4.374691,                   #Double normal selectivity parameters
+                 B2=-14.836252,                  #Nicks best approximation of trigger selectivity
+                 B3=1.214063,
+                 B4=1.582468,
+                 B5=-15.730439,
+                 B6=-13.303932,
                  R0=exp(16),                     #Unfished recruitment 
                  h=0.59,                         #Steepness
                  sd_rec=0.73,                    #Recruitment SD
@@ -61,22 +61,23 @@ SimPop<-function(seed=1,                         #seed to start random number ge
 #  Sel<-1/(1+exp(-log(19)*((fage:lage)-Sel_50)/Sel_slope))  #Logistic based on age
   
   #Double Normal
-  Amin<-fage
   Amax<-lage
   age<-Amin:Amax
   peak2<-B1+1+((0.99*Amax-B1-1)/(1+exp(-B2)))
-  t1<-exp(-(Amin-B1)^2/exp(B3))
-  t2<-exp(-(Amax-peak2)^2/exp(B4))
   j1<-(1+exp(-20*((age-B1)/(1+abs(age-B1)))))^-1
   j2<-(1+exp(-20*((age-peak2)/(1+abs(age-peak2)))))^-1
-  asc<-(1+exp(-B5))^-1+(1-(1+exp(-B5))^-1)*((exp(-(age-B1)^2/exp(B3))-t1)/(1-t1))
-  dsc<-1+(((1+exp(-B6))^-1)-1)*((exp(-(age-peak2)/exp(B4))-1)/(t2-1))
+  asc<-exp(-(age-B1)^2/exp(B3))
+  dsc<-exp(-(age-peak2)^2/exp(B4))
   Sel<-asc*(1-j1)+j1*((1-j2)+j2*dsc)
   
   #Fishing intensity, starts in year 25
   k_int<-0.15
   mid_int<-20
   F_int<-NA
+  if (F_man==TRUE){
+    F_int[fyear:25]<-0
+    F_int[26:lyear]<-F_val
+  } else if (F_man==FALSE){
   if (const_F==TRUE){
     F_int[fyear:lyear]<-fint
   } else if (const_F==FALSE){
@@ -84,12 +85,6 @@ SimPop<-function(seed=1,                         #seed to start random number ge
     F_int[26:85]<-fhigh/length(26:85)*(1:length(26:85))
     F_int[86:lyear]<-F_int[85]+(flow-fhigh)/length(86:lyear)*(1:length(86:lyear))
   }
-  
-  if (F_man==TRUE){
-    F_int[fyear:25]<-0
-    F_int[26:lyear]<-F_val
-  } else if (F_man==FALSE){
-    
   }
   
   #Now Pop Stuff
@@ -275,7 +270,7 @@ sim_Fn <- function(OM_text, N_sim, AE_mat){
                 log_sd_index=factor(NA))
     
     #Bounds, need to be updated if you go back to logistic selectivity
-    lower_bounds<-c(-5,-20,rep(-10,dat$lage),rep(-10,dat$lyear), 0, 5, -5,-5,-5,  0,-15, 0, 0,-20,-15,rep(-10,dat$lyear))
+    lower_bounds<-c(-5,-20,rep(-10,dat$lage),rep(-10,dat$lyear), 0, 5, -5,-5,-5,  0,-20, 0, 0,-20,-20,rep(-10,dat$lyear))
     upper_bounds<-c( 2,  1,rep( 10,dat$lage),rep( 10,dat$lyear), 1, 25, 2, 2, 2, 40,  3,10,10,  7, 17,rep(  0,dat$lyear))
     
     reffects=c("log_recruit_devs","log_recruit_devs_init")

@@ -170,10 +170,10 @@ Type objective_function<Type>::operator() ()
 //MORTALITY
 //////////////////////
  //Lorenzen M or Constant M
-//  for(j=0;j<=lage;j++){
-//   Maa(j)=NatMort*pow((Lt(j)/(Linf*0.75)),-1);
-// }
-   Maa.fill(NatMort);
+  for(j=0;j<=lage;j++){
+   Maa(j)=NatMort*pow((Laa(j)/44.2275),-1.775641);
+  }
+//   Maa.fill(NatMort);
 
   for(i=0;i<=years.size()-1;i++){
    for(j=0;j<=lage;j++){

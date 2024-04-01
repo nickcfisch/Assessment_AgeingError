@@ -38,7 +38,8 @@ for (s in 1:Nsim){
                              BK=0.14, #(Sedar 43, 2015) p. 64
                              Weight_scaling=2.16e-5, #(Sedar 43, 2015) p. 64
                              Weight_allometry=3.007, #(Sedar 43, 2015) p. 64
-                             Mref=0.28, #(Sedar 43, 2015) p. 32
+                             Mref=0.3015598,                 #Reference M for constant or lorenzen. 
+                             M_pow=1.775641,                 #power for lorenzen M
                              Mat_50=31.0, #(Sedar 43, 2015) p. 64
                              Mat_slope=-0.065, #(Sedar 43, 2015) p. 64
                              Sel_50=28.9, # logistic selectivity, not used

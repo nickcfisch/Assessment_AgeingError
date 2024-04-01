@@ -12,7 +12,8 @@ SimPop<-function(seed=1,                         #seed to start random number ge
                  BK=0.4,                         #brody growth coefficient
                  Weight_scaling=1.7e-5,          #Weight-length a
                  Weight_allometry=2.9,           #Weight-length b
-                 Mref=0.4,                       #Constant, age-invariant natural mortality parameter 
+                 Mref=0.3015598,                 #Reference M for constant or lorenzen. 
+                 M_pow=1.775641,                 #power for lorenzen M
                  Mat_50=15.9,                    #Mat param1, Age at which 50% maturity occurs
                  Mat_slope=-0.9,                 #Mat param2, Slope for logistic function of maturity
                  Sel_50=15.9,                    #Sel param1, Age at which 50% selectivity occurs
@@ -42,28 +43,30 @@ SimPop<-function(seed=1,                         #seed to start random number ge
   Laa<-Lmin+b*0
   Laa<-NA
   Laa[1]<-Lmin+b*0
-  Laa[2:lage]<-Linf+(L1-Linf)*exp(-BK*((1:(lage-1))-a3))
-  Laa[lage+1]<-Linf
+  Laa[2:(lage+1)]<-Linf+(L1-Linf)*exp(-BK*((1:lage)-a3))
+#  Laa[2:lage]<-Linf+(L1-Linf)*exp(-BK*((1:(lage-1))-a3))
+#  Laa[lage+1]<-Linf
   Laa[1]<-uniroot(f=function(x) x+(x-Linf)*(exp(-BK)-1)-Laa[2], interval=c(0.01,100))$root
   
   #Weight at age
   Waa<-Weight_scaling*Laa^Weight_allometry
-  
+  Fec<-51.357*Laa^2.8538
+    
   #Natural mortality at age
-  #Maa<-Mref*(Laa/(Linf*0.75))^-1     #If you'd like to use lorenzen M
-  Maa<-rep(Mref,length(fage:lage))    #Constant M
+  Maa<-Mref*(Laa/(Linf*0.75))^-M_pow
+  #Maa<-rep(Mref,length(fage:lage))    #Constant M
   
   #Maturity
-  Mat<-0.5/(1+exp(Mat_slope*(Laa-Mat_50)))   #Changed mat to max at 0.5 to account for 50% females
+  Mat<-0.5*c(0, 0, 0.79, 0.91, 0.98, 0.99, 1, 1, 1, 1, 1) #Mat read in from assessment?
+ # Mat<-0.5/(1+exp(Mat_slope*(Laa-Mat_50)))   #Changed mat to max at 0.5 to account for 50% females
   
   #Fishery Selectivity 
 #  Sel<-1/(1+exp(-log(19)*(Laa-Sel_50)/Sel_slope))         #Logistic based on mean length at age
 #  Sel<-1/(1+exp(-log(19)*((fage:lage)-Sel_50)/Sel_slope))  #Logistic based on age
   
   #Double Normal
-  Amax<-lage
-  age<-Amin:Amax
-  peak2<-B1+1+((0.99*Amax-B1-1)/(1+exp(-B2)))
+  age<-fage:lage
+  peak2<-B1+1+((0.99*lage-B1-1)/(1+exp(-B2)))
   j1<-(1+exp(-20*((age-B1)/(1+abs(age-B1)))))^-1
   j2<-(1+exp(-20*((age-peak2)/(1+abs(age-peak2)))))^-1
   asc<-exp(-(age-B1)^2/exp(B3))
@@ -91,13 +94,13 @@ SimPop<-function(seed=1,                         #seed to start random number ge
   lxo<-c(1,cumprod(exp(-Maa[1:lage])))   #survivorship
   lxo[lage+1]<-lxo[lage+1]/(1-exp(-Maa[lage+1]))   #plus group survivorship
   N0aa<-R0*lxo
-  SSB0<-sum(N0aa*Mat*Waa)  #Unfished SSB calc
+  SSB0<-sum(N0aa*Mat*Fec)  #Unfished SSB calc
   
   #Population Simulation
   Faa<-Zaa<-matrix(NA, nrow=lyear, ncol=lage+1)
   Naa<-matrix(NA, nrow=lyear+1, ncol=lage+1)
   Naa[1,]<-N0aa
-  SSB<-sum(Naa[1,]*Mat*Waa)
+  SSB<-sum(Naa[1,]*Mat*Fec)
   lrecdevs<-0
   for(i in fyear:lyear){
     Faa[i,]<-F_int[i]*Sel
@@ -107,7 +110,7 @@ SimPop<-function(seed=1,                         #seed to start random number ge
     }
     Naa[i+1,lage+1]<-Naa[i+1,lage+1]+Naa[i,lage+1]*exp(-Zaa[i,lage+1]) #plus group
     
-    SSB[i+1] <- sum(Naa[i+1,]*Mat*Waa, na.rm=TRUE)
+    SSB[i+1] <- sum(Naa[i+1,]*Mat*Fec, na.rm=TRUE)
     if (stochastic==TRUE){
       lrecdevs[i+1]<-rnorm(n=1,mean=0, sd=sd_rec)
       Naa[i+1,1] <- (4*h*R0*SSB[i+1])/(SSB0*(1-h)+SSB[i+1]*(5*h-1))*exp(lrecdevs[i+1]-0.5*sd_rec^2)
@@ -124,6 +127,7 @@ SimPop<-function(seed=1,                         #seed to start random number ge
               lrecdevs=lrecdevs,
               Laa=Laa,
               Waa=Waa,
+              Fec=Fec,
               Mat=Mat,
               F_int=F_int,
               lxo=lxo,
@@ -231,6 +235,7 @@ sim_Fn <- function(OM_text, N_sim, AE_mat){
               Mat=OM$OM$Mat,
               Laa=OM$OM$Laa,
               Waa=OM$OM$Waa,
+              Fec=OM$OM$Fec,
               Lamda_Harvest=1,                           #Switch for whether to use a data source or not, 0=no, 1=yes
               Lamda_Comp=1,
               Lamda_Index=1,

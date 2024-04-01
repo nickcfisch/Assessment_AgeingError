@@ -96,3 +96,13 @@ B6 <- -13.3039320
 theta<-c(B1,B2,B3,B4,B5,B6)
 optim(par=theta,fn=opt, lower=c(0,-15,0,0,-20,-15), method= "L-BFGS-B")
 
+#Trying to approximate M
+v<-function(theta){
+pred<-exp(theta[1])*(Triggerfish_runs[[1]]$Laa/(Triggerfish_runs[[1]]$Linf*0.75))^theta[2]
+sum((pred-M)^2)
+}
+optim(p=c(log(0.3),-1),fn=v)
+
+points(0:10, exp(-1.198787)*(Triggerfish_runs[[1]]$Laa/(Triggerfish_runs[[1]]$Linf*0.75))^-1.775641, col=3, pch=16)
+Mref<-0.3015598
+M_pow<--1.775641

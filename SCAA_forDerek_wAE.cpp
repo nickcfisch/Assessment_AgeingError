@@ -44,6 +44,7 @@ Type objective_function<Type>::operator() ()
   DATA_VECTOR(Mat);                 //Maturity at age vector 
   DATA_VECTOR(Laa);                 //Length at age vector
   DATA_VECTOR(Waa);                 //Weight at age vector
+  DATA_VECTOR(Fec);                 //Fecundity vector
 
   DATA_INTEGER(Lamda_Harvest);      //Whether to use data sources or not
   DATA_INTEGER(Lamda_Comp);    
@@ -193,7 +194,7 @@ Type objective_function<Type>::operator() ()
   }
   lxo(lage)=lxo(lage)/(1-exp(-1*Maa(lage)));
   N0_age=R0*lxo;
-  SSB0=(N0_age*Mat*Waa).sum();   //Numbers at age * Fecundity
+  SSB0=(N0_age*Mat*Fec).sum();   //Numbers at age * Fecundity
 
   //Filling in log_rec_devs
   for(i=0;i<=years.size()-1;i++){
@@ -210,7 +211,7 @@ Type objective_function<Type>::operator() ()
   N(fyear-1,fage)=R0*exp(log_rec_devs(0)-0.5*pow(sd_rec,2));     //Filling in initial year recruitment
   
   //Spawning Biomass in the first year
-  spbiomass(fyear-1)=(vector<Type>(N.row(fyear-1))*Mat*Waa).sum();
+  spbiomass(fyear-1)=(vector<Type>(N.row(fyear-1))*Mat*Fec).sum();
   
 //Population loop
   for(i=fyear;i<=years.size();i++){  //TMB starts at zero so this is 81 years (or 41), starting at i+1
@@ -219,7 +220,7 @@ Type objective_function<Type>::operator() ()
     }
    N(i,lage)+=N(i-1,lage)*S(i-1,lage);   //Plus group
    
-  spbiomass(i)=(vector<Type>(N.row(i))*Mat*Waa).sum();
+  spbiomass(i)=(vector<Type>(N.row(i))*Mat*Fec).sum();
 
 //   N(i,fage)=((4.*steepness*R0*spbiomass(i))/(SSB0*(1.-steepness)+spbiomass(i)*(5.*steepness-1.)))*exp(log_rec_devs(i));  //Recruitment if at age 0
    N(i,fage)=((4.*steepness*R0*spbiomass(i))/(SSB0*(1.-steepness)+spbiomass(i)*(5.*steepness-1.)))*exp(log_rec_devs(i)-0.5*pow(sd_rec,2));  //Recruitment, if at age 1

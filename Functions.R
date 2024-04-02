@@ -296,7 +296,7 @@ for(i in 1:100){
 
 boxplot(x, ylim=c(-1,1))
 
-
+#Example of extracting Data
 est_par<-as.list(SCAA_fit$SD, what="Est") #EXACT SAME STRUCTURE AS PARAMETER VECTOR
 sd_par<-as.list(SCAA_fit$SD, what="Std")
 

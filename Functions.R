@@ -22,8 +22,6 @@ SimPop<-function(seed=1,                         #seed to start random number ge
                  B2=-14.836252,                  #Nicks best approximation of trigger selectivity
                  B3=1.214063,
                  B4=1.582468,
-                 B5=-15.730439,
-                 B6=-13.303932,
                  R0=exp(16),                     #Unfished recruitment 
                  h=0.59,                         #Steepness
                  sd_rec=0.73,                    #Recruitment SD
@@ -123,7 +121,7 @@ SimPop<-function(seed=1,                         #seed to start random number ge
   
   return(list(fage=fage,lage=lage,seed=seed,fyear=fyear,lyear=lyear,Linf=Linf,a3=a3,L1=L1,BK=BK,Weight_scaling=Weight_scaling,
               Weight_allometry=Weight_allometry,Mref=Mref,Mat_50=Mat_50,Mat_slope=Mat_slope,Sel_50=Sel_50,Sel_slope=Sel_slope,
-              B1=B1,B2=B2,B3=B3,B4=B4,B5=B5,B6=B6,R0=R0,h=h,sd_rec=sd_rec,fint=fint,fhigh=fhigh,flow=flow,stochastic=stochastic,
+              B1=B1,B2=B2,B3=B3,B4=B4,R0=R0,h=h,sd_rec=sd_rec,fint=fint,fhigh=fhigh,flow=flow,stochastic=stochastic,
               lrecdevs=lrecdevs,
               Laa=Laa,
               Waa=Waa,
@@ -200,7 +198,7 @@ OM_Err <- function(OM_text, AE_mat){
   OM_wdat<-list()
   N_comp<-c(rep(0,25),30,rep(0,9),40,rep(0,9),50,rep(0,4),60,rep(0,4),70,rep(0,4),80,rep(0,4),90,rep(0,4),rep(100,24))
   sd_catch<-0.05
-  sd_index<-0.5
+  sd_index<-0.25
   fyear_dat<-26
   lyear_dat<-94
   AE_mat<-diag(length(Triggerfish_runs[[s]]$fage:Triggerfish_runs[[s]]$lage)) #TRUE ageing error matrix for sampling model
@@ -259,8 +257,6 @@ sim_Fn <- function(OM_text, N_sim, AE_mat){
                 B2=runif(1,min=OM$OM$B2-abs(OM$OM$B2)*0.35,max=OM$OM$B2+abs(OM$OM$B2)*0.35),
                 B3=runif(1,min=OM$OM$B3-abs(OM$OM$B3)*0.35,max=OM$OM$B3+abs(OM$OM$B3)*0.35),
                 B4=runif(1,min=OM$OM$B4-abs(OM$OM$B4)*0.35,max=OM$OM$B4+abs(OM$OM$B4)*0.35),
-                B5=runif(1,min=OM$OM$B5-abs(OM$OM$B5)*0.35,max=OM$OM$B5+abs(OM$OM$B5)*0.35),
-                B6=runif(1,min=OM$OM$B6-abs(OM$OM$B6)*0.35,max=OM$OM$B6+abs(OM$OM$B6)*0.35),
                 log_fint=log(runif(length(OM$OM$F_int[26:94]),min=OM$OM$F_int[26:94]-OM$OM$F_int[26:94]*0.35,max=OM$OM$F_int[26:94]+OM$OM$F_int[26:94]*0.35)))  
 
     ################
@@ -275,8 +271,8 @@ sim_Fn <- function(OM_text, N_sim, AE_mat){
                 log_sd_index=factor(NA))
     
     #Bounds, need to be updated if you go back to logistic selectivity
-    lower_bounds<-c(-5,-20,rep(-10,dat$lage),rep(-10,dat$lyear), 0, 5, -5,-5,-5,  0,-20, 0, 0,-20,-20,rep(-10,dat$lyear))
-    upper_bounds<-c( 2,  1,rep( 10,dat$lage),rep( 10,dat$lyear), 1, 25, 2, 2, 2, 40,  3,10,10,  7, 17,rep(  0,dat$lyear))
+    lower_bounds<-c(-5,-20,rep(-10,dat$lage),rep(-10,dat$lyear), 0, 5, -5,-5,-5, 1,-20, 0,-4,rep(-10,dat$lyear))
+    upper_bounds<-c( 2,  1,rep( 10,dat$lage),rep( 10,dat$lyear), 1, 25, 2, 2, 2, 5,  5, 2, 2,rep(  0,dat$lyear))
     
     reffects=c("log_recruit_devs","log_recruit_devs_init")
     l<-lower_bounds[-which(parm_names %in% c(names(fixed),reffects))]
@@ -290,3 +286,21 @@ sim_Fn <- function(OM_text, N_sim, AE_mat){
     return(res_list)
   }
 }
+
+x<-matrix(NA, nrow=100, ncol=length(res_list[[1]]$SD$value))
+for(i in 1:100){
+ if(!is.null(res_list[[i]]$SD$value)){
+  x[i,]<-(res_list[[i]]$SD$value-Triggerfish_OM[[i]]$OM$SSB[26:95])/Triggerfish_OM[[i]]$OM$SSB[26:95]
+ }
+}
+
+boxplot(x, ylim=c(-1,1))
+
+
+est_par<-as.list(SCAA_fit$SD, what="Est") #EXACT SAME STRUCTURE AS PARAMETER VECTOR
+sd_par<-as.list(SCAA_fit$SD, what="Std")
+
+est_der<-as.list(SCAA_fit$SD,report=TRUE, what="Est. (bias.correct)")
+sd_der<-as.list(SCAA_fit$SD,report=TRUE,  what="Std. Error")
+
+SCAA$report(SCAA$env$last.par.best)

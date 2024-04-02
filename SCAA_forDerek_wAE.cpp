@@ -72,8 +72,6 @@ Type objective_function<Type>::operator() ()
   PARAMETER(B2);     
   PARAMETER(B3);         
   PARAMETER(B4);     
-  PARAMETER(B5);         
-  PARAMETER(B6);     
 
   PARAMETER_VECTOR(log_fint);       //Log scale fishing intensities (fully selected fishing mortalities)
   //---------------------------------------------------------------------------------------------
@@ -293,8 +291,6 @@ Type objective_function<Type>::operator() ()
   REPORT(B2);     
   REPORT(B3);         
   REPORT(B4);     
-  REPORT(B5);         
-  REPORT(B6);     
 
   REPORT(fishery_sel);
   REPORT(N0_age);

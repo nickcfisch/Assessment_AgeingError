@@ -45,11 +45,9 @@ for (s in 1:Nsim){
                              Sel_50=28.9, # logistic selectivity, not used
                              Sel_slope=7, # logistic selectivity, not used
                              B1=4.374691,                   #Double normal selectivity parameters
-                             B2=-14.836252,                  #Nicks best approximation of trigger selectivity
+                             B2=-14.836252,                 #Nicks best approximation of trigger selectivity
                              B3=1.214063,
                              B4=1.582468,
-                             B5=-15.730439,
-                             B6=-13.303932,
                              R0=exp(9.7608), #(Sedar 43, 2015) p. 64
                              h=0.4593, #(Sedar 43, 2015) p. 64
                              sd_rec=0.3582, #(Sedar 43, 2015) p. 64

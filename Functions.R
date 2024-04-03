@@ -18,8 +18,8 @@ SimPop<-function(seed=1,                         #seed to start random number ge
                  Mat_slope=-0.9,                 #Mat param2, Slope for logistic function of maturity
                  Sel_50=15.9,                    #Sel param1, Age at which 50% selectivity occurs
                  Sel_slope=3.3,                  #Sel param2, Slope for logistic function of selectivity
-                 B1=4.374691,                   #Double normal selectivity parameters
-                 B2=-14.836252,                  #Nicks best approximation of trigger selectivity
+                 B1=4.374691,                    #Double normal selectivity parameters
+                 B2=-3,                          #Nicks best approximation of trigger selectivity
                  B3=1.214063,
                  B4=1.582468,
                  R0=exp(16),                     #Unfished recruitment 
@@ -271,7 +271,7 @@ sim_Fn <- function(OM_text, N_sim, AE_mat){
                 log_sd_index=factor(NA))
     
     #Bounds, need to be updated if you go back to logistic selectivity
-    lower_bounds<-c(-5,-20,rep(-10,dat$lage),rep(-10,dat$lyear), 0, 5, -5,-5,-5, 1,-20, 0,-4,rep(-10,dat$lyear))
+    lower_bounds<-c(-5,-20,rep(-10,dat$lage),rep(-10,dat$lyear), 0, 5, -5,-5,-5, 1, -5, 0,-4,rep(-10,dat$lyear))
     upper_bounds<-c( 2,  1,rep( 10,dat$lage),rep( 10,dat$lyear), 1, 25, 2, 2, 2, 5,  5, 2, 2,rep(  0,dat$lyear))
     
     reffects=c("log_recruit_devs","log_recruit_devs_init")

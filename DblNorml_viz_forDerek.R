@@ -5,7 +5,7 @@ Amin<-0
 Amax<-10
 age<-Amin:Amax
 B1 <- 4.374701
-B2 <- -14.864175
+B2 <- -4
 B3 <- 1.214091
 B4 <- 1.582473
 
@@ -28,7 +28,7 @@ Amin<-0
 Amax<-10
 age<-Amin:Amax
 B1 <- runif(1,1,5)
-B2 <- runif(1,-20,5)
+B2 <- runif(1,-5,5)
 B3 <- runif(1,0,2)
 B4 <- runif(1,-4,2)
 

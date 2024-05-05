@@ -108,11 +108,12 @@ compile("SCAA_forDerek_wAE.cpp")
   }
   
   
-  sd = 0.1
   bias = 0.25
+  sd_slope = 0.1707
+  sd_intercept = -0.0854
   plot(AE_mat[,3],col="white")
   for (i in 1:nrow(AE_mat)) {
-    AE_mat_linear[,i]<-dnorm(1:nrow(AE_mat), mean = i-(bias*i+0), sd = sd*i+0)/sum(dnorm(1:nrow(AE_mat), mean = i-(bias*i+0), sd = sd*i+0))
+    AE_mat_linear[,i]<-dnorm(1:nrow(AE_mat), mean = i-(bias*i+0), sd = sd_slope*i+sd_intercept)/sum(dnorm(1:nrow(AE_mat), mean = i-(bias*i+0), sd = sd_slope*i+sd_intercept))
     lines(AE_mat_linear[,i])
   }
   

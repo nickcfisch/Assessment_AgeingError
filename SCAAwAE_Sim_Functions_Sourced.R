@@ -98,11 +98,12 @@ compile("SCAA_forDerek_wAE.cpp")
   AE_mat_curvilinear <- AE_mat
   
   
-  sd = 1
+  #sd = 1
+  sd = 0.2
   bias = 1
   plot(AE_mat[,3],col="white")
   for (i in 1:nrow(AE_mat)) {
-    AE_mat_constant[,i]<-dnorm(1:nrow(AE_mat), mean = i+bias, sd = sd)/sum(dnorm(1:nrow(AE_mat), mean = i+bias, sd = sd))
+    AE_mat_constant[,i]<-dnorm(1:nrow(AE_mat), mean = i-bias, sd = sd)/sum(dnorm(1:nrow(AE_mat), mean = i-bias, sd = sd))
     lines(AE_mat_constant[,i])
   }
   
@@ -111,20 +112,22 @@ compile("SCAA_forDerek_wAE.cpp")
   bias = 0.25
   plot(AE_mat[,3],col="white")
   for (i in 1:nrow(AE_mat)) {
-    AE_mat_linear[,i]<-dnorm(1:nrow(AE_mat), mean = i+(bias*i+0), sd = sd*i+0)/sum(dnorm(1:nrow(AE_mat), mean = i+(bias*i+0), sd = sd*i+0))
+    AE_mat_linear[,i]<-dnorm(1:nrow(AE_mat), mean = i-(bias*i+0), sd = sd*i+0)/sum(dnorm(1:nrow(AE_mat), mean = i-(bias*i+0), sd = sd*i+0))
     lines(AE_mat_linear[,i])
   }
   
   
-  sd = 0.1
+  
   #From GT Oto, Old-spine comparison
   #Need to change SD to curvilinear
   bias1 = -0.0329
   bias2 = 1.1207
   bias3 = 0.3772
+  sd_slope = 0.1707
+  sd_intercept = -0.0854
   plot(AE_mat[,3],col="white")
   for (i in 1:nrow(AE_mat)) {
-    AE_mat_curvilinear[,i]<-dnorm(1:nrow(AE_mat), mean = i+((bias1*i^2)+(bias2*i)-bias3), sd = sd*i+0)/sum(dnorm(1:nrow(AE_mat), mean = i+((bias1*i^2)+(bias2*i)-bias3), sd = sd*i+0))
+    AE_mat_curvilinear[,i]<-dnorm(1:nrow(AE_mat), mean = ((bias1*i^2)+(bias2*i)-bias3), sd = sd_slope*i+sd_intercept)/sum(dnorm(1:nrow(AE_mat), mean = ((bias1*i^2)+(bias2*i)-bias3), sd = sd_slope*i+sd_intercept))
     lines(AE_mat_curvilinear[,i])
   }
 }

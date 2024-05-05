@@ -287,20 +287,20 @@ sim_Fn <- function(OM_text, N_sim, AE_mat){
   }
 }
 
-x<-matrix(NA, nrow=100, ncol=length(res_list[[1]]$SD$value))
-for(i in 1:100){
- if(!is.null(res_list[[i]]$SD$value)){
-  x[i,]<-(res_list[[i]]$SD$value-Triggerfish_OM[[i]]$OM$SSB[26:95])/Triggerfish_OM[[i]]$OM$SSB[26:95]
- }
-}
+#x<-matrix(NA, nrow=100, ncol=length(res_list[[1]]$SD$value))
+#for(i in 1:100){
+# if(!is.null(res_list[[i]]$SD$value)){
+#  x[i,]<-(res_list[[i]]$SD$value-Triggerfish_OM[[i]]$OM$SSB[26:95])/Triggerfish_OM[[i]]$OM$SSB[26:95]
+# }
+#}
 
-boxplot(x, ylim=c(-1,1))
+#boxplot(x, ylim=c(-1,1))
 
 #Example of extracting Data
-est_par<-as.list(SCAA_fit$SD, what="Est") #EXACT SAME STRUCTURE AS PARAMETER VECTOR
-sd_par<-as.list(SCAA_fit$SD, what="Std")
+#est_par<-as.list(SCAA_fit$SD, what="Est") #EXACT SAME STRUCTURE AS PARAMETER VECTOR
+#sd_par<-as.list(SCAA_fit$SD, what="Std")
 
-est_der<-as.list(SCAA_fit$SD,report=TRUE, what="Est. (bias.correct)")
-sd_der<-as.list(SCAA_fit$SD,report=TRUE,  what="Std. Error")
+#est_der<-as.list(SCAA_fit$SD,report=TRUE, what="Est. (bias.correct)")
+#sd_der<-as.list(SCAA_fit$SD,report=TRUE,  what="Std. Error")
 
-SCAA$report(SCAA$env$last.par.best)
+#SCAA$report(SCAA$env$last.par.best)

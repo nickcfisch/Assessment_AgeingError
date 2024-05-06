@@ -143,10 +143,11 @@ compile("SCAA_forDerek_wAE.cpp")
 
 
 
-N_sim <-1
+N_sim <- 10
 
 
 scenarios <- read.csv("Simulation Scenarios for model.csv") #data frame with columns Scenario #, OM_test, AE_mat
+scenarios <- scenarios[-2:-16,]
 
 library(foreach)
 library(doParallel)
@@ -159,7 +160,9 @@ registerDoParallel(cl)
 parallel::clusterExport(cl = cl, varlist = c('AE_mat', 'AE_mat_constant', 'AE_mat_linear', 
                                              'AE_mat_curvilinear','scenarios', 'N_sim'), envir = .GlobalEnv)
 
-res_list_final[[i]] <- foreach(i=1:nrow(scenarios),.packages='TMB') %dopar% {
+res_list_final <- list()
+
+res_list_final <- foreach(i=1:nrow(scenarios),.packages='TMB') %dopar% {
   sim_Fn(OM_text = as.character(scenarios[i,2]), 
                                 N_sim = N_sim, AE_mat = get(scenarios[i,3]))
 }

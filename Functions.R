@@ -283,8 +283,8 @@ sim_Fn <- function(OM_text, N_sim, AE_mat){
     
     #res_list saves all sorts of output related to the assessment, a couple of examples below. 
     res_list[[s]]<-SCAA_fit
-    return(res_list)
   }
+  return(res_list)
 }
 
 #x<-matrix(NA, nrow=100, ncol=length(res_list[[1]]$SD$value))

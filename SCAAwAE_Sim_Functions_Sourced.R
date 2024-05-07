@@ -103,8 +103,8 @@ compile("SCAA_forDerek_wAE.cpp")
   bias = 1
   plot(AE_mat[,3],col="white")
   for (i in 1:nrow(AE_mat)) {
-    AE_mat_constant[,i]<-dnorm(1:nrow(AE_mat), mean = i-bias, sd = sd)/sum(dnorm(1:nrow(AE_mat), mean = i-bias, sd = sd))
-    lines(AE_mat_constant[,i])
+    AE_mat_constant[i,]<-dnorm(1:nrow(AE_mat), mean = i-bias, sd = sd)/sum(dnorm(1:nrow(AE_mat), mean = i-bias, sd = sd))
+    lines(AE_mat_constant[i,])
   }
   
   
@@ -113,8 +113,8 @@ compile("SCAA_forDerek_wAE.cpp")
   sd_intercept = -0.0854
   plot(AE_mat[,3],col="white")
   for (i in 1:nrow(AE_mat)) {
-    AE_mat_linear[,i]<-dnorm(1:nrow(AE_mat), mean = i-(bias*i+0), sd = sd_slope*i+sd_intercept)/sum(dnorm(1:nrow(AE_mat), mean = i-(bias*i+0), sd = sd_slope*i+sd_intercept))
-    lines(AE_mat_linear[,i])
+    AE_mat_linear[i,]<-dnorm(1:nrow(AE_mat), mean = i-(bias*i+0), sd = sd_slope*i+sd_intercept)/sum(dnorm(1:nrow(AE_mat), mean = i-(bias*i+0), sd = sd_slope*i+sd_intercept))
+    lines(AE_mat_linear[i,])
   }
   
   
@@ -128,8 +128,8 @@ compile("SCAA_forDerek_wAE.cpp")
   sd_intercept = -0.0854
   plot(AE_mat[,3],col="white")
   for (i in 1:nrow(AE_mat)) {
-    AE_mat_curvilinear[,i]<-dnorm(1:nrow(AE_mat), mean = ((bias1*i^2)+(bias2*i)-bias3), sd = sd_slope*i+sd_intercept)/sum(dnorm(1:nrow(AE_mat), mean = ((bias1*i^2)+(bias2*i)-bias3), sd = sd_slope*i+sd_intercept))
-    lines(AE_mat_curvilinear[,i])
+    AE_mat_curvilinear[i,]<-dnorm(1:nrow(AE_mat), mean = ((bias1*i^2)+(bias2*i)-bias3), sd = sd_slope*i+sd_intercept)/sum(dnorm(1:nrow(AE_mat), mean = ((bias1*i^2)+(bias2*i)-bias3), sd = sd_slope*i+sd_intercept))
+    lines(AE_mat_curvilinear[i,])
   }
 }
 
@@ -143,11 +143,11 @@ compile("SCAA_forDerek_wAE.cpp")
 
 
 
-N_sim <- 10
+N_sim <- 2
 
 
 scenarios <- read.csv("Simulation Scenarios for model.csv") #data frame with columns Scenario #, OM_test, AE_mat
-scenarios <- scenarios[-2:-16,]
+#scenarios <- scenarios[-2:-16,]
 
 library(foreach)
 library(doParallel)

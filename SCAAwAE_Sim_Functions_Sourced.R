@@ -131,6 +131,28 @@ compile("SCAA_forDerek_wAE.cpp")
     AE_mat_curvilinear[i,]<-dnorm(1:nrow(AE_mat), mean = ((bias1*i^2)+(bias2*i)-bias3), sd = sd_slope*i+sd_intercept)/sum(dnorm(1:nrow(AE_mat), mean = ((bias1*i^2)+(bias2*i)-bias3), sd = sd_slope*i+sd_intercept))
     lines(AE_mat_curvilinear[i,])
   }
+  
+  #Correct way to do it with the CDF 
+  bias1 = -0.0329
+  bias2 = 1.1207
+  bias3 = 0.3772
+  sd_slope = 0.1707
+  sd_intercept = -0.0854
+  plot(AE_mat[,3],col="white")
+  for (i in 1:nrow(AE_mat)) {
+    for(j in 1:nrow(AE_mat)){
+     if(j==1){                      #if age=0 then integrate from 0.5 to 0
+      AE_mat_curvilinear[i,j]<-pnorm(j+0.5, mean = ((bias1*i^2)+(bias2*i)-bias3), sd = sd_slope*i+sd_intercept)
+     }else if (j %in% 2:10){        #integrate from age+0.5 to age-0.5
+       AE_mat_curvilinear[i,j]<-pnorm(j+0.5, mean = ((bias1*i^2)+(bias2*i)-bias3), sd = sd_slope*i+sd_intercept)-pnorm(j-0.5, mean = ((bias1*i^2)+(bias2*i)-bias3), sd = sd_slope*i+sd_intercept)
+     }else if (j==nrow(AE_mat)){    # if you are in plus group integrate from age-0.5 to infinity
+       AE_mat_curvilinear[i,j]<-1-pnorm(j-0.5, mean = ((bias1*i^2)+(bias2*i)-bias3), sd = sd_slope*i+sd_intercept)
+     }
+    }
+   lines(AE_mat_curvilinear[,i])
+  }
+  
+  
 }
 
 #OMs run with different ageing error scenarios

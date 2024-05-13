@@ -201,7 +201,6 @@ OM_Err <- function(OM_text, AE_mat){
   sd_index<-0.25
   fyear_dat<-26
   lyear_dat<-94
-  AE_mat<-diag(length(Triggerfish_runs[[s]]$fage:Triggerfish_runs[[s]]$lage)) #TRUE ageing error matrix for sampling model
   for (s in 1:N_sim){
     OM_wdat[[s]]<-Get_Data(OM=Triggerfish_runs[[s]],AE_mat=AE_mat,dat_seed=s,fyear_dat=fyear_dat,lyear_dat=lyear_dat,sd_catch=sd_catch,N_Comp=N_comp,q_index=0.0001,sd_index=sd_index)
   }

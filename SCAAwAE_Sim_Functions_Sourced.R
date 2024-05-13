@@ -167,11 +167,11 @@ compile("SCAA_forDerek_wAE.cpp")
 
 
 
-N_sim <- 2
+N_sim <- 100
 
 
 scenarios <- read.csv("Simulation Scenarios for model.csv") #data frame with columns Scenario #, OM_test, AE_mat
-#scenarios <- scenarios[-2:-16,]
+scenarios <- scenarios[c(1,6,11,16),]
 
 library(foreach)
 library(doParallel)

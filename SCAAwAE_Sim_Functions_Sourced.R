@@ -171,7 +171,7 @@ N_sim <- 1000
 
 
 scenarios <- read.csv("Simulation Scenarios for model.csv") #data frame with columns Scenario #, OM_test, AE_mat
-scenarios <- scenarios[c(1,6,11,16),]
+#scenarios <- scenarios[c(1,6,11,16),] #only OM, EM age error match scenarios
 
 library(foreach)
 library(doParallel)

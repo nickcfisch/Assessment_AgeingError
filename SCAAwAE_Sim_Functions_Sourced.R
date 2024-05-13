@@ -167,7 +167,7 @@ compile("SCAA_forDerek_wAE.cpp")
 
 
 
-N_sim <- 100
+N_sim <- 1000
 
 
 scenarios <- read.csv("Simulation Scenarios for model.csv") #data frame with columns Scenario #, OM_test, AE_mat
@@ -199,27 +199,27 @@ stopCluster(cl)
 
 
 
-res_list_perf <- sim_Fn(OM_text = "GT_OM_perf_wdat", N_sim = N_sim, AE_mat = AE_mat)
+#res_list_perf <- sim_Fn(OM_text = "GT_OM_perf_wdat", N_sim = N_sim, AE_mat = AE_mat)
 #saveRDS(res_list_perf, file=paste0(wd,"/SCAAfit_GT_perf.RData"))
 
-res_list_constant <- sim_Fn(OM_text = "GT_OM_constant_wdat", N_sim = N_sim, AE_mat = AE_mat_constant)
+#res_list_constant <- sim_Fn(OM_text = "GT_OM_constant_wdat", N_sim = N_sim, AE_mat = AE_mat_constant)
 #saveRDS(res_list_constant, file=paste0(wd,"/SCAAfit_GT_constant.RData"))
 
-res_list_linear <- sim_Fn(OM_text = "GT_OM_linear_wdat", N_sim = N_sim, AE_mat = AE_mat_linear)
+#res_list_linear <- sim_Fn(OM_text = "GT_OM_linear_wdat", N_sim = N_sim, AE_mat = AE_mat_linear)
 #saveRDS(res_list_linear, file=paste0(wd,"/SCAAfit_GT_linear.RData"))
 
-res_list_curvilinear <- sim_Fn(OM_text = "GT_OM_curvilinear_wdat", N_sim = N_sim, AE_mat = AE_mat_curvilinear)
+#res_list_curvilinear <- sim_Fn(OM_text = "GT_OM_curvilinear_wdat", N_sim = N_sim, AE_mat = AE_mat_curvilinear)
 #saveRDS(res_list_curvilinear, file=paste0(wd,"/SCAAfit_GT_curvilinear.RData"))
 
 
-plot(26:95,res_list_perf[[1]]$SD$value, ylab="SSB", las=1, xlab="Year", type="b", pch=16, ylim=c(0,1e5))
-res_list_perf[[1]]$diagnostics
+#plot(26:95,res_list_perf[[1]]$SD$value, ylab="SSB", las=1, xlab="Year", type="b", pch=16, ylim=c(0,1e5))
+#res_list_perf[[1]]$diagnostics
 
-plot(26:95,res_list_constant[[1]]$SD$value, ylab="SSB", las=1, xlab="Year", type="b", pch=16, ylim=c(0,1e5))
-res_list_constant[[1]]$diagnostics
+#plot(26:95,res_list_constant[[1]]$SD$value, ylab="SSB", las=1, xlab="Year", type="b", pch=16, ylim=c(0,1e5))
+#res_list_constant[[1]]$diagnostics
 
-plot(26:95,res_list_linear[[1]]$SD$value, ylab="SSB", las=1, xlab="Year", type="b", pch=16, ylim=c(0,1e5))
-res_list_linear[[1]]$diagnostics
+#plot(26:95,res_list_linear[[1]]$SD$value, ylab="SSB", las=1, xlab="Year", type="b", pch=16, ylim=c(0,1e5))
+#res_list_linear[[1]]$diagnostics
 
-plot(26:95,res_list_curvilinear[[1]]$SD$value, ylab="SSB", las=1, xlab="Year", type="b", pch=16, ylim=c(0,1e5))
-res_list_curvilinear[[1]]$diagnostics
+#plot(26:95,res_list_curvilinear[[1]]$SD$value, ylab="SSB", las=1, xlab="Year", type="b", pch=16, ylim=c(0,1e5))
+#res_list_curvilinear[[1]]$diagnostics

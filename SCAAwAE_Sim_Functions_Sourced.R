@@ -165,6 +165,7 @@ compile("SCAA_forDerek_wAE.cpp")
   OM_Err(OM_text = "GT_OM_curvilinear_wdat", AE_mat = AE_mat_curvilinear, N_sim = N_sim)
 }
 
+
 scenarios <- read.csv("Simulation Scenarios for model.csv") #data frame with columns Scenario #, OM_test, AE_mat
 #scenarios <- scenarios[c(1,6,11,16),] #only OM, EM age error match scenarios
 

@@ -193,8 +193,7 @@ Get_Data<-function(OM=NA,              #Operating model from which to model
 ####################################################################
 #Getting Data from OM and applying Age Error the composition data
 ####################################################################
-OM_Err <- function(OM_text, AE_mat){
-  N_sim<-100
+OM_Err <- function(OM_text, AE_mat, N_sim){
   OM_wdat<-list()
   N_comp<-c(rep(0,25),30,rep(0,9),40,rep(0,9),50,rep(0,4),60,rep(0,4),70,rep(0,4),80,rep(0,4),90,rep(0,4),rep(100,24))
   sd_catch<-0.05

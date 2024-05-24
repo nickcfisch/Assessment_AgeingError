@@ -22,10 +22,10 @@ F_val_no_shrimp <- c(0.0021, 0.0008, 0.0044, 0.0073, 0.0104, 0.0144, 0.0179,
 
 #Example for Gray Triggerfish-like life-history
 #For Triggerfish, based on stochastic runs, fmsy is 0.268, MSY is 2969, SSBmsy is 10046
-Nsim<-100
+N_sim<-1000
 
 Triggerfish_runs<-list()
-for (s in 1:Nsim){
+for (s in 1:N_sim){
   Triggerfish_runs[[s]]<-SimPop(seed=s,
                              fage=0,
                              lage=10, #(Sedar 43, 2015)  p. 10
@@ -64,9 +64,9 @@ for (s in 1:Nsim){
 
 #Looking at some plots of population
 plot(1:95,Triggerfish_runs[[1]]$SSB/Triggerfish_runs[[1]]$SSB0, ylim=c(0,2.75), las=1, xlab="Year", ylab="SSB/SSB0", main="Triggerfish", type="l", col="grey50")
-Triggerfish_Depl<-matrix(NA, nrow=Nsim,ncol=95)
+Triggerfish_Depl<-matrix(NA, nrow=N_sim,ncol=95)
 Triggerfish_Depl[1,]<-Triggerfish_runs[[1]]$SSB/Triggerfish_runs[[1]]$SSB0
-for(s in 2:Nsim){
+for(s in 2:N_sim){
   Triggerfish_Depl[s,]<-Triggerfish_runs[[s]]$SSB/Triggerfish_runs[[s]]$SSB0
   lines(1:95,Triggerfish_runs[[s]]$SSB/Triggerfish_runs[[s]]$SSB0, col="grey50")
 }
@@ -159,16 +159,11 @@ compile("SCAA_forDerek_wAE.cpp")
 
 #OMs run with different ageing error scenarios
 {
-  OM_Err(OM_text = "GT_OM_perf_wdat", AE_mat = AE_mat)
-  OM_Err(OM_text = "GT_OM_constant_wdat", AE_mat = AE_mat_constant)
-  OM_Err(OM_text = "GT_OM_linear_wdat", AE_mat = AE_mat_linear)
-  OM_Err(OM_text = "GT_OM_curvilinear_wdat", AE_mat = AE_mat_curvilinear)
+  OM_Err(OM_text = "GT_OM_perf_wdat", AE_mat = AE_mat, N_sim = N_sim)
+  OM_Err(OM_text = "GT_OM_constant_wdat", AE_mat = AE_mat_constant, N_sim = N_sim)
+  OM_Err(OM_text = "GT_OM_linear_wdat", AE_mat = AE_mat_linear, N_sim = N_sim)
+  OM_Err(OM_text = "GT_OM_curvilinear_wdat", AE_mat = AE_mat_curvilinear, N_sim = N_sim)
 }
-
-
-
-N_sim <- 1000
-
 
 scenarios <- read.csv("Simulation Scenarios for model.csv") #data frame with columns Scenario #, OM_test, AE_mat
 #scenarios <- scenarios[c(1,6,11,16),] #only OM, EM age error match scenarios

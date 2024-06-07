@@ -203,7 +203,7 @@ Type objective_function<Type>::operator() ()
   //Abundance at age in the first year
   for(j=fage+1;j<=lage;j++){
 //   N(fyear-1,j)=R0*lxo(j);          //set abundance in the fist year 
-   N(fyear-1,j)=R0*exp(log_recruit_devs_init(fabs(j-(lage)))-0.5*pow(sd_rec,2))*lxo(j);          //set abundance in the fist year f
+   N(fyear-1,j)=R0*exp(log_recruit_devs_init(abs(j-(lage)))-0.5*pow(sd_rec,2))*lxo(j);          //set abundance in the fist year 
   }
 //  N(fyear-1,fage)=R0*exp(log_rec_devs(0));     //Filling in initial year recruitment
   N(fyear-1,fage)=R0*exp(log_rec_devs(0)-0.5*pow(sd_rec,2));     //Filling in initial year recruitment

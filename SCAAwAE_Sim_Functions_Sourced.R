@@ -96,7 +96,7 @@ compile("SCAA_forDerek_wAE.cpp")
   AE_mat_constant <- AE_mat
   AE_mat_linear <- AE_mat
   AE_mat_curvilinear <- AE_mat
-  
+  ages<-(1:nrow(AE_mat))-1
   
   #sd = 1
   sd = 0.2
@@ -105,11 +105,11 @@ compile("SCAA_forDerek_wAE.cpp")
   for (i in 1:nrow(AE_mat)) {
     for(j in 1:nrow(AE_mat)){
       if(j==1){                      #if age=0 then integrate from 0.5 to 0
-        AE_mat_constant[i,j]<-pnorm(j+0.5, mean = i-bias, sd = sd)
-      }else if (j %in% 2:10){        #integrate from age+0.5 to age-0.5
-        AE_mat_constant[i,j]<-pnorm(j+0.5, mean = i-bias, sd = sd)-pnorm(j-0.5, mean = i-bias, sd = sd)
+        AE_mat_constant[i,j]<-pnorm(ages[j]+0.5, mean = ages[i]-bias, sd = sd)
+      }else if (j %in% 2:(nrow(AE_mat)-1)){        #integrate from age+0.5 to age-0.5
+        AE_mat_constant[i,j]<-pnorm(ages[j]+0.5, mean = ages[i]-bias, sd = sd)-pnorm(ages[j]-0.5, mean = ages[i]-bias, sd = sd)
       }else if (j==nrow(AE_mat)){    # if you are in plus group integrate from age-0.5 to infinity
-        AE_mat_constant[i,j]<-1-pnorm(j-0.5, mean = i-bias, sd = sd)
+        AE_mat_constant[i,j]<-1-pnorm(ages[j]-0.5, mean = ages[i]-bias, sd = sd)
       }
     }
     lines(AE_mat_constant[i,])
@@ -123,11 +123,11 @@ compile("SCAA_forDerek_wAE.cpp")
   for (i in 1:nrow(AE_mat)) {
     for(j in 1:nrow(AE_mat)){
       if(j==1){                      #if age=0 then integrate from 0.5 to 0
-        AE_mat_linear[i,j]<-pnorm(j+0.5, mean = i-(bias*i+0), sd = sd_slope*i+sd_intercept)
-      }else if (j %in% 2:10){        #integrate from age+0.5 to age-0.5
-        AE_mat_linear[i,j]<-pnorm(j+0.5, mean = i-(bias*i+0), sd = sd_slope*i+sd_intercept)-pnorm(j-0.5, mean = i-(bias*i+0), sd = sd_slope*i+sd_intercept)
+        AE_mat_linear[i,j]<-pnorm(ages[j]+0.5, mean = ages[i]-(bias*ages[i]+0), sd = sd_slope*ages[i]+sd_intercept)
+      }else if (j %in% 2:(nrow(AE_mat)-1)){        #integrate from age+0.5 to age-0.5
+        AE_mat_linear[i,j]<-pnorm(ages[j]+0.5, mean = ages[i]-(bias*ages[i]+0), sd = sd_slope*ages[i]+sd_intercept)-pnorm(ages[j]-0.5, mean = ages[i]-(bias*ages[i]+0), sd = sd_slope*ages[i]+sd_intercept)
       }else if (j==nrow(AE_mat)){    # if you are in plus group integrate from age-0.5 to infinity
-        AE_mat_linear[i,j]<-1-pnorm(j-0.5, mean = i-(bias*i+0), sd = sd_slope*i+sd_intercept)
+        AE_mat_linear[i,j]<-1-pnorm(ages[j]-0.5, mean = ages[i]-(bias*ages[i]+0), sd = sd_slope*ages[i]+sd_intercept)
       }
     }
     lines(AE_mat_linear[i,])
@@ -146,11 +146,11 @@ compile("SCAA_forDerek_wAE.cpp")
   for (i in 1:nrow(AE_mat)) {
     for(j in 1:nrow(AE_mat)){
      if(j==1){                      #if age=0 then integrate from 0.5 to 0
-      AE_mat_curvilinear[i,j]<-pnorm(j+0.5, mean = ((bias1*i^2)+(bias2*i)-bias3), sd = sd_slope*i+sd_intercept)
-     }else if (j %in% 2:10){        #integrate from age+0.5 to age-0.5
-       AE_mat_curvilinear[i,j]<-pnorm(j+0.5, mean = ((bias1*i^2)+(bias2*i)-bias3), sd = sd_slope*i+sd_intercept)-pnorm(j-0.5, mean = ((bias1*i^2)+(bias2*i)-bias3), sd = sd_slope*i+sd_intercept)
+      AE_mat_curvilinear[i,j]<-pnorm(ages[j]+0.5, mean = ((bias1*ages[i]^2)+(bias2*ages[i])-bias3), sd = sd_slope*ages[i]+sd_intercept)
+     }else if (j %in% 2:(nrow(AE_mat)-1)){        #integrate from age+0.5 to age-0.5
+       AE_mat_curvilinear[i,j]<-pnorm(ages[j]+0.5, mean = ((bias1*ages[i]^2)+(bias2*ages[i])-bias3), sd = sd_slope*ages[i]+sd_intercept)-pnorm(ages[j]-0.5, mean = ((bias1*ages[i]^2)+(bias2*ages[i])-bias3), sd = sd_slope*ages[i]+sd_intercept)
      }else if (j==nrow(AE_mat)){    # if you are in plus group integrate from age-0.5 to infinity
-       AE_mat_curvilinear[i,j]<-1-pnorm(j-0.5, mean = ((bias1*i^2)+(bias2*i)-bias3), sd = sd_slope*i+sd_intercept)
+       AE_mat_curvilinear[i,j]<-1-pnorm(ages[j]-0.5, mean = ((bias1*ages[i]^2)+(bias2*ages[i])-bias3), sd = sd_slope*ages[i]+sd_intercept)
      }
     }
    lines(AE_mat_curvilinear[i,])

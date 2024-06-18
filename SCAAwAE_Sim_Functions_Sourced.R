@@ -188,7 +188,7 @@ res_list_final <- foreach(i=1:nrow(scenarios),.packages='TMB') %dopar% {
 }
 
 saveRDS(res_list_final, file=paste0(wd,"/SCAAfit_GT_All.RData"))
-
+save.image("workspace.RData")
 stopCluster(cl)
 
 

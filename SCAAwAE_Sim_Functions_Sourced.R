@@ -22,7 +22,7 @@ F_val_no_shrimp <- c(0.0021, 0.0008, 0.0044, 0.0073, 0.0104, 0.0144, 0.0179,
 
 #Example for Gray Triggerfish-like life-history
 #For Triggerfish, based on stochastic runs, fmsy is 0.268, MSY is 2969, SSBmsy is 10046
-N_sim<-1000
+N_sim<-2
 
 Triggerfish_runs<-list()
 for (s in 1:N_sim){
@@ -117,17 +117,17 @@ compile("SCAA_forDerek_wAE.cpp")
   
   
   bias = 0.25
-  sd_slope = 0.1707
-  sd_intercept = -0.0854
+  sd_def <- c(0.170711, 0.170711, 0.341422, 0.512133, 0.682844, 0.853555, 
+              1.02427, 1.19498, 1.36569, 1.5364, 1.70711) #Based on GT otolith and spine relationship
   plot(AE_mat[,3],col="white")
   for (i in 1:nrow(AE_mat)) {
     for(j in 1:nrow(AE_mat)){
       if(j==1){                      #if age=0 then integrate from 0.5 to 0
-        AE_mat_linear[i,j]<-pnorm(ages[j]+0.5, mean = ages[i]-(bias*ages[i]+0), sd = sd_slope*ages[i]+sd_intercept)
+        AE_mat_linear[i,j]<-pnorm(ages[j]+0.5, mean = ages[i]-(bias*ages[i]+0), sd = sd_def[i])
       }else if (j %in% 2:(nrow(AE_mat)-1)){        #integrate from age+0.5 to age-0.5
-        AE_mat_linear[i,j]<-pnorm(ages[j]+0.5, mean = ages[i]-(bias*ages[i]+0), sd = sd_slope*ages[i]+sd_intercept)-pnorm(ages[j]-0.5, mean = ages[i]-(bias*ages[i]+0), sd = sd_slope*ages[i]+sd_intercept)
+        AE_mat_linear[i,j]<-pnorm(ages[j]+0.5, mean = ages[i]-(bias*ages[i]+0), sd = sd_def[i])-pnorm(ages[j]-0.5, mean = ages[i]-(bias*ages[i]+0), sd = sd_def[i])
       }else if (j==nrow(AE_mat)){    # if you are in plus group integrate from age-0.5 to infinity
-        AE_mat_linear[i,j]<-1-pnorm(ages[j]-0.5, mean = ages[i]-(bias*ages[i]+0), sd = sd_slope*ages[i]+sd_intercept)
+        AE_mat_linear[i,j]<-1-pnorm(ages[j]-0.5, mean = ages[i]-(bias*ages[i]+0), sd = sd_def[i])
       }
     }
     lines(AE_mat_linear[i,])
@@ -140,17 +140,17 @@ compile("SCAA_forDerek_wAE.cpp")
   bias1 = -0.0329
   bias2 = 1.1207
   bias3 = 0.3772
-  sd_slope = 0.1707
-  sd_intercept = -0.0854
+  sd_def <- c(0.170711, 0.170711, 0.341422, 0.512133, 0.682844, 0.853555, 
+              1.02427, 1.19498, 1.36569, 1.5364, 1.70711) #Based on GT otolith and spine relationship
   plot(AE_mat[,3],col="white")
   for (i in 1:nrow(AE_mat)) {
     for(j in 1:nrow(AE_mat)){
      if(j==1){                      #if age=0 then integrate from 0.5 to 0
-      AE_mat_curvilinear[i,j]<-pnorm(ages[j]+0.5, mean = ((bias1*ages[i]^2)+(bias2*ages[i])-bias3), sd = sd_slope*ages[i]+sd_intercept)
+      AE_mat_curvilinear[i,j]<-pnorm(ages[j]+0.5, mean = ((bias1*ages[i]^2)+(bias2*ages[i])-bias3), sd = sd_def[i])
      }else if (j %in% 2:(nrow(AE_mat)-1)){        #integrate from age+0.5 to age-0.5
-       AE_mat_curvilinear[i,j]<-pnorm(ages[j]+0.5, mean = ((bias1*ages[i]^2)+(bias2*ages[i])-bias3), sd = sd_slope*ages[i]+sd_intercept)-pnorm(ages[j]-0.5, mean = ((bias1*ages[i]^2)+(bias2*ages[i])-bias3), sd = sd_slope*ages[i]+sd_intercept)
+       AE_mat_curvilinear[i,j]<-pnorm(ages[j]+0.5, mean = ((bias1*ages[i]^2)+(bias2*ages[i])-bias3), sd = sd_def[i])-pnorm(ages[j]-0.5, mean = ((bias1*ages[i]^2)+(bias2*ages[i])-bias3), sd = sd_def[i])
      }else if (j==nrow(AE_mat)){    # if you are in plus group integrate from age-0.5 to infinity
-       AE_mat_curvilinear[i,j]<-1-pnorm(ages[j]-0.5, mean = ((bias1*ages[i]^2)+(bias2*ages[i])-bias3), sd = sd_slope*ages[i]+sd_intercept)
+       AE_mat_curvilinear[i,j]<-1-pnorm(ages[j]-0.5, mean = ((bias1*ages[i]^2)+(bias2*ages[i])-bias3), sd = sd_def[i])
      }
     }
    lines(AE_mat_curvilinear[i,])

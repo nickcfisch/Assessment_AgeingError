@@ -22,7 +22,7 @@ F_val_no_shrimp <- c(0.0021, 0.0008, 0.0044, 0.0073, 0.0104, 0.0144, 0.0179,
 
 #Example for Gray Triggerfish-like life-history
 #For Triggerfish, based on stochastic runs, fmsy is 0.268, MSY is 2969, SSBmsy is 10046
-N_sim<-2
+N_sim<-100
 
 Triggerfish_runs<-list()
 for (s in 1:N_sim){
@@ -167,7 +167,7 @@ compile("SCAA_forDerek_wAE.cpp")
 
 
 scenarios <- read.csv("Simulation Scenarios for model.csv") #data frame with columns Scenario #, OM_test, AE_mat
-#scenarios <- scenarios[c(1,6,11,16),] #only OM, EM age error match scenarios
+#scenarios <- scenarios[c(1,2),] #only OM, EM age error match scenarios
 
 library(foreach)
 library(doParallel)

@@ -277,7 +277,46 @@ sim_Fn <- function(OM_text, N_sim, AE_mat){
     u<-upper_bounds[-which(parm_names %in% c(names(fixed),reffects))]
     
     SCAA <- MakeADFun(dat, par, DLL="SCAA_forDerek_wAE", map=fixed, random=reffects)
-    SCAA_fit <- TMBhelper::fit_tmb(obj=SCAA, startpar=SCAA$par, lower=l, upper=u, newtonsteps = 1,getsd=TRUE,bias.correct=TRUE,getHessian=TRUE)
+    
+counter<-1  
+tryCatch({
+  SCAA_fit <- TMBhelper::fit_tmb(obj=SCAA, startpar=SCAA$par, lower=l, upper=u, newtonsteps = 1,getsd=TRUE,bias.correct=TRUE,getHessian=TRUE)
+}, error=function(e){
+  counter<<-0
+  SCAA_fit<<-list(NA)
+})
+
+convcounter<-1
+if(is.null(SCAA_fit$hessian)){
+  while(counter==1 & is.null(SCAA_fit$hessian) & convcounter < 5){
+    par <- list(log_M=log(runif(1,min=OM$OM$Mref-OM$OM$Mref*0.35,max=OM$OM$Mref+OM$OM$Mref*0.35)),
+                log_q=log(runif(1,min=OM$q_index-OM$q_index*0.35,max=OM$q_index+OM$q_index*0.35)),
+                log_recruit_devs_init=rep(0,dat$lage),
+                log_recruit_devs=rep(0,dat$lyear),
+                steepness=OM$OM$h,
+                log_R0=log(runif(1,min=OM$OM$R0-OM$OM$R0*0.35,max=OM$OM$R0+OM$OM$R0*0.35)),
+                log_sigma_rec=log(OM$OM$sd_rec),
+                log_sd_catch=log(OM$sd_catch),
+                log_sd_index=log(OM$sd_index),
+                #                Sel_logis_k=log(runif(1,min=OM$OM$Sel_slope-OM$OM$Sel_slope*0.35,max=OM$OM$Sel_slope+OM$OM$Sel_slope*0.35)),
+                #                Sel_logis_midpt=log(runif(1,min=OM$OM$Sel_50-OM$OM$Sel_50*0.35,max=OM$OM$Sel_50+OM$OM$Sel_50*0.35)),
+                B1=runif(1,min=OM$OM$B1-abs(OM$OM$B1)*0.35,max=OM$OM$B1+abs(OM$OM$B1)*0.35),                       #Double normal selectivity parameters
+                B2=runif(1,min=OM$OM$B2-abs(OM$OM$B2)*0.35,max=OM$OM$B2+abs(OM$OM$B2)*0.35),
+                B3=runif(1,min=OM$OM$B3-abs(OM$OM$B3)*0.35,max=OM$OM$B3+abs(OM$OM$B3)*0.35),
+                B4=runif(1,min=OM$OM$B4-abs(OM$OM$B4)*0.35,max=OM$OM$B4+abs(OM$OM$B4)*0.35),
+                log_fint=log(runif(length(OM$OM$F_int[26:94]),min=OM$OM$F_int[26:94]-OM$OM$F_int[26:94]*0.35,max=OM$OM$F_int[26:94]+OM$OM$F_int[26:94]*0.35)))  
+    
+    
+    SCAA <- MakeADFun(dat, par, DLL="SCAA_forDerek_wAE", map=fixed, random=reffects)
+    tryCatch({
+      SCAA_fit <- TMBhelper::fit_tmb(obj=SCAA, startpar=SCAA$par, lower=l, upper=u, newtonsteps = 1,getsd=TRUE,bias.correct=TRUE,getHessian=TRUE)
+    }, error=function(e){
+      counter<<-0
+      SCAA_fit<<-list(NA)
+    })
+    convcounter<-sum(convcounter, 1)
+  }
+}
     
     #res_list saves all sorts of output related to the assessment, a couple of examples below. 
     res_list[[s]]<-SCAA_fit

@@ -200,7 +200,7 @@ OM_Err <- function(OM_text, AE_mat, N_sim){
   sd_index<-0.25
   fyear_dat<-26
   lyear_dat<-94
-  for (s in 1:N_sim){
+  for (s in N_sim){
     OM_wdat[[s]]<-Get_Data(OM=Triggerfish_runs[[s]],AE_mat=AE_mat,dat_seed=s,fyear_dat=fyear_dat,lyear_dat=lyear_dat,sd_catch=sd_catch,N_Comp=N_comp,q_index=0.0001,sd_index=sd_index)
   }
   save(OM_wdat,file=paste0(wd,"/",OM_text,".RData"))
@@ -210,13 +210,12 @@ OM_Err <- function(OM_text, AE_mat, N_sim){
 #################################################
 #EM including ageing error matrix 
 #################################################
-sim_Fn <- function(OM_text, N_sim, AE_mat){
+sim_Fn <- function(OM_text, N_sim, AE_mat, max_jitter){
   load(paste0(wd,"/",OM_text,".RData"))
 
   Triggerfish_OM<-OM_wdat
 
   #Doing N Simulations
-  N_sim<-1:N_sim
   res_list<-list()
   for (s in N_sim){
     
@@ -296,10 +295,10 @@ else {
   }) {
   while(
     if(length(SCAA_fit) == 2) {
-      c(matrixcalc::is.positive.definite(SCAA_fit$h) == FALSE | SCAA_fit$opt$max_gradient > 0.1) & convcounter < 5 & counter==1
+      c(matrixcalc::is.positive.definite(SCAA_fit$h) == FALSE | SCAA_fit$opt$max_gradient > 0.1) & convcounter < max_jitter & counter==1
   }
   else {
-    c(matrixcalc::is.positive.definite(SCAA_fit$hessian) == FALSE | SCAA_fit$max_gradient > 0.1) & convcounter < 5 & counter==1
+    c(matrixcalc::is.positive.definite(SCAA_fit$hessian) == FALSE | SCAA_fit$max_gradient > 0.1) & convcounter < max_jitter & counter==1
   }
     ){
     par <- list(log_M=log(runif(1,min=OM$OM$Mref-OM$OM$Mref*0.35,max=OM$OM$Mref+OM$OM$Mref*0.35)),
@@ -330,7 +329,7 @@ else {
     convcounter<-sum(convcounter, 1)
   }
 }
-    
+    SCAA_fit$convcounter <- convcounter
     #res_list saves all sorts of output related to the assessment, a couple of examples below. 
     res_list[[s]]<-SCAA_fit
   }

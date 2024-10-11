@@ -7,7 +7,7 @@
 wd<-"C:/Users/fischn/Dropbox/"
 wd<-"C:/Users/Derek.Chamberlin/Work/Research/Age_Err_Simulation/Assessment_AgeingError"
 
-source(paste0(wd,"/Functions.R"))
+source(paste0(wd,"/R/Functions.R"))
 
 F_val_no_shrimp <- c(0.0021, 0.0008, 0.0044, 0.0073, 0.0104, 0.0144, 0.0179, 
                      0.0214, 0.0251, 0.029, 0.0331, 0.0359, 0.0388, 0.042, 
@@ -22,7 +22,7 @@ F_val_no_shrimp <- c(0.0021, 0.0008, 0.0044, 0.0073, 0.0104, 0.0144, 0.0179,
 
 #Example for Gray Triggerfish-like life-history
 #For Triggerfish, based on stochastic runs, fmsy is 0.268, MSY is 2969, SSBmsy is 10046
-N_sim<-32:32
+N_sim<-1:50
 max_jitter <- 1
 
 Triggerfish_runs<-list()
@@ -61,7 +61,7 @@ for (s in N_sim){
                              stochastic=TRUE)
 }
 
-#save(Triggerfish_runs, file=paste0(wd,"/Triggerfish_Base.RData"))
+save(Triggerfish_runs, file=paste0(wd,"/Output/Triggerfish_Base.RData"))
 
 #Looking at some plots of population
 plot(1:95,Triggerfish_runs[[1]]$SSB/Triggerfish_runs[[1]]$SSB0, ylim=c(0,2.75), las=1, xlab="Year", ylab="SSB/SSB0", main="Triggerfish", type="l", col="grey50")
@@ -188,7 +188,8 @@ res_list_final <- foreach(i=1:nrow(scenarios),.packages='TMB') %dopar% {
                                 N_sim = N_sim, AE_mat = get(scenarios[i,3]), max_jitter =  max_jitter)
 }
 
-saveRDS(res_list_final, file=paste0(wd,"/SCAAfit_GT_All.RData"))
+dir.create("Output", showWarnings = FALSE)
+saveRDS(res_list_final, file=paste0(wd,"/Output/SCAAfit_GT_All.RData"))
 save.image("workspace.RData")
 stopCluster(cl)
 
@@ -196,16 +197,16 @@ stopCluster(cl)
 
 
 
-res_list_perf <- sim_Fn(OM_text = "GT_OM_perf_wdat", N_sim = N_sim, AE_mat = AE_mat, max_jitter =  max_jitter)
+#res_list_perf <- sim_Fn(OM_text = "GT_OM_perf_wdat", N_sim = N_sim, AE_mat = AE_mat, max_jitter =  max_jitter)
 #saveRDS(res_list_perf, file=paste0(wd,"/SCAAfit_GT_perf.RData"))
 
-res_list_constant <- sim_Fn(OM_text = "GT_OM_constant_wdat", N_sim = N_sim, AE_mat = AE_mat_constant, max_jitter =  max_jitter)
+#res_list_constant <- sim_Fn(OM_text = "GT_OM_constant_wdat", N_sim = N_sim, AE_mat = AE_mat_constant, max_jitter =  max_jitter)
 #saveRDS(res_list_constant, file=paste0(wd,"/SCAAfit_GT_constant.RData"))
 
-res_list_linear <- sim_Fn(OM_text = "GT_OM_linear_wdat", N_sim = N_sim, AE_mat = AE_mat_linear, max_jitter =  max_jitter)
+#res_list_linear <- sim_Fn(OM_text = "GT_OM_linear_wdat", N_sim = N_sim, AE_mat = AE_mat_linear, max_jitter =  max_jitter)
 #saveRDS(res_list_linear, file=paste0(wd,"/SCAAfit_GT_linear.RData"))
 
-res_list_curvilinear <- sim_Fn(OM_text = "GT_OM_curvilinear_wdat", N_sim = N_sim, AE_mat = AE_mat_curvilinear, max_jitter =  max_jitter)
+#res_list_curvilinear <- sim_Fn(OM_text = "GT_OM_curvilinear_wdat", N_sim = N_sim, AE_mat = AE_mat_curvilinear, max_jitter =  max_jitter)
 #saveRDS(res_list_curvilinear, file=paste0(wd,"/SCAAfit_GT_curvilinear.RData"))
 
 

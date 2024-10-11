@@ -203,7 +203,8 @@ OM_Err <- function(OM_text, AE_mat, N_sim){
   for (s in N_sim){
     OM_wdat[[s]]<-Get_Data(OM=Triggerfish_runs[[s]],AE_mat=AE_mat,dat_seed=s,fyear_dat=fyear_dat,lyear_dat=lyear_dat,sd_catch=sd_catch,N_Comp=N_comp,q_index=0.0001,sd_index=sd_index)
   }
-  save(OM_wdat,file=paste0(wd,"/",OM_text,".RData"))
+  dir.create("Output", showWarnings = FALSE)
+  save(OM_wdat,file=paste0(wd,"/Output/",OM_text,".RData"))
 }
 
 
@@ -211,7 +212,7 @@ OM_Err <- function(OM_text, AE_mat, N_sim){
 #EM including ageing error matrix 
 #################################################
 sim_Fn <- function(OM_text, N_sim, AE_mat, max_jitter){
-  load(paste0(wd,"/",OM_text,".RData"))
+  load(paste0(wd,"/Output/",OM_text,".RData"))
 
   Triggerfish_OM<-OM_wdat
 

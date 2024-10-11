@@ -286,21 +286,22 @@ tryCatch({
 })
 
 convcounter<-1
-if(
+if (
   if(length(SCAA_fit) == 2) {
-  c(matrixcalc::is.positive.definite(SCAA_fit$h) == FALSE | SCAA_fit$opt$max_gradient > 0.1)
-}
-else {
-  c(matrixcalc::is.positive.definite(SCAA_fit$hessian) == FALSE | SCAA_fit$max_gradient > 0.1)
-  }) {
-  while(
+    is.na(SCAA_fit$h[1,1]) || !matrixcalc::is.positive.definite(SCAA_fit$h) || SCAA_fit$opt$max_gradient > 0.1
+  } else {
+    is.na(SCAA_fit$hessian[1,1]) || !matrixcalc::is.positive.definite(SCAA_fit$hessian) || SCAA_fit$max_gradient > 0.1
+  }
+) {
+  while (
     if(length(SCAA_fit) == 2) {
-      c(matrixcalc::is.positive.definite(SCAA_fit$h) == FALSE | SCAA_fit$opt$max_gradient > 0.1) & convcounter < max_jitter & counter==1
-  }
-  else {
-    c(matrixcalc::is.positive.definite(SCAA_fit$hessian) == FALSE | SCAA_fit$max_gradient > 0.1) & convcounter < max_jitter & counter==1
-  }
-    ){
+      (is.na(SCAA_fit$h[1,1]) || !matrixcalc::is.positive.definite(SCAA_fit$h) || SCAA_fit$opt$max_gradient > 0.1) && 
+        convcounter < max_jitter && counter == 1
+    } else {
+      (is.na(SCAA_fit$hessian[1,1]) || !matrixcalc::is.positive.definite(SCAA_fit$hessian) || SCAA_fit$max_gradient > 0.1) && 
+        convcounter < max_jitter && counter == 1
+    }
+  ){
     par <- list(log_M=log(runif(1,min=OM$OM$Mref-OM$OM$Mref*0.35,max=OM$OM$Mref+OM$OM$Mref*0.35)),
                 log_q=log(runif(1,min=OM$q_index-OM$q_index*0.35,max=OM$q_index+OM$q_index*0.35)),
                 log_recruit_devs_init=rep(0,dat$lage),

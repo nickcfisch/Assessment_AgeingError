@@ -22,8 +22,8 @@ F_val_no_shrimp <- c(0.0021, 0.0008, 0.0044, 0.0073, 0.0104, 0.0144, 0.0179,
 
 #Example for Gray Triggerfish-like life-history
 #For Triggerfish, based on stochastic runs, fmsy is 0.268, MSY is 2969, SSBmsy is 10046
-N_sim<-1:20
-max_jitter <- 10
+N_sim<-32:32
+max_jitter <- 1
 
 Triggerfish_runs<-list()
 for (s in N_sim){
@@ -196,16 +196,16 @@ stopCluster(cl)
 
 
 
-#res_list_perf <- sim_Fn(OM_text = "GT_OM_perf_wdat", N_sim = N_sim, AE_mat = AE_mat, max_jitter =  max_jitter)
+res_list_perf <- sim_Fn(OM_text = "GT_OM_perf_wdat", N_sim = N_sim, AE_mat = AE_mat, max_jitter =  max_jitter)
 #saveRDS(res_list_perf, file=paste0(wd,"/SCAAfit_GT_perf.RData"))
 
-#res_list_constant <- sim_Fn(OM_text = "GT_OM_constant_wdat", N_sim = N_sim, AE_mat = AE_mat_constant, max_jitter =  max_jitter)
+res_list_constant <- sim_Fn(OM_text = "GT_OM_constant_wdat", N_sim = N_sim, AE_mat = AE_mat_constant, max_jitter =  max_jitter)
 #saveRDS(res_list_constant, file=paste0(wd,"/SCAAfit_GT_constant.RData"))
 
-#res_list_linear <- sim_Fn(OM_text = "GT_OM_linear_wdat", N_sim = N_sim, AE_mat = AE_mat_linear, max_jitter =  max_jitter)
+res_list_linear <- sim_Fn(OM_text = "GT_OM_linear_wdat", N_sim = N_sim, AE_mat = AE_mat_linear, max_jitter =  max_jitter)
 #saveRDS(res_list_linear, file=paste0(wd,"/SCAAfit_GT_linear.RData"))
 
-#res_list_curvilinear <- sim_Fn(OM_text = "GT_OM_curvilinear_wdat", N_sim = N_sim, AE_mat = AE_mat_curvilinear, max_jitter =  max_jitter)
+res_list_curvilinear <- sim_Fn(OM_text = "GT_OM_curvilinear_wdat", N_sim = N_sim, AE_mat = AE_mat_curvilinear, max_jitter =  max_jitter)
 #saveRDS(res_list_curvilinear, file=paste0(wd,"/SCAAfit_GT_curvilinear.RData"))
 
 

@@ -3,7 +3,9 @@ library(matrixcalc)
 #Write where you would like your output
 #and .cpp file has to be in working directory
 wd<-"C:/Users/fischn/Dropbox/"
-wd<-"C:/Users/Derek.Chamberlin/Work/Research/Age_Err_Simulation/Assessment_AgeingError"
+wd<-"C:/Users/Derek.Chamberlin/Work/Research/Age_Err_Simulation/Assessment_AgeingError/"
+
+setwd(wd)
 
 load("workspace.RData")
 
@@ -18,7 +20,8 @@ for (i in 1:length(res_list_final)) {
     
     # Check if the Hessian is positive definite
     if (!is.null(hessian)) {
-      is_positive_definite <- is.positive.definite(hessian)
+      #is_positive_definite <- is.positive.definite(hessian)
+      is_positive_definite <- is.positive.definite(hessian) & res_list_final[[i]][[j]]$max_gradient <= 0.1
     } else {
       is_positive_definite <- FALSE
     }
@@ -27,7 +30,7 @@ for (i in 1:length(res_list_final)) {
   }
 }
 
-summary_percent_true <- matrix(data = NA, nrow = length(hessian_check), ncol = 4)
+summary_percent_true <- matrix(data = NA, nrow = length(hessian_check), ncol = 5)
 
 for (i in 1:length(hessian_check)) {
   results <- hessian_check[[i]]
@@ -40,6 +43,26 @@ for (i in 1:length(hessian_check)) {
 
   summary_percent_true[i, 4] <- percent_true
 }
+
+# Initialize a matrix to store the mean convcounter values
+mean_convcounter <- numeric(length(res_list_final))
+
+for (i in 1:length(res_list_final)) {
+  convcounter_values <- numeric(length(res_list_final[[i]]))
+  
+  for (j in 1:length(res_list_final[[i]])) {
+    # Check if convcounter exists and is numeric
+    if (!is.null(res_list_final[[i]][[j]]$convcounter) && is.numeric(res_list_final[[i]][[j]]$convcounter)) {
+      convcounter_values[j] <- res_list_final[[i]][[j]]$convcounter
+    }
+  }
+  
+  # Calculate the mean, excluding NA values
+  mean_convcounter[i] <- mean(convcounter_values, na.rm = TRUE)
+}
+
+# Add mean_convcounter to the summary_percent_true matrix
+summary_percent_true[, 5] <- mean_convcounter
 
 summary_percent_true[, 1] <- scenarios[, 1]
 summary_percent_true[, 2] <- scenarios[, 2]

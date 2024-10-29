@@ -5,9 +5,13 @@
 #Write where you would like your output
 #and .cpp file has to be in working directory
 wd<-"C:/Users/fischn/Dropbox/"
-wd<-"C:/Users/Derek.Chamberlin/Work/Research/Age_Err_Simulation/Assessment_AgeingError"
+#wd<-"C:/Users/Derek.Chamberlin/Work/Research/Age_Err_Simulation/Assessment_AgeingError"
 
-source(paste0(wd,"/R/Functions.R"))
+#source(paste0(wd,"/R/Functions.R")) #multinomial
+source(paste0(wd,"/R/Functions_wDM.R")) #dirichlet (also change lines 93-94 if switching b/t MN and DM)
+
+N_sim<-1:5
+max_jitter <- 10
 
 F_val_no_shrimp <- c(0.0021, 0.0008, 0.0044, 0.0073, 0.0104, 0.0144, 0.0179, 
                      0.0214, 0.0251, 0.029, 0.0331, 0.0359, 0.0388, 0.042, 
@@ -22,8 +26,6 @@ F_val_no_shrimp <- c(0.0021, 0.0008, 0.0044, 0.0073, 0.0104, 0.0144, 0.0179,
 
 #Example for Gray Triggerfish-like life-history
 #For Triggerfish, based on stochastic runs, fmsy is 0.268, MSY is 2969, SSBmsy is 10046
-N_sim<-1:50
-max_jitter <- 10
 
 Triggerfish_runs<-list()
 for (s in N_sim){
@@ -88,7 +90,8 @@ library(TMB)
 
 setwd(wd)
 #Compile and load model 
-compile("SCAA_forDerek_wAE.cpp")
+#compile("SCAA_forDerek_wAE.cpp") #multinomial
+compile("SCAA_forDerek_wAE_wDM.cpp") #dirichlet 
 
 #Ageing Error Definitions
 #Need to refine and add in no bias but imprecision scenarios
@@ -168,7 +171,7 @@ compile("SCAA_forDerek_wAE.cpp")
 
 
 scenarios <- read.csv("Simulation Scenarios for model.csv") #data frame with columns Scenario #, OM_test, AE_mat
-#scenarios <- scenarios[c(1,2),] #only OM, EM age error match scenarios
+#scenarios <- scenarios[c(1,2),] #adjust what scenarios are run
 
 library(foreach)
 library(doParallel)

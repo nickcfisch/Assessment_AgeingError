@@ -1,0 +1,18 @@
+Hessian PD,,,,,,Hessian PD and max_grad < 0.1,,,,
+Scenario Number,OM,EM,Percent True,Mean Number of Jitters,,Scenario Number,OM,EM,Percent True,Mean Number of Jitters
+1,GT_OM_perf_wdat,AE_mat,100,2.8,,1,GT_OM_perf_wdat,AE_mat,80,2.8
+2,GT_OM_perf_wdat,AE_mat_constant,40,10,,2,GT_OM_perf_wdat,AE_mat_constant,0,10
+3,GT_OM_perf_wdat,AE_mat_linear,0,10,,3,GT_OM_perf_wdat,AE_mat_linear,0,10
+4,GT_OM_perf_wdat,AE_mat_curvilinear,60,8.2,,4,GT_OM_perf_wdat,AE_mat_curvilinear,20,8.2
+5,GT_OM_constant_wdat,AE_mat,100,6.4,,5,GT_OM_constant_wdat,AE_mat,40,6.4
+6,GT_OM_constant_wdat,AE_mat_constant,100,6.4,,6,GT_OM_constant_wdat,AE_mat_constant,40,6.4
+7,GT_OM_constant_wdat,AE_mat_linear,40,10,,7,GT_OM_constant_wdat,AE_mat_linear,0,10
+8,GT_OM_constant_wdat,AE_mat_curvilinear,80,6.4,,8,GT_OM_constant_wdat,AE_mat_curvilinear,40,6.4
+9,GT_OM_linear_wdat,AE_mat,60,8.2,,9,GT_OM_linear_wdat,AE_mat,20,8.2
+10,GT_OM_linear_wdat,AE_mat_constant,80,8.2,,10,GT_OM_linear_wdat,AE_mat_constant,20,8.2
+11,GT_OM_linear_wdat,AE_mat_linear,100,4.8,,11,GT_OM_linear_wdat,AE_mat_linear,60,4.8
+12,GT_OM_linear_wdat,AE_mat_curvilinear,60,10,,12,GT_OM_linear_wdat,AE_mat_curvilinear,0,10
+13,GT_OM_curvilinear_wdat,AE_mat,100,4.6,,13,GT_OM_curvilinear_wdat,AE_mat,60,4.6
+14,GT_OM_curvilinear_wdat,AE_mat_constant,100,4.6,,14,GT_OM_curvilinear_wdat,AE_mat_constant,60,4.6
+15,GT_OM_curvilinear_wdat,AE_mat_linear,20,10,,15,GT_OM_curvilinear_wdat,AE_mat_linear,0,10
+16,GT_OM_curvilinear_wdat,AE_mat_curvilinear,80,8.2,,16,GT_OM_curvilinear_wdat,AE_mat_curvilinear,20,8.2

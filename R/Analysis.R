@@ -3,11 +3,12 @@ library(matrixcalc)
 #Write where you would like your output
 #and .cpp file has to be in working directory
 wd<-"C:/Users/fischn/Dropbox/"
-wd<-"C:/Users/Derek.Chamberlin/Work/Research/Age_Err_Simulation/Assessment_AgeingError/"
+#wd<-"C:/Users/Derek.Chamberlin/Work/Research/Age_Err_Simulation/Assessment_AgeingError/"
 
 setwd(wd)
 
 load("workspace.RData")
+source(paste0(wd,"/R/Analysis_Functions.R"))
 
 #Check Scenarios for Hessian Positive/Definite
 hessian_check <- list()
@@ -70,3 +71,14 @@ summary_percent_true[, 3] <- scenarios[, 3]
 
 print(summary_percent_true)
 
+
+
+
+
+#Time series plot of SSB relative error
+load("./Output/GT_OM_perf_wdat.RData")
+OM_perf <- OM_wdat
+rm(OM_wdat)
+perf_re <- relative_error(OM_perf,res_list_final[[1]])
+perf_re_plot <- plot_re(perf_re)
+print(perf_re_plot)

@@ -4,8 +4,8 @@
 
 #Write where you would like your output
 #and .cpp file has to be in working directory
-wd<-"C:/Users/fischn/Dropbox/"
-#wd<-"C:/Users/Derek.Chamberlin/Work/Research/Age_Err_Simulation/Assessment_AgeingError"
+#wd<-"C:/Users/fischn/Dropbox/"
+wd<-"C:/Users/Derek.Chamberlin/Work/Research/Age_Err_Simulation/Assessment_AgeingError"
 
 #source(paste0(wd,"/R/Functions.R")) #multinomial
 source(paste0(wd,"/R/Functions_wDM.R")) #dirichlet (also change lines 93-94 if switching b/t MN and DM)

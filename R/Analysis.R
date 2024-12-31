@@ -1,13 +1,28 @@
 library(matrixcalc)
 
+#To Do:
+# add in code to calculate F-ratio and B-ratio
+# change plot_re function to things other than SSB to be plotted
+# change grid_plot to allow y axes to be changed
+
+
 #Write where you would like your output
 #and .cpp file has to be in working directory
-wd<-"C:/Users/fischn/Dropbox/"
-#wd<-"C:/Users/Derek.Chamberlin/Work/Research/Age_Err_Simulation/Assessment_AgeingError/"
+#wd<-"C:/Users/fischn/Dropbox/"
+wd<-"C:/Users/Derek.Chamberlin/Work/Research/Age_Err_Simulation/Assessment_AgeingError/"
 
 setwd(wd)
 
 load("workspace.RData")
+load("./Output/GT_OM_perf_wdat.RData")
+GT_OM_perf_wdat <- OM_wdat
+load("./Output/GT_OM_constant_wdat.RData")
+GT_OM_constant_wdat <- OM_wdat
+load("./Output/GT_OM_linear_wdat.RData")
+GT_OM_linear_wdat <- OM_wdat
+load("./Output/GT_OM_curvilinear_wdat.RData")
+GT_OM_curvilinear_wdat <- OM_wdat
+rm(OM_wdat)
 source(paste0(wd,"/R/Analysis_Functions.R"))
 
 #Check Scenarios for Hessian Positive/Definite
@@ -73,12 +88,83 @@ print(summary_percent_true)
 
 
 
+#Calculate RE in SSB
+SSB_re <- list()
+for (i in 1:nrow(scenarios)) {
+  SSB_re[[i]] <- relative_error(get(scenarios[i , 2]),res_list_final[[i]]) #function on runs on hessian PD iterations
+}
 
 
-#Time series plot of SSB relative error
-load("./Output/GT_OM_perf_wdat.RData")
-OM_perf <- OM_wdat
-rm(OM_wdat)
-perf_re <- relative_error(OM_perf,res_list_final[[1]])
-perf_re_plot <- plot_re(perf_re)
-print(perf_re_plot)
+#Time series boxplots of RE in SSB
+OM_Title <- c(rep("No AE", 4), rep("AE Constant Bias", 4), rep("AE Linear Bias", 4), rep("AE Curvilinear Bias", 4))
+EM_Title <- c(rep(c("No AE", "AE Constant Bias", "AE Linear Bias", "AE Curvilinear Bias"), 4))
+par(mfrow = c(4,4), mar = c(4.1, 4.6, 2.1, 1.1))
+for (i in 1:nrow(scenarios)) {
+  boxplot(SSB_re[[i]], ylim = c(-1.0, 1.0), xlim = c(1, 70), axes = FALSE, 
+          frame = TRUE, 
+          main = paste0("TRUE = ", OM_Title[i], ", Model = ", EM_Title[i]),
+          cex.main = 1.0)
+  axis(1, at = seq(5, 70, by=5), labels = seq(5, 70, by=5), cex.axis = 1.1)
+  axis(1, at = 1, labels = 1, cex.axis = 1.1)
+  axis(2, at = seq(-1.0, 1.0, by=0.5), labels = seq(-1.0, 1.0, by=0.5), cex.axis = 1.1)
+  abline(0, 0, lwd = 2)
+}
+mtext("     Year", side = 1, line = -2, cex = 1.3, outer = TRUE)
+mtext("SSB Relative Error", side = 2, line = -2, cex = 1.3, outer = TRUE)
+
+
+
+#Time series plots of RE in SSB
+grid_plot(SSB_re)
+
+
+
+
+#F-ratio
+#Finding fmsy for the true operating model
+MSY <- find_msy()  #Looks to be 0.349
+
+MSY_re <- vector("list", length(res_list_final))
+for (k in 1:length(res_list_final)) {
+  #add in if/else satement to skip over noncoverged iteration where res_list_final[[k]][[j]]$SD$par doesn't exit
+  MSY_re[[k]] <- vector("list", length(res_list_final[[1]]))
+  for (j in 1:length(res_list_final[[1]])) {
+    hessian <- res_list_final[[k]][[j]]$hessian
+    
+    # Check if the Hessian is positive definite
+    if (!is.null(hessian)) {
+      MSY_re[[k]][[j]] <- find_msy(Mref=exp(res_list_final[[k]][[j]]$SD$par.fixed["log_M"]),                 
+                      B1=res_list_final[[k]][[j]]$SD$par.fixed["B1"],                   
+                      B2=res_list_final[[k]][[j]]$SD$par.fixed["B2"],                         
+                      B3=res_list_final[[k]][[j]]$SD$par.fixed["B3"],
+                      B4=res_list_final[[k]][[j]]$SD$par.fixed["B4"],
+                      R0=exp(res_list_final[[k]][[j]]$SD$par.fixed["log_R0"]),
+                      h=0.4593,
+                      sd_rec=res_list_final[[k]][[j]]$SD$par.fixed["log_sigma_rec"])  #sigma not really needed for msy 
+      MSY_re[[k]][[j]]$fratio_EM <- exp(res_list_final[[k]][[j]]$SD$par.fixed[10:78])/MSY_re[[k]][[j]]$fmsy #are these the correct Fs??????????
+      MSY_re[[k]][[j]]$bratio_EM <- res_list_final[[k]][[j]]$SD$value/MSY_re[[k]][[j]]$ssbmsy
+      if (k >= 1 & k <= 4) {
+        MSY_re[[k]][[j]]$fratio_OM <- GT_OM_perf_wdat[[j]]$OM$F_int[26:94]/MSY$fmsy
+        MSY_re[[k]][[j]]$bratio_OM <- GT_OM_perf_wdat[[j]]$OM$SSB[26:95]/MSY$ssbmsy
+      } else if (k >= 5 & k <= 8) {
+        MSY_re[[k]][[j]]$fratio_OM <- GT_OM_constant_wdat[[j]]$OM$F_int[26:94]/MSY$fmsy
+        MSY_re[[k]][[j]]$bratio_OM <- GT_OM_constant_wdat[[j]]$OM$SSB[26:95]/MSY$ssbmsy
+      } else if (k >= 9 & k <= 12) {
+        MSY_re[[k]][[j]]$fratio_OM <- GT_OM_linear_wdat[[j]]$OM$F_int[26:94]/MSY$fmsy
+        MSY_re[[k]][[j]]$bratio_OM <- GT_OM_linear_wdat[[j]]$OM$SSB[26:95]/MSY$ssbmsy
+      } else if(k >= 13 & k <= 16) {
+        MSY_re[[k]][[j]]$fratio_OM <- GT_OM_curvilinear_wdat[[j]]$OM$F_int[26:94]/MSY$fmsy
+        MSY_re[[k]][[j]]$bratio_OM <- GT_OM_curvilinear_wdat[[j]]$OM$SSB[26:95]/MSY$ssbmsy #would ssb_msy or fmsy be different for different scenarios?
+      }
+      MSY_re[[k]][[j]]$fratio_re <- (MSY_re[[k]][[j]]$fratio_EM - MSY_re[[k]][[j]]$fratio_OM) / MSY_re[[k]][[j]]$fratio_OM
+      MSY_re[[k]][[j]]$bratio_re <- (MSY_re[[k]][[j]]$bratio_EM - MSY_re[[k]][[j]]$bratio_OM) / MSY_re[[k]][[j]]$bratio_OM
+    } else {
+      MSY_re[[k]][[j]] <- NA
+    }
+  }
+}
+
+
+#make function to put data in same format as SSB_re then do plot_grid
+plot(MSY_re[[13]][[3]]$fratio_re)
+

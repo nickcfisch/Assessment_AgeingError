@@ -181,7 +181,7 @@ save(MSY_re,file= "C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/Outpu
 #load("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/Output/MSY_re.rds")
 
 #Getting it into usable format
-fratio_re<-bratio_re<-bratio_e<-fratio_e<-fmsy_re<-bmsy_re<-f_re<-list()
+fratio_re<-bratio_re<-bratio_e<-fratio_e<-fmsy_re<-bmsy_re<-f_re<-f_e<-fmsy_e<-bmsy_e<-list()
 for(i in 1:16){
   fratio_re[[i]]<-fratio_e[[i]]<-matrix(NA,nrow=100,ncol=69)
   bratio_re[[i]]<-bratio_e[[i]]<-matrix(NA,nrow=100,ncol=70)
@@ -196,9 +196,9 @@ for(i in 1:16){
     fmsy_re[[i]][j] <- MSY_re[[i]][[j]]$fmsy_re
     bmsy_re[[i]][j] <- MSY_re[[i]][[j]]$bmsy_re
     f_re[[i]][j,] <- MSY_re[[i]][[j]]$f_re
+    f_e[[i]][j,] <- MSY_re[[i]][[j]]$f_e
     fmsy_e[[i]][j] <- MSY_re[[i]][[j]]$fmsy_e
     bmsy_e[[i]][j] <- MSY_re[[i]][[j]]$bmsy_e
-    f_e[[i]][j,] <- MSY_re[[i]][[j]]$f_e
     }
   }
 }

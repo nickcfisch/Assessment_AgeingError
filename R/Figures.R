@@ -117,6 +117,53 @@ OM_Title <- c(rep("No AE", 4), rep("AE Constant Bias", 4), rep("AE Linear Bias",
 EM_Title <- c(rep(c("No AE", "AE Constant Bias", "AE Linear Bias", "AE Curvilinear Bias"), 4))
 par(mfrow = c(4,4), mar = c(2,2, 1, 1), oma=c(4,4,2,2))
 for (i in 1:nrow(scenarios)) {
+  boxplot(bratio_re[[i]], ylim = c(-0.4, 0.4), xlim = c(1, 70), axes = FALSE, 
+          frame = TRUE, 
+          main = paste0("TRUE = ", OM_Title[i], ", Model = ", EM_Title[i]),
+          cex.main = 1.1)
+  if(i %in% 13:16){
+    axis(1, at = seq(5, 70, by=5), labels = seq(5, 70, by=5), cex.axis = 1.1)
+    axis(1, at = 1, labels = 1, cex.axis = 1.1)
+  }
+  if(i %in% c(1,5,9,13)){
+    axis(2, at = seq(-0.4, 0.4, by=0.1), labels = seq(-0.4, 0.4, by=0.1), cex.axis = 1.1, las=1)
+  }
+  abline(0, 0, lwd = 2)
+}
+mtext("     Year", side = 1, line = 2, cex = 1.3, outer = TRUE)
+mtext("Relative Error in B-ratio", side = 2, line = 2, cex = 1.3, outer = TRUE)
+#dev.off()
+
+#Now Raw
+#Time series boxplots of RE in Fratio and Bratio
+#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/F_ratio_raw.tiff"), height=35, width=50, units='cm', compression="lzw", res=500)
+OM_Title <- c(rep("No AE", 4), rep("AE Constant Bias", 4), rep("AE Linear Bias", 4), rep("AE Curvilinear Bias", 4))
+EM_Title <- c(rep(c("No AE", "AE Constant Bias", "AE Linear Bias", "AE Curvilinear Bias"), 4))
+par(mfrow = c(4,4), mar = c(2,2, 1, 1), oma=c(4,4,2,2))
+for (i in 1:nrow(scenarios)) {
+  boxplot(fratio_e[[i]], ylim = c(-1.0, 1.0), xlim = c(1, 70), axes = FALSE, 
+          frame = TRUE, 
+          main = paste0("TRUE = ", OM_Title[i], ", Model = ", EM_Title[i]),
+          cex.main = 1.1)
+  if(i %in% 13:16){
+    axis(1, at = seq(5, 70, by=5), labels = seq(5, 70, by=5), cex.axis = 1.1)
+    axis(1, at = 1, labels = 1, cex.axis = 1.1)
+  }
+  if(i %in% c(1,5,9,13)){
+    axis(2, at = seq(-1.0, 1.0, by=0.5), labels = seq(-1.0, 1.0, by=0.5), cex.axis = 1.1, las=1)
+  }
+  abline(0, 0, lwd = 2)
+}
+mtext("     Year", side = 1, line = 1, cex = 1.3, outer = TRUE)
+mtext("Relative Error in F-ratio", side = 2, line = 1, cex = 1.3, outer = TRUE)
+#dev.off()
+
+
+#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/B_ratio_raw.tiff"), height=35, width=50, units='cm', compression="lzw", res=500)
+OM_Title <- c(rep("No AE", 4), rep("AE Constant Bias", 4), rep("AE Linear Bias", 4), rep("AE Curvilinear Bias", 4))
+EM_Title <- c(rep(c("No AE", "AE Constant Bias", "AE Linear Bias", "AE Curvilinear Bias"), 4))
+par(mfrow = c(4,4), mar = c(2,2, 1, 1), oma=c(4,4,2,2))
+for (i in 1:nrow(scenarios)) {
   boxplot(bratio_e[[i]], ylim = c(-0.75, 0.75), xlim = c(1, 70), axes = FALSE, 
           frame = TRUE, 
           main = paste0("TRUE = ", OM_Title[i], ", Model = ", EM_Title[i]),
@@ -133,6 +180,71 @@ for (i in 1:nrow(scenarios)) {
 mtext("     Year", side = 1, line = 2, cex = 1.3, outer = TRUE)
 mtext("Relative Error in B-ratio", side = 2, line = 2, cex = 1.3, outer = TRUE)
 #dev.off()
+
+#M and R0
+#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/M_R0_re.tiff"), height=25, width=35, units='cm', compression="lzw", res=500)
+OM_Title <- c(rep("No AE", 4), rep("AE Constant Bias", 4), rep("AE Linear Bias", 4), rep("AE Curvilinear Bias", 4))
+EM_Title <- c(rep(c("No AE", "AE Constant Bias", "AE Linear Bias", "AE Curvilinear Bias"), 4))
+par(mfrow = c(4,4), mar = c(2,2, 1, 1), oma=c(2.5,4,2,2))
+for (i in 1:nrow(scenarios)) {
+  boxplot(M_R0_re[[i]], ylim = c(-1.0, 1.0), axes = FALSE, 
+          frame = TRUE, 
+          main = paste0("TRUE = ", OM_Title[i], ", Model = ", EM_Title[i]),
+          cex.main = 1.0)
+  if(i %in% 13:16){
+    axis(1, at = 1:2, labels = c("M", "R0"), cex.axis = 1.5)
+  }
+  if(i %in% c(1,5,9,13)){
+    axis(2, at = seq(-1.0, 1.0, by=0.5), labels = seq(-1.0, 1.0, by=0.5), cex.axis = 1.1, las=1)
+  }
+  abline(0, 0, lwd = 2)
+}
+mtext("Relative Error in M and R0", side = 2, line = 2, cex = 1.3, outer = TRUE)
+#dev.off()
+
+#msys
+#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/Fmsy_Bmsy_re.tiff"), height=25, width=35, units='cm', compression="lzw", res=500)
+OM_Title <- c(rep("No AE", 4), rep("AE Constant Bias", 4), rep("AE Linear Bias", 4), rep("AE Curvilinear Bias", 4))
+EM_Title <- c(rep(c("No AE", "AE Constant Bias", "AE Linear Bias", "AE Curvilinear Bias"), 4))
+par(mfrow = c(4,4), mar = c(2,2, 1, 1), oma=c(2.5,4,2,2))
+for (i in 1:nrow(scenarios)) {
+  boxplot(cbind(fmsy_re[[i]],bmsy_re[[i]]), ylim = c(-1.0, 1.0), axes = FALSE, 
+          frame = TRUE, 
+          main = paste0("TRUE = ", OM_Title[i], ", Model = ", EM_Title[i]),
+          cex.main = 1.0)
+  if(i %in% 13:16){
+    axis(1, at = 1:2, labels = c("Fmsy", "SSBmsy"), cex.axis = 1.5)
+  }
+  if(i %in% c(1,5,9,13)){
+    axis(2, at = seq(-1.0, 1.0, by=0.5), labels = seq(-1.0, 1.0, by=0.5), cex.axis = 1.1, las=1)
+  }
+  abline(0, 0, lwd = 2)
+}
+mtext("Relative Error", side = 2, line = 2, cex = 1.3, outer = TRUE)
+#dev.off()
+
+#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/F_re.tiff"), height=35, width=50, units='cm', compression="lzw", res=500)
+OM_Title <- c(rep("No AE", 4), rep("AE Constant Bias", 4), rep("AE Linear Bias", 4), rep("AE Curvilinear Bias", 4))
+EM_Title <- c(rep(c("No AE", "AE Constant Bias", "AE Linear Bias", "AE Curvilinear Bias"), 4))
+par(mfrow = c(4,4), mar = c(2,2, 1, 1), oma=c(4,4,2,2))
+for (i in 1:nrow(scenarios)) {
+  boxplot(f_re[[i]], ylim = c(-0.3, 0.3), xlim = c(1, 70), axes = FALSE, 
+          frame = TRUE, 
+          main = paste0("TRUE = ", OM_Title[i], ", Model = ", EM_Title[i]),
+          cex.main = 1.1)
+  if(i %in% 13:16){
+    axis(1, at = seq(5, 70, by=5), labels = seq(5, 70, by=5), cex.axis = 1.1)
+    axis(1, at = 1, labels = 1, cex.axis = 1.1)
+  }
+  if(i %in% c(1,5,9,13)){
+    axis(2, at = seq(-0.3, 0.3, by=0.1), labels = round(seq(-0.3, 0.3, by=0.1),1), cex.axis = 1.1, las=1)
+  }
+  abline(0, 0, lwd = 2)
+}
+mtext("     Year", side = 1, line = 1, cex = 1.3, outer = TRUE)
+mtext("Relative Error in F", side = 2, line = 1, cex = 1.3, outer = TRUE)
+#dev.off()
+
 
 #Bubble plots for ageing error
 AE_no<-diag(11)

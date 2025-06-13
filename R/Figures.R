@@ -214,7 +214,8 @@ for (i in 1:nrow(scenarios)) {
           main = paste0("TRUE = ", OM_Title[i], ", Model = ", EM_Title[i]),
           cex.main = 1.2)
   if(i %in% 13:16){
-    axis(1, at = 1:3, labels = c("M", "R0", "SD(R)"), cex.axis = 1.75)
+#    axis(1, at = 1:3, labels = c("M", "R0", "SD(R)"), cex.axis = 1.75)
+    axis(1, at = 1:2, labels = c("M", "R0"), cex.axis = 1.75)
   }
   if(i %in% c(1,5,9,13)){
     axis(2, at = seq(-1.0, 1.0, by=0.5), labels = seq(-1.0, 1.0, by=0.5), cex.axis = 1.3, las=1)
@@ -253,18 +254,18 @@ for (i in 1:nrow(scenarios)) {
   boxplot(f_re[[i]], ylim = c(-0.3, 0.3), xlim = c(1, 70), axes = FALSE, 
           frame = TRUE, 
           main = paste0("TRUE = ", OM_Title[i], ", Model = ", EM_Title[i]),
-          cex.main = 1.1)
+          cex.main = 1.75)
   if(i %in% 13:16){
-    axis(1, at = seq(5, 70, by=5), labels = seq(5, 70, by=5), cex.axis = 1.1)
+    axis(1, at = seq(10, 70, by=10), labels = seq(10, 70, by=10), cex.axis = 1.5)
     axis(1, at = 1, labels = 1, cex.axis = 1.1)
   }
   if(i %in% c(1,5,9,13)){
-    axis(2, at = seq(-0.3, 0.3, by=0.1), labels = round(seq(-0.3, 0.3, by=0.1),1), cex.axis = 1.3, las=1)
+    axis(2, at = seq(-0.3, 0.3, by=0.1), labels = round(seq(-0.3, 0.3, by=0.1),1), cex.axis = 1.5, las=1)
   }
   abline(0, 0, lwd = 2)
 }
-mtext("     Year", side = 1, line = 1, cex = 1.3, outer = TRUE)
-mtext("Relative Error in F", side = 2, line = 1, cex = 1.3, outer = TRUE)
+mtext("   Year", side = 1, line = 1, cex = 1.75, outer = TRUE)
+mtext("Relative Error in F", side = 2, line = 1.5, cex = 1.75, outer = TRUE)
 #dev.off()
 
 

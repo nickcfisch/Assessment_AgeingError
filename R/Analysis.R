@@ -243,8 +243,10 @@ mtext("Relative Error in Bratio", side = 2, line = -2, cex = 1.3, outer = TRUE)
 M_R0_re <- vector("list", length(res_list_final))
 for (i in 1:length(res_list_final)) {
   #add in if/else statement to skip over nonconverged iteration where res_list_final[[k]][[j]]$SD$par doesn't exist
-  M_R0_re[[i]]<-matrix(NA, nrow=100,ncol=3)
-  colnames( M_R0_re[[i]])<-c("M_re", "R0_re", "rSD_re")
+  M_R0_re[[i]]<-matrix(NA, nrow=100,ncol=2)
+#  M_R0_re[[i]]<-matrix(NA, nrow=100,ncol=3)
+  colnames( M_R0_re[[i]])<-c("M_re", "R0_re")
+#  colnames( M_R0_re[[i]])<-c("M_re", "R0_re", "rSD_re")
   for (j in 1:length(res_list_final[[1]])) {
     hessian <- res_list_final[[i]][[j]]$hessian
     # Check if the Hessian is positive definite
@@ -252,7 +254,7 @@ for (i in 1:length(res_list_final)) {
 
       M_R0_re[[i]][j,1]<-(exp(res_list_final[[i]][[j]]$SD$par.fixed["log_M"]) - 0.3015598)/0.3015598
       M_R0_re[[i]][j,2]<-(exp(res_list_final[[i]][[j]]$SD$par.fixed["log_R0"]) - exp(9.7608))/exp(9.7608)
-      M_R0_re[[i]][j,3]<-(exp(res_list_final[[i]][[j]]$SD$par.fixed["log_sigma_rec"]) - 0.3582)/0.3582
+      #M_R0_re[[i]][j,3]<-(exp(res_list_final[[i]][[j]]$SD$par.fixed["log_sigma_rec"]) - 0.3582)/0.3582
       
       }}}
 

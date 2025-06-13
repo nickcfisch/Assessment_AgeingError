@@ -1,19 +1,17 @@
 library(matrixcalc)
 
 #To Do:
-# add in code to calculate F-ratio and B-ratio
-# change plot_re function to things other than SSB to be plotted
 # change grid_plot to allow y axes to be changed
 
 
 #Write where you would like your output
 #and .cpp file has to be in working directory
-#wd<-"C:/Users/fischn/Dropbox/"
+#wd<-"C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/"
 wd<-"C:/Users/Derek.Chamberlin/Work/Research/Age_Err_Simulation/Assessment_AgeingError/"
 
 setwd(wd)
 
-load("workspace.RData")
+load("./Output/workspace.RData")
 load("./Output/GT_OM_perf_wdat.RData")
 GT_OM_perf_wdat <- OM_wdat
 load("./Output/GT_OM_constant_wdat.RData")
@@ -24,6 +22,7 @@ load("./Output/GT_OM_curvilinear_wdat.RData")
 GT_OM_curvilinear_wdat <- OM_wdat
 rm(OM_wdat)
 setwd(wd)
+wd<-"C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/"
 source(paste0(wd,"/R/Analysis_Functions.R"))
 source(paste0(wd,"/R/Functions.R"))
 

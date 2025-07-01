@@ -7,10 +7,10 @@
 #wd<-"C:/Users/fischn/Dropbox/"
 wd<-"C:/Users/Derek.Chamberlin/Work/Research/Assessment_Age_Err_Simulation/Assessment_AgeingError"
 
-#source(paste0(wd,"/R/Functions.R")) #multinomial
-source(paste0(wd,"/R/Functions_wDM.R")) #dirichlet (also change lines 93-94 if switching b/t MN and DM)
+source(paste0(wd,"/R/Functions.R")) #multinomial
+#source(paste0(wd,"/R/Functions_wDM.R")) #dirichlet (also change lines 93-94 if switching b/t MN and DM)
 
-N_sim<-1:5
+N_sim<-1:100
 max_jitter <- 10
 
 F_val_no_shrimp <- c(0.0021, 0.0008, 0.0044, 0.0073, 0.0104, 0.0144, 0.0179, 
@@ -90,8 +90,8 @@ library(TMB)
 
 setwd(wd)
 #Compile and load model 
-#compile("SCAA_forDerek_wAE.cpp") #multinomial
-compile("SCAA_forDerek_wAE_wDM.cpp") #dirichlet 
+compile("SCAA_forDerek_wAE.cpp") #multinomial
+#compile("SCAA_forDerek_wAE_wDM.cpp") #dirichlet 
 
 #Ageing Error Definitions
 #Need to refine and add in no bias but imprecision scenarios
@@ -100,6 +100,9 @@ compile("SCAA_forDerek_wAE_wDM.cpp") #dirichlet
   AE_mat_constant <- AE_mat
   AE_mat_linear <- AE_mat
   AE_mat_curvilinear <- AE_mat
+  AE_mat_constant_over <- AE_mat
+  AE_mat_linear_over <- AE_mat
+  AE_mat_curvilinear_over <- AE_mat
   ages<-(1:nrow(AE_mat))-1
   
   #sd = 1
@@ -159,6 +162,64 @@ compile("SCAA_forDerek_wAE_wDM.cpp") #dirichlet
     }
    lines(AE_mat_curvilinear[i,])
   }
+  
+  #sd = 1
+  sd = 0.2
+  bias = -1
+  plot(AE_mat[,3],col="white")
+  for (i in 1:nrow(AE_mat)) {
+    for(j in 1:nrow(AE_mat)){
+      if(j==1){                      #if age=0 then integrate from 0.5 to 0
+        AE_mat_constant_over[i,j]<-pnorm(ages[j]+0.5, mean = ages[i]-bias, sd = sd)
+      }else if (j %in% 2:(nrow(AE_mat)-1)){        #integrate from age+0.5 to age-0.5
+        AE_mat_constant_over[i,j]<-pnorm(ages[j]+0.5, mean = ages[i]-bias, sd = sd)-pnorm(ages[j]-0.5, mean = ages[i]-bias, sd = sd)
+      }else if (j==nrow(AE_mat)){    # if you are in plus group integrate from age-0.5 to infinity
+        AE_mat_constant_over[i,j]<-1-pnorm(ages[j]-0.5, mean = ages[i]-bias, sd = sd)
+      }
+    }
+    lines(AE_mat_constant[i,])
+  }
+  
+  
+  bias = -0.25
+  sd_def <- c(0.170711, 0.170711, 0.341422, 0.512133, 0.682844, 0.853555, 
+              1.02427, 1.19498, 1.36569, 1.5364, 1.70711) #Based on GT otolith and spine relationship
+  plot(AE_mat[,3],col="white")
+  for (i in 1:nrow(AE_mat)) {
+    for(j in 1:nrow(AE_mat)){
+      if(j==1){                      #if age=0 then integrate from 0.5 to 0
+        AE_mat_linear_over[i,j]<-pnorm(ages[j]+0.5, mean = ages[i]-(bias*ages[i]+0), sd = sd_def[i])
+      }else if (j %in% 2:(nrow(AE_mat)-1)){        #integrate from age+0.5 to age-0.5
+        AE_mat_linear_over[i,j]<-pnorm(ages[j]+0.5, mean = ages[i]-(bias*ages[i]+0), sd = sd_def[i])-pnorm(ages[j]-0.5, mean = ages[i]-(bias*ages[i]+0), sd = sd_def[i])
+      }else if (j==nrow(AE_mat)){    # if you are in plus group integrate from age-0.5 to infinity
+        AE_mat_linear_over[i,j]<-1-pnorm(ages[j]-0.5, mean = ages[i]-(bias*ages[i]+0), sd = sd_def[i])
+      }
+    }
+    lines(AE_mat_linear_over[i,])
+  }
+  
+  
+  
+  #From GT Oto, Old-spine comparison
+  #Correct way to do it with the cumulative distribution function
+  bias1 = 0.138
+  bias2 = 0.2355
+  bias3 = -0.9268
+  sd_def <- c(0.170711, 0.170711, 0.341422, 0.512133, 0.682844, 0.853555, 
+              1.02427, 1.19498, 1.36569, 1.5364, 1.70711) #Based on GT otolith and spine relationship
+  plot(AE_mat[,3],col="white")
+  for (i in 1:nrow(AE_mat)) {
+    for(j in 1:nrow(AE_mat)){
+      if(j==1){                      #if age=0 then integrate from 0.5 to 0
+        AE_mat_curvilinear_over[i,j]<-pnorm(ages[j]+0.5, mean = ((bias1*ages[i]^2)+(bias2*ages[i])-bias3), sd = sd_def[i])
+      }else if (j %in% 2:(nrow(AE_mat)-1)){        #integrate from age+0.5 to age-0.5
+        AE_mat_curvilinear_over[i,j]<-pnorm(ages[j]+0.5, mean = ((bias1*ages[i]^2)+(bias2*ages[i])-bias3), sd = sd_def[i])-pnorm(ages[j]-0.5, mean = ((bias1*ages[i]^2)+(bias2*ages[i])-bias3), sd = sd_def[i])
+      }else if (j==nrow(AE_mat)){    # if you are in plus group integrate from age-0.5 to infinity
+        AE_mat_curvilinear_over[i,j]<-1-pnorm(ages[j]-0.5, mean = ((bias1*ages[i]^2)+(bias2*ages[i])-bias3), sd = sd_def[i])
+      }
+    }
+    lines(AE_mat_curvilinear_over[i,])
+  }
 }
 
 #OMs run with different ageing error scenarios
@@ -167,11 +228,15 @@ compile("SCAA_forDerek_wAE_wDM.cpp") #dirichlet
   OM_Err(OM_text = "GT_OM_constant_wdat", AE_mat = AE_mat_constant, N_sim = N_sim)
   OM_Err(OM_text = "GT_OM_linear_wdat", AE_mat = AE_mat_linear, N_sim = N_sim)
   OM_Err(OM_text = "GT_OM_curvilinear_wdat", AE_mat = AE_mat_curvilinear, N_sim = N_sim)
+
+  OM_Err(OM_text = "GT_OM_constant_over_wdat", AE_mat = AE_mat_constant_over, N_sim = N_sim)
+  OM_Err(OM_text = "GT_OM_linear_over_wdat", AE_mat = AE_mat_linear_over, N_sim = N_sim)
+  OM_Err(OM_text = "GT_OM_curvilinear_over_wdat", AE_mat = AE_mat_curvilinear_over, N_sim = N_sim)
 }
 
 
 scenarios <- read.csv("Simulation Scenarios for model.csv") #data frame with columns Scenario #, OM_test, AE_mat
-#scenarios <- scenarios[c(1,2),] #adjust what scenarios are run
+#scenarios <- scenarios[c(17:32),] #adjust what scenarios are run
 
 library(foreach)
 library(doParallel)
@@ -182,7 +247,8 @@ cl <- makeCluster(cores[1]-1)
 registerDoParallel(cl)
 
 parallel::clusterExport(cl = cl, varlist = c('AE_mat', 'AE_mat_constant', 'AE_mat_linear', 
-                                             'AE_mat_curvilinear','scenarios', 'N_sim'), envir = .GlobalEnv)
+                                             'AE_mat_curvilinear','AE_mat_constant_over', 'AE_mat_linear_over', 
+                                             'AE_mat_curvilinear_over','scenarios', 'N_sim'), envir = .GlobalEnv)
 
 res_list_final <- list()
 

@@ -202,9 +202,9 @@ compile("SCAA_forDerek_wAE.cpp") #multinomial
   
   #From GT Oto, Old-spine comparison
   #Correct way to do it with the cumulative distribution function
-  bias1 = 0.138
-  bias2 = 0.2355
-  bias3 = -0.9268
+  bias1 = 0.0329
+  bias2 = 0.8793
+  bias3 = -0.3772
   sd_def <- c(0.170711, 0.170711, 0.341422, 0.512133, 0.682844, 0.853555, 
               1.02427, 1.19498, 1.36569, 1.5364, 1.70711) #Based on GT otolith and spine relationship
   plot(AE_mat[,3],col="white")

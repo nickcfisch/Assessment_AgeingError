@@ -50,6 +50,7 @@ for (i in 1:nrow(scenarios)) {
 
 #Time series boxplots of RE in SSB
 #tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/SSB_re.tiff"), height=35, width=50, units='cm', compression="lzw", res=500)
+#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/SSB_re_over.tiff"), height=35, width=50, units='cm', compression="lzw", res=500)
 OM_Title <- c(rep("No AE", 4), rep("Constant Bias", 4), rep("Linear Bias", 4), rep("Curvilinear Bias", 4))
 EM_Title <- c(rep(c("No AE", "Constant Bias", "Linear Bias", "Curvilinear Bias"), 4))
 par(mfrow = c(4,4), mar = c(2,2, 1, 1), oma=c(4,4,2,2))
@@ -90,6 +91,7 @@ for(i in 1:16){
 
 #Time series boxplots of RE in Fratio and Bratio
 #tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/F_ratio.tiff"), height=35, width=50, units='cm', compression="lzw", res=500)
+#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/F_ratio_over.tiff"), height=35, width=50, units='cm', compression="lzw", res=500)
 OM_Title <- c(rep("No AE", 4), rep("Constant Bias", 4), rep("Linear Bias", 4), rep("Curvilinear Bias", 4))
 EM_Title <- c(rep(c("No AE", "Constant Bias", "Linear Bias", "Curvilinear Bias"), 4))
 par(mfrow = c(4,4), mar = c(2,2, 1, 1), oma=c(4,4,2,2))
@@ -113,6 +115,7 @@ mtext("Relative Error in F-ratio", side = 2, line = 1, cex = 1.3, outer = TRUE)
 
 
 #tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/B_ratio.tiff"), height=35, width=50, units='cm', compression="lzw", res=500)
+#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/B_ratio_over.tiff"), height=35, width=50, units='cm', compression="lzw", res=500)
 OM_Title <- c(rep("No AE", 4), rep("Constant Bias", 4), rep("Linear Bias", 4), rep("Curvilinear Bias", 4))
 EM_Title <- c(rep(c("No AE", "Constant Bias", "Linear Bias", "Curvilinear Bias"), 4))
 par(mfrow = c(4,4), mar = c(2,2, 1, 1), oma=c(4,4,2,2))
@@ -137,6 +140,7 @@ mtext("Relative Error in B-ratio", side = 2, line = 2, cex = 1.3, outer = TRUE)
 #Now Raw
 #Time series boxplots of E in Fratio and Bratio
 #tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/F_ratio_raw.tiff"), height=35, width=50, units='cm', compression="lzw", res=500)
+#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/F_ratio_raw_over.tiff"), height=35, width=50, units='cm', compression="lzw", res=500)
 OM_Title <- c(rep("No AE", 4), rep("Constant Bias", 4), rep("Linear Bias", 4), rep("Curvilinear Bias", 4))
 EM_Title <- c(rep(c("No AE", "Constant Bias", "Linear Bias", "Curvilinear Bias"), 4))
 par(mfrow = c(4,4), mar = c(2,2, 1, 1), oma=c(4,4,2,2))
@@ -160,6 +164,7 @@ mtext("Relative Error in F-ratio", side = 2, line = 1, cex = 1.3, outer = TRUE)
 
 
 #tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/B_ratio_raw.tiff"), height=35, width=50, units='cm', compression="lzw", res=500)
+#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/B_ratio_raw_over.tiff"), height=35, width=50, units='cm', compression="lzw", res=500)
 OM_Title <- c(rep("No AE", 4), rep("Constant Bias", 4), rep("Linear Bias", 4), rep("Curvilinear Bias", 4))
 EM_Title <- c(rep(c("No AE", "Constant Bias", "Linear Bias", "Curvilinear Bias"), 4))
 par(mfrow = c(4,4), mar = c(2,2, 1, 1), oma=c(4,4,2,2))
@@ -183,6 +188,7 @@ mtext("Relative Error in B-ratio", side = 2, line = 2, cex = 1.3, outer = TRUE)
 
 #Now only final year, raw ratio errors
 #tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/fratio_bratio_raw_fy.tiff"), height=25, width=35, units='cm', compression="lzw", res=500)
+#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/fratio_bratio_raw_fy_over.tiff"), height=25, width=35, units='cm', compression="lzw", res=500)
 OM_Title <- c(rep("No AE", 4), rep("Constant Bias", 4), rep("Linear Bias", 4), rep("Curvilinear Bias", 4))
 EM_Title <- c(rep(c("No AE", "Constant Bias", "Linear Bias", "Curvilinear Bias"), 4))
 par(mfrow = c(4,4), mar = c(2,2, 1, 1), oma=c(2.5,4,2,2))
@@ -205,6 +211,7 @@ mtext("Error in Terminal Year", side = 2, line = 2, cex = 1.5, outer = TRUE)
 
 #M and R0
 #tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/M_R0_re.tiff"), height=25, width=35, units='cm', compression="lzw", res=500)
+#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/M_R0_re_over.tiff"), height=25, width=35, units='cm', compression="lzw", res=500)
 OM_Title <- c(rep("No AE", 4), rep("Constant Bias", 4), rep("Linear Bias", 4), rep("Curvilinear Bias", 4))
 EM_Title <- c(rep(c("No AE", "Constant Bias", "Linear Bias", "Curvilinear Bias"), 4))
 par(mfrow = c(4,4), mar = c(2,2, 1, 1), oma=c(2.5,4,2,2))
@@ -227,6 +234,7 @@ mtext("Relative Error", side = 2, line = 2, cex = 1.3, outer = TRUE)
 
 #msys
 #tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/Fmsy_Bmsy_re.tiff"), height=25, width=35, units='cm', compression="lzw", res=500)
+#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/Fmsy_Bmsy_re_over.tiff"), height=25, width=35, units='cm', compression="lzw", res=500)
 OM_Title <- c(rep("No AE", 4), rep("Constant Bias", 4), rep("Linear Bias", 4), rep("Curvilinear Bias", 4))
 EM_Title <- c(rep(c("No AE", "Constant Bias", "Linear Bias", "Curvilinear Bias"), 4))
 par(mfrow = c(4,4), mar = c(2,2, 1, 1), oma=c(2.5,4,2,2))
@@ -247,6 +255,7 @@ mtext("Relative Error", side = 2, line = 2, cex = 1.3, outer = TRUE)
 #dev.off()
 
 #tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/F_re.tiff"), height=35, width=50, units='cm', compression="lzw", res=500)
+#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/F_re_over.tiff"), height=35, width=50, units='cm', compression="lzw", res=500)
 OM_Title <- c(rep("No AE", 4), rep("Constant Bias", 4), rep("Linear Bias", 4), rep("Curvilinear Bias", 4))
 EM_Title <- c(rep(c("No AE", "Constant Bias", "Linear Bias", "Curvilinear Bias"), 4))
 par(mfrow = c(4,4), mar = c(2,2, 1, 1), oma=c(4,4,2,2))
@@ -272,18 +281,28 @@ mtext("Relative Error in F", side = 2, line = 1.5, cex = 1.75, outer = TRUE)
 #Bubble plots for ageing error
 AE_no<-diag(11)
 library(PBSmodelling)
-#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/AE_Scenarios.tiff"), height=12, width=40, units='cm', compression="lzw", res=500)
-par(mfrow=c(1,4), mar=c(2,2,1,1), oma=c(3,3,1,1))
+#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/AE_Scenarios_both.tiff"), height=20, width=40, units='cm', compression="lzw", res=500)
+par(mfrow=c(2,4), mar=c(2,2,1,1), oma=c(3,3,1,1))
 plotBubbles(AE_no, xlab="True Age", ylab="Coded Age", las=1,xval=0:10, yval=0:10, main="No Ageing Error",size=0.175, cex.main=1.9, cex.axis=1.5)
 abline(b=1,a=0, lty=2)
 mtext(side=2, line=3, text="Coded Age", cex=1.5)
 
-plotBubbles(t(AE_mat_constant), xlab="True Age", ylab="Coded Age", las=1,xval=0:10, yval=0:10, main="Constant Bias",size=0.175, cex.main=1.9, cex.axis=1.5)
+plotBubbles(t(AE_mat_constant), xlab="True Age", ylab="Coded Age", las=1,xval=0:10, yval=0:10, main="Constant Bias - Under",size=0.175, cex.main=1.9, cex.axis=1.5, xaxt="n")
 abline(b=1,a=0, lty=2)
 
-plotBubbles(t(AE_mat_linear), xlab="True Age", ylab="Coded Age", las=1,xval=0:10, yval=0:10, main="Linear Bias",size=0.175, cex.main=1.9, cex.axis=1.5)
+plotBubbles(t(AE_mat_linear), xlab="True Age", ylab="Coded Age", las=1,xval=0:10, yval=0:10, main="Linear Bias - Under",size=0.175, cex.main=1.9, cex.axis=1.5, xaxt="n")
+abline(b=1,a=0, lty=2)
+plotBubbles(t(AE_mat_curvilinear), xlab="True Age", ylab="Coded Age", las=1,xval=0:10, yval=0:10, main="Curvilinear Bias - Under",size=0.175, cex.main=1.9, cex.axis=1.5, xaxt="n")
+abline(b=1,a=0, lty=2)
+
+plot(1,1,col="white", xaxt="n", yaxt="n", bty="n")
+
+plotBubbles(t(AE_mat_constant_over), xlab="True Age", ylab="Coded Age", las=1,xval=0:10, yval=0:10, main="Constant Bias - Over",size=0.175, cex.main=1.9, cex.axis=1.5)
+abline(b=1,a=0, lty=2)
+
+plotBubbles(t(AE_mat_linear_over), xlab="True Age", ylab="Coded Age", las=1,xval=0:10, yval=0:10, main="Linear Bias - Over",size=0.175, cex.main=1.9, cex.axis=1.5)
 abline(b=1,a=0, lty=2)
 mtext(side=1, line=3, text="True Age", at=-1.5, cex=1.5)
-plotBubbles(t(AE_mat_curvilinear), xlab="True Age", ylab="Coded Age", las=1,xval=0:10, yval=0:10, main="Curvilinear Bias",size=0.175, cex.main=1.9, cex.axis=1.5)
+plotBubbles(t(AE_mat_curvilinear_over), xlab="True Age", ylab="Coded Age", las=1,xval=0:10, yval=0:10, main="Curvilinear Bias - Over",size=0.175, cex.main=1.9, cex.axis=1.5)
 abline(b=1,a=0, lty=2)
 #dev.off()

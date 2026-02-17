@@ -287,22 +287,22 @@ plotBubbles(AE_no, xlab="True Age", ylab="Coded Age", las=1,xval=0:10, yval=0:10
 abline(b=1,a=0, lty=2)
 mtext(side=2, line=3, text="Coded Age", cex=1.5)
 
-plotBubbles(t(AE_mat_constant), xlab="True Age", ylab="Coded Age", las=1,xval=0:10, yval=0:10, main="Constant Bias - Under",size=0.175, cex.main=1.9, cex.axis=1.5, xaxt="n")
+plotBubbles(t(AE_mat_constant), xlab="True Age", ylab="Coded Age", las=1,xval=0:10, yval=0:10, main="Constant Negative Bias",size=0.175, cex.main=1.9, cex.axis=1.5, xaxt="n")
 abline(b=1,a=0, lty=2)
 
-plotBubbles(t(AE_mat_linear), xlab="True Age", ylab="Coded Age", las=1,xval=0:10, yval=0:10, main="Linear Bias - Under",size=0.175, cex.main=1.9, cex.axis=1.5, xaxt="n")
+plotBubbles(t(AE_mat_linear), xlab="True Age", ylab="Coded Age", las=1,xval=0:10, yval=0:10, main="Linear Negative Bias",size=0.175, cex.main=1.9, cex.axis=1.5, xaxt="n")
 abline(b=1,a=0, lty=2)
-plotBubbles(t(AE_mat_curvilinear), xlab="True Age", ylab="Coded Age", las=1,xval=0:10, yval=0:10, main="Curvilinear Bias - Under",size=0.175, cex.main=1.9, cex.axis=1.5, xaxt="n")
+plotBubbles(t(AE_mat_curvilinear), xlab="True Age", ylab="Coded Age", las=1,xval=0:10, yval=0:10, main="Curvilinear Negative Bias",size=0.175, cex.main=1.9, cex.axis=1.5, xaxt="n")
 abline(b=1,a=0, lty=2)
 
 plot(1,1,col="white", xaxt="n", yaxt="n", bty="n")
 
-plotBubbles(t(AE_mat_constant_over), xlab="True Age", ylab="Coded Age", las=1,xval=0:10, yval=0:10, main="Constant Bias - Over",size=0.175, cex.main=1.9, cex.axis=1.5)
+plotBubbles(t(AE_mat_constant_over), xlab="True Age", ylab="Coded Age", las=1,xval=0:10, yval=0:10, main="Constant Positive Bias",size=0.175, cex.main=1.9, cex.axis=1.5)
 abline(b=1,a=0, lty=2)
 
-plotBubbles(t(AE_mat_linear_over), xlab="True Age", ylab="Coded Age", las=1,xval=0:10, yval=0:10, main="Linear Bias - Over",size=0.175, cex.main=1.9, cex.axis=1.5)
+plotBubbles(t(AE_mat_linear_over), xlab="True Age", ylab="Coded Age", las=1,xval=0:10, yval=0:10, main="Linear Positive Bias",size=0.175, cex.main=1.9, cex.axis=1.5)
 abline(b=1,a=0, lty=2)
 mtext(side=1, line=3, text="True Age", at=-1.5, cex=1.5)
-plotBubbles(t(AE_mat_curvilinear_over), xlab="True Age", ylab="Coded Age", las=1,xval=0:10, yval=0:10, main="Curvilinear Bias - Over",size=0.175, cex.main=1.9, cex.axis=1.5)
+plotBubbles(t(AE_mat_curvilinear_over), xlab="True Age", ylab="Coded Age", las=1,xval=0:10, yval=0:10, main="Curvilinear Positive Bias",size=0.175, cex.main=1.9, cex.axis=1.5)
 abline(b=1,a=0, lty=2)
 #dev.off()

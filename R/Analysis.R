@@ -13,22 +13,22 @@ wd<-"C:/Users/fischn/Documents/GitHub/Assessment_AgeingError"
 
 setwd(wd)
 
-#load("./Output/workspace.RData")
-load("./Output/workspace_over.RData")
+load("./Output/workspace.RData")
+#load("./Output/workspace_over.RData")
 load("./Output/GT_OM_perf_wdat.RData")
 GT_OM_perf_wdat <- OM_wdat
-#load("./Output/GT_OM_constant_wdat.RData")
-load("./Output/GT_OM_constant_over_wdat.RData")
-#GT_OM_constant_wdat <- OM_wdat
-GT_OM_constant_over_wdat <- OM_wdat
-#load("./Output/GT_OM_linear_wdat.RData")
-load("./Output/GT_OM_linear_over_wdat.RData")
-#GT_OM_linear_wdat <- OM_wdat
-GT_OM_linear_over_wdat <- OM_wdat
-#load("./Output/GT_OM_curvilinear_wdat.RData")
-load("./Output/GT_OM_curvilinear_over_wdat.RData")
-#GT_OM_curvilinear_wdat <- OM_wdat
-GT_OM_curvilinear_over_wdat <- OM_wdat
+load("./Output/GT_OM_constant_wdat.RData")
+#load("./Output/GT_OM_constant_over_wdat.RData")
+GT_OM_constant_wdat <- OM_wdat
+#GT_OM_constant_over_wdat <- OM_wdat
+load("./Output/GT_OM_linear_wdat.RData")
+#load("./Output/GT_OM_linear_over_wdat.RData")
+GT_OM_linear_wdat <- OM_wdat
+#GT_OM_linear_over_wdat <- OM_wdat
+load("./Output/GT_OM_curvilinear_wdat.RData")
+#load("./Output/GT_OM_curvilinear_over_wdat.RData")
+GT_OM_curvilinear_wdat <- OM_wdat
+#GT_OM_curvilinear_over_wdat <- OM_wdat
 rm(OM_wdat)
 wd<-"C:/Users/fischn/Documents/GitHub/Assessment_AgeingError"
 source(paste0(wd,"/R/Analysis_Functions.R"))
@@ -159,20 +159,20 @@ for (k in 1:length(res_list_final)) {
         MSY_re[[k]][[j]]$fratio_OM <- GT_OM_perf_wdat[[j]]$OM$F_int[26:94]/MSY$fmsy
         MSY_re[[k]][[j]]$bratio_OM <- GT_OM_perf_wdat[[j]]$OM$SSB[26:95]/MSY$ssbmsy
       } else if (k >= 5 & k <= 8) {
-#        MSY_re[[k]][[j]]$fratio_OM <- GT_OM_constant_wdat[[j]]$OM$F_int[26:94]/MSY$fmsy
-#        MSY_re[[k]][[j]]$bratio_OM <- GT_OM_constant_wdat[[j]]$OM$SSB[26:95]/MSY$ssbmsy
-        MSY_re[[k]][[j]]$fratio_OM <- GT_OM_constant_over_wdat[[j]]$OM$F_int[26:94]/MSY$fmsy
-        MSY_re[[k]][[j]]$bratio_OM <- GT_OM_constant_over_wdat[[j]]$OM$SSB[26:95]/MSY$ssbmsy
+        MSY_re[[k]][[j]]$fratio_OM <- GT_OM_constant_wdat[[j]]$OM$F_int[26:94]/MSY$fmsy
+        MSY_re[[k]][[j]]$bratio_OM <- GT_OM_constant_wdat[[j]]$OM$SSB[26:95]/MSY$ssbmsy
+#        MSY_re[[k]][[j]]$fratio_OM <- GT_OM_constant_over_wdat[[j]]$OM$F_int[26:94]/MSY$fmsy
+#        MSY_re[[k]][[j]]$bratio_OM <- GT_OM_constant_over_wdat[[j]]$OM$SSB[26:95]/MSY$ssbmsy
       } else if (k >= 9 & k <= 12) {
-#        MSY_re[[k]][[j]]$fratio_OM <- GT_OM_linear_wdat[[j]]$OM$F_int[26:94]/MSY$fmsy
-#        MSY_re[[k]][[j]]$bratio_OM <- GT_OM_linear_wdat[[j]]$OM$SSB[26:95]/MSY$ssbmsy
-        MSY_re[[k]][[j]]$fratio_OM <- GT_OM_linear_over_wdat[[j]]$OM$F_int[26:94]/MSY$fmsy
-        MSY_re[[k]][[j]]$bratio_OM <- GT_OM_linear_over_wdat[[j]]$OM$SSB[26:95]/MSY$ssbmsy
+        MSY_re[[k]][[j]]$fratio_OM <- GT_OM_linear_wdat[[j]]$OM$F_int[26:94]/MSY$fmsy
+        MSY_re[[k]][[j]]$bratio_OM <- GT_OM_linear_wdat[[j]]$OM$SSB[26:95]/MSY$ssbmsy
+#        MSY_re[[k]][[j]]$fratio_OM <- GT_OM_linear_over_wdat[[j]]$OM$F_int[26:94]/MSY$fmsy
+#        MSY_re[[k]][[j]]$bratio_OM <- GT_OM_linear_over_wdat[[j]]$OM$SSB[26:95]/MSY$ssbmsy
       } else if(k >= 13 & k <= 16) {
-#        MSY_re[[k]][[j]]$fratio_OM <- GT_OM_curvilinear_wdat[[j]]$OM$F_int[26:94]/MSY$fmsy
-#       MSY_re[[k]][[j]]$bratio_OM <- GT_OM_curvilinear_wdat[[j]]$OM$SSB[26:95]/MSY$ssbmsy #would ssb_msy or fmsy be different for different scenarios?
-        MSY_re[[k]][[j]]$fratio_OM <- GT_OM_curvilinear_over_wdat[[j]]$OM$F_int[26:94]/MSY$fmsy
-        MSY_re[[k]][[j]]$bratio_OM <- GT_OM_curvilinear_over_wdat[[j]]$OM$SSB[26:95]/MSY$ssbmsy #would ssb_msy or fmsy be different for different scenarios?
+        MSY_re[[k]][[j]]$fratio_OM <- GT_OM_curvilinear_wdat[[j]]$OM$F_int[26:94]/MSY$fmsy
+        MSY_re[[k]][[j]]$bratio_OM <- GT_OM_curvilinear_wdat[[j]]$OM$SSB[26:95]/MSY$ssbmsy #would ssb_msy or fmsy be different for different scenarios?
+#        MSY_re[[k]][[j]]$fratio_OM <- GT_OM_curvilinear_over_wdat[[j]]$OM$F_int[26:94]/MSY$fmsy
+#        MSY_re[[k]][[j]]$bratio_OM <- GT_OM_curvilinear_over_wdat[[j]]$OM$SSB[26:95]/MSY$ssbmsy #would ssb_msy or fmsy be different for different scenarios?
       }
       MSY_re[[k]][[j]]$fratio_re <- (MSY_re[[k]][[j]]$fratio_EM - MSY_re[[k]][[j]]$fratio_OM) / MSY_re[[k]][[j]]$fratio_OM
       MSY_re[[k]][[j]]$bratio_re <- (MSY_re[[k]][[j]]$bratio_EM - MSY_re[[k]][[j]]$bratio_OM) / MSY_re[[k]][[j]]$bratio_OM

@@ -10,6 +10,7 @@ SimPop<-function(seed=1,                         #seed to start random number ge
                  a3=0.5,                         #SS-like parameterization of growth, a3 parameter
                  L1=10,                          #ditto^ L1 param
                  BK=0.4,                         #brody growth coefficient
+                 CV_LAA=0.22,                    #CV of mean length at age 
                  Weight_scaling=1.7e-5,          #Weight-length a
                  Weight_allometry=2.9,           #Weight-length b
                  Mref=0.3015598,                 #Reference M for constant or lorenzen. 
@@ -42,25 +43,25 @@ SimPop<-function(seed=1,                         #seed to start random number ge
   Laa<-NA
   Laa[1]<-Lmin+b*0
   Laa[2:(lage+1)]<-Linf+(L1-Linf)*exp(-BK*((1:lage)-a3))
-#  Laa[2:lage]<-Linf+(L1-Linf)*exp(-BK*((1:(lage-1))-a3))
-#  Laa[lage+1]<-Linf
+  #  Laa[2:lage]<-Linf+(L1-Linf)*exp(-BK*((1:(lage-1))-a3))
+  #  Laa[lage+1]<-Linf
   Laa[1]<-uniroot(f=function(x) x+(x-Linf)*(exp(-BK)-1)-Laa[2], interval=c(0.01,100))$root
   
   #Weight at age
   Waa<-Weight_scaling*Laa^Weight_allometry
   Fec<-51.357*Laa^2.8538
-    
+  
   #Natural mortality at age
   Maa<-Mref*(Laa/(Linf*0.75))^-M_pow
   #Maa<-rep(Mref,length(fage:lage))    #Constant M
   
   #Maturity
   Mat<-0.5*c(0, 0, 0.79, 0.91, 0.98, 0.99, 1, 1, 1, 1, 1) #Mat read in from assessment?
- # Mat<-0.5/(1+exp(Mat_slope*(Laa-Mat_50)))   #Changed mat to max at 0.5 to account for 50% females
+  # Mat<-0.5/(1+exp(Mat_slope*(Laa-Mat_50)))   #Changed mat to max at 0.5 to account for 50% females
   
   #Fishery Selectivity 
-#  Sel<-1/(1+exp(-log(19)*(Laa-Sel_50)/Sel_slope))         #Logistic based on mean length at age
-#  Sel<-1/(1+exp(-log(19)*((fage:lage)-Sel_50)/Sel_slope))  #Logistic based on age
+  #  Sel<-1/(1+exp(-log(19)*(Laa-Sel_50)/Sel_slope))         #Logistic based on mean length at age
+  #  Sel<-1/(1+exp(-log(19)*((fage:lage)-Sel_50)/Sel_slope))  #Logistic based on age
   
   #Double Normal
   age<-fage:lage
@@ -79,13 +80,13 @@ SimPop<-function(seed=1,                         #seed to start random number ge
     F_int[fyear:25]<-0
     F_int[26:lyear]<-F_val
   } else if (F_man==FALSE){
-  if (const_F==TRUE){
-    F_int[fyear:lyear]<-fint
-  } else if (const_F==FALSE){
-    F_int[fyear:25]<-0
-    F_int[26:85]<-fhigh/length(26:85)*(1:length(26:85))
-    F_int[86:lyear]<-F_int[85]+(flow-fhigh)/length(86:lyear)*(1:length(86:lyear))
-  }
+    if (const_F==TRUE){
+      F_int[fyear:lyear]<-fint
+    } else if (const_F==FALSE){
+      F_int[fyear:25]<-0
+      F_int[26:85]<-fhigh/length(26:85)*(1:length(26:85))
+      F_int[86:lyear]<-F_int[85]+(flow-fhigh)/length(86:lyear)*(1:length(86:lyear))
+    }
   }
   
   #Now Pop Stuff
@@ -119,7 +120,7 @@ SimPop<-function(seed=1,                         #seed to start random number ge
   
   Caa<-Faa/Zaa*Naa[1:lyear,]*(1-exp(-Zaa))
   
-  return(list(fage=fage,lage=lage,seed=seed,fyear=fyear,lyear=lyear,Linf=Linf,a3=a3,L1=L1,BK=BK,Weight_scaling=Weight_scaling,
+  return(list(fage=fage,lage=lage,seed=seed,fyear=fyear,lyear=lyear,Linf=Linf,a3=a3,L1=L1,BK=BK,CV_LAA=CV_LAA,Weight_scaling=Weight_scaling,
               Weight_allometry=Weight_allometry,Mref=Mref,Mat_50=Mat_50,Mat_slope=Mat_slope,Sel_50=Sel_50,Sel_slope=Sel_slope,
               B1=B1,B2=B2,B3=B3,B4=B4,R0=R0,h=h,sd_rec=sd_rec,fint=fint,fhigh=fhigh,flow=flow,stochastic=stochastic,
               lrecdevs=lrecdevs,
@@ -144,6 +145,7 @@ SimPop<-function(seed=1,                         #seed to start random number ge
 #########################################################################
 #Data simulator, function which simulates data from a population model
 #########################################################################
+source("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/R/RTMB_functions.R")
 Get_Data<-function(OM=NA,              #Operating model from which to model
                    dat_seed=1,         #seed to start random number generation for reproducibility
                    fyear_dat=26,       #first year that has data
@@ -182,11 +184,44 @@ Get_Data<-function(OM=NA,              #Operating model from which to model
   #This would be *expected* data with ageing error but in decimals. 
   #  Obs_Catch_Comp<-Obs_Catch_Comp_noAE%*%AE_mat  #Getting observed data with Ageing error
   
+  #Ok now getting new VB parameters and maturity given ageing error matrix
+  #Creating a new dataset with true age, coded age, length, and maturity
+  dat_wAErr<-data.frame(true_age=NA, coded_age=NA, length=NA, mat=NA)
+  for (a in 1:length(OM$fage:OM$lage)){
+    for (i in 1:100){
+      dat_wAErr<-rbind.data.frame(dat_wAErr, data.frame(true_age=a-1,
+                                                        coded_age=which(rmultinom(1, size=1, prob=AE_mat[a,])==1)-1,
+                                                        length=rnorm(1, mean=OM$Laa[a], sd=OM$Laa[a]*OM$CV_LAA),
+                                                        mat=rbinom(1, 1, prob=OM$Mat[a]*2)))
+    }
+  }
+  dat_wAErr<-dat_wAErr[-1,] #Getting rid of first row of NAs
+  
+  #Now need to re-estimate parameters for VB and maturity
+  library(RTMB)
+  VB_fit<-get_VB(dat=data.frame(age=dat_wAErr$coded_age, length=dat_wAErr$length))
+  if(sum(AE_mat==diag(11))==121){
+   pred_Laa<-OM$Laa
+  }else {
+   pred_Laa<-VB_fit$Est$pred_derived
+  }
+  
+  mat_fit<-get_Mat(dat=data.frame(age=dat_wAErr$coded_age, maturity=dat_wAErr$mat))
+  if(sum(AE_mat==diag(11))==121){
+    pred_mat<-OM$Mat
+  }else{
+    pred_mat<-0.5*mat_fit$Est$pred_derived
+  }
+  
   return(list(OM=OM,dat_seed=dat_seed,sd_catch=sd_catch,N_Comp=N_Comp,q_index=q_index,sd_index=sd_index,fyear_dat=fyear_dat,lyear_dat=lyear_dat,
               Obs_Catch=Obs_Catch,
               Obs_Catch_CompnoAE=Obs_Catch_Comp_noAE,
               Obs_Catch_Comp=Obs_Catch_Comp,
-              Obs_Index=Obs_Index))
+              Obs_Index=Obs_Index,
+              pred_Laa=pred_Laa,
+              pred_Waa=OM$Weight_scaling*pred_Laa^OM$Weight_allometry,
+              pred_Mat=pred_mat,
+              pred_Fec=51.357*pred_Laa^2.8538))
 }
 
 
@@ -213,9 +248,9 @@ OM_Err <- function(OM_text, AE_mat, N_sim){
 #################################################
 sim_Fn <- function(OM_text, N_sim, AE_mat, max_jitter){
   load(paste0(wd,"/Output/",OM_text,".RData"))
-
+  
   Triggerfish_OM<-OM_wdat
-
+  
   #Doing N Simulations
   res_list<-list()
   for (s in N_sim){
@@ -249,14 +284,14 @@ sim_Fn <- function(OM_text, N_sim, AE_mat, max_jitter){
                 log_sigma_rec=log(OM$OM$sd_rec),
                 log_sd_catch=log(OM$sd_catch),
                 log_sd_index=log(OM$sd_index),
-#                Sel_logis_k=log(runif(1,min=OM$OM$Sel_slope-OM$OM$Sel_slope*0.35,max=OM$OM$Sel_slope+OM$OM$Sel_slope*0.35)),
-#                Sel_logis_midpt=log(runif(1,min=OM$OM$Sel_50-OM$OM$Sel_50*0.35,max=OM$OM$Sel_50+OM$OM$Sel_50*0.35)),
+                #                Sel_logis_k=log(runif(1,min=OM$OM$Sel_slope-OM$OM$Sel_slope*0.35,max=OM$OM$Sel_slope+OM$OM$Sel_slope*0.35)),
+                #                Sel_logis_midpt=log(runif(1,min=OM$OM$Sel_50-OM$OM$Sel_50*0.35,max=OM$OM$Sel_50+OM$OM$Sel_50*0.35)),
                 B1=runif(1,min=OM$OM$B1-abs(OM$OM$B1)*0.35,max=OM$OM$B1+abs(OM$OM$B1)*0.35),                       #Double normal selectivity parameters
                 B2=runif(1,min=OM$OM$B2-abs(OM$OM$B2)*0.35,max=OM$OM$B2+abs(OM$OM$B2)*0.35),
                 B3=runif(1,min=OM$OM$B3-abs(OM$OM$B3)*0.35,max=OM$OM$B3+abs(OM$OM$B3)*0.35),
                 B4=runif(1,min=OM$OM$B4-abs(OM$OM$B4)*0.35,max=OM$OM$B4+abs(OM$OM$B4)*0.35),
                 log_fint=log(runif(length(OM$OM$F_int[26:94]),min=OM$OM$F_int[26:94]-OM$OM$F_int[26:94]*0.35,max=OM$OM$F_int[26:94]+OM$OM$F_int[26:94]*0.35)))  
-
+    
     ################
     #TMB stuff
     ################
@@ -278,59 +313,59 @@ sim_Fn <- function(OM_text, N_sim, AE_mat, max_jitter){
     
     SCAA <- MakeADFun(dat, par, DLL="SCAA_forDerek_wAE", map=fixed, random=reffects)
     
-counter<-1  
-tryCatch({
-  SCAA_fit <- TMBhelper::fit_tmb(obj=SCAA, startpar=SCAA$par, lower=l, upper=u, newtonsteps = 1,getsd=TRUE,bias.correct=TRUE,getHessian=TRUE)
-}, error=function(e){
-  counter<<-0
-  SCAA_fit<<-list(NA)
-})
-
-convcounter<-1
-if (
-  if(length(SCAA_fit) == 2) {
-    is.na(SCAA_fit$h[1,1]) || !matrixcalc::is.positive.definite(SCAA_fit$h) || SCAA_fit$opt$max_gradient > 0.1
-  } else {
-    is.na(SCAA_fit$hessian[1,1]) || !matrixcalc::is.positive.definite(SCAA_fit$hessian) || SCAA_fit$max_gradient > 0.1
-  }
-) {
-  while (
-    if(length(SCAA_fit) == 2) {
-      (is.na(SCAA_fit$h[1,1]) || !matrixcalc::is.positive.definite(SCAA_fit$h) || SCAA_fit$opt$max_gradient > 0.1) && 
-        convcounter < max_jitter && counter == 1
-    } else {
-      (is.na(SCAA_fit$hessian[1,1]) || !matrixcalc::is.positive.definite(SCAA_fit$hessian) || SCAA_fit$max_gradient > 0.1) && 
-        convcounter < max_jitter && counter == 1
-    }
-  ){
-    par <- list(log_M=log(runif(1,min=OM$OM$Mref-OM$OM$Mref*0.35,max=OM$OM$Mref+OM$OM$Mref*0.35)),
-                log_q=log(runif(1,min=OM$q_index-OM$q_index*0.35,max=OM$q_index+OM$q_index*0.35)),
-                log_recruit_devs_init=rep(0,dat$lage),
-                log_recruit_devs=rep(0,dat$lyear),
-                steepness=OM$OM$h,
-                log_R0=log(runif(1,min=OM$OM$R0-OM$OM$R0*0.35,max=OM$OM$R0+OM$OM$R0*0.35)),
-                log_sigma_rec=log(OM$OM$sd_rec),
-                log_sd_catch=log(OM$sd_catch),
-                log_sd_index=log(OM$sd_index),
-                #                Sel_logis_k=log(runif(1,min=OM$OM$Sel_slope-OM$OM$Sel_slope*0.35,max=OM$OM$Sel_slope+OM$OM$Sel_slope*0.35)),
-                #                Sel_logis_midpt=log(runif(1,min=OM$OM$Sel_50-OM$OM$Sel_50*0.35,max=OM$OM$Sel_50+OM$OM$Sel_50*0.35)),
-                B1=runif(1,min=OM$OM$B1-abs(OM$OM$B1)*0.35,max=OM$OM$B1+abs(OM$OM$B1)*0.35),                       #Double normal selectivity parameters
-                B2=runif(1,min=OM$OM$B2-abs(OM$OM$B2)*0.35,max=OM$OM$B2+abs(OM$OM$B2)*0.35),
-                B3=runif(1,min=OM$OM$B3-abs(OM$OM$B3)*0.35,max=OM$OM$B3+abs(OM$OM$B3)*0.35),
-                B4=runif(1,min=OM$OM$B4-abs(OM$OM$B4)*0.35,max=OM$OM$B4+abs(OM$OM$B4)*0.35),
-                log_fint=log(runif(length(OM$OM$F_int[26:94]),min=OM$OM$F_int[26:94]-OM$OM$F_int[26:94]*0.35,max=OM$OM$F_int[26:94]+OM$OM$F_int[26:94]*0.35)))  
-    
-    
-    SCAA <- MakeADFun(dat, par, DLL="SCAA_forDerek_wAE", map=fixed, random=reffects)
+    counter<-1  
     tryCatch({
       SCAA_fit <- TMBhelper::fit_tmb(obj=SCAA, startpar=SCAA$par, lower=l, upper=u, newtonsteps = 1,getsd=TRUE,bias.correct=TRUE,getHessian=TRUE)
     }, error=function(e){
       counter<<-0
       SCAA_fit<<-list(NA)
     })
-    convcounter<-sum(convcounter, 1)
-  }
-}
+    
+    convcounter<-1
+    if (
+      if(length(SCAA_fit) == 2) {
+        is.na(SCAA_fit$h[1,1]) || !matrixcalc::is.positive.definite(SCAA_fit$h) || SCAA_fit$opt$max_gradient > 0.1
+      } else {
+        is.na(SCAA_fit$hessian[1,1]) || !matrixcalc::is.positive.definite(SCAA_fit$hessian) || SCAA_fit$max_gradient > 0.1
+      }
+    ) {
+      while (
+        if(length(SCAA_fit) == 2) {
+          (is.na(SCAA_fit$h[1,1]) || !matrixcalc::is.positive.definite(SCAA_fit$h) || SCAA_fit$opt$max_gradient > 0.1) && 
+            convcounter < max_jitter && counter == 1
+        } else {
+          (is.na(SCAA_fit$hessian[1,1]) || !matrixcalc::is.positive.definite(SCAA_fit$hessian) || SCAA_fit$max_gradient > 0.1) && 
+            convcounter < max_jitter && counter == 1
+        }
+      ){
+        par <- list(log_M=log(runif(1,min=OM$OM$Mref-OM$OM$Mref*0.35,max=OM$OM$Mref+OM$OM$Mref*0.35)),
+                    log_q=log(runif(1,min=OM$q_index-OM$q_index*0.35,max=OM$q_index+OM$q_index*0.35)),
+                    log_recruit_devs_init=rep(0,dat$lage),
+                    log_recruit_devs=rep(0,dat$lyear),
+                    steepness=OM$OM$h,
+                    log_R0=log(runif(1,min=OM$OM$R0-OM$OM$R0*0.35,max=OM$OM$R0+OM$OM$R0*0.35)),
+                    log_sigma_rec=log(OM$OM$sd_rec),
+                    log_sd_catch=log(OM$sd_catch),
+                    log_sd_index=log(OM$sd_index),
+                    #                Sel_logis_k=log(runif(1,min=OM$OM$Sel_slope-OM$OM$Sel_slope*0.35,max=OM$OM$Sel_slope+OM$OM$Sel_slope*0.35)),
+                    #                Sel_logis_midpt=log(runif(1,min=OM$OM$Sel_50-OM$OM$Sel_50*0.35,max=OM$OM$Sel_50+OM$OM$Sel_50*0.35)),
+                    B1=runif(1,min=OM$OM$B1-abs(OM$OM$B1)*0.35,max=OM$OM$B1+abs(OM$OM$B1)*0.35),                       #Double normal selectivity parameters
+                    B2=runif(1,min=OM$OM$B2-abs(OM$OM$B2)*0.35,max=OM$OM$B2+abs(OM$OM$B2)*0.35),
+                    B3=runif(1,min=OM$OM$B3-abs(OM$OM$B3)*0.35,max=OM$OM$B3+abs(OM$OM$B3)*0.35),
+                    B4=runif(1,min=OM$OM$B4-abs(OM$OM$B4)*0.35,max=OM$OM$B4+abs(OM$OM$B4)*0.35),
+                    log_fint=log(runif(length(OM$OM$F_int[26:94]),min=OM$OM$F_int[26:94]-OM$OM$F_int[26:94]*0.35,max=OM$OM$F_int[26:94]+OM$OM$F_int[26:94]*0.35)))  
+        
+        
+        SCAA <- MakeADFun(dat, par, DLL="SCAA_forDerek_wAE", map=fixed, random=reffects)
+        tryCatch({
+          SCAA_fit <- TMBhelper::fit_tmb(obj=SCAA, startpar=SCAA$par, lower=l, upper=u, newtonsteps = 1,getsd=TRUE,bias.correct=TRUE,getHessian=TRUE)
+        }, error=function(e){
+          counter<<-0
+          SCAA_fit<<-list(NA)
+        })
+        convcounter<-sum(convcounter, 1)
+      }
+    }
     SCAA_fit$convcounter <- convcounter
     #res_list saves all sorts of output related to the assessment, a couple of examples below. 
     res_list[[s]]<-SCAA_fit

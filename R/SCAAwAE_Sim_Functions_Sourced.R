@@ -4,8 +4,10 @@
 
 #Write where you would like your output
 #and .cpp file has to be in working directory
-#wd<-"C:/Users/fischn/Dropbox/"
+wd<-"C:/Users/fischn/Documents/GitHub/Assessment_AgeingError"
 wd<-"C:/Users/Derek.Chamberlin/Work/Research/Assessment_Age_Err_Simulation/Assessment_AgeingError"
+
+setwd(wd)
 
 source(paste0(wd,"/R/Functions.R")) #multinomial
 #source(paste0(wd,"/R/Functions_wDM.R")) #dirichlet (also change lines 93-94 if switching b/t MN and DM)
@@ -30,37 +32,38 @@ F_val_no_shrimp <- c(0.0021, 0.0008, 0.0044, 0.0073, 0.0104, 0.0144, 0.0179,
 Triggerfish_runs<-list()
 for (s in N_sim){
   Triggerfish_runs[[s]]<-SimPop(seed=s,
-                             fage=0,
-                             lage=10, #(Sedar 43, 2015)  p. 10
-                             fyear=1,
-                             #lyear=100,
-                             lyear=length(F_val_no_shrimp)+25,
-                             Linf=58.97, #(Sedar 43, 2015) p. 64
-                             a3=0.5, 
-                             L1=28.3, #(Sedar 43, 2015) p. 64
-                             BK=0.14, #(Sedar 43, 2015) p. 64
-                             Weight_scaling=2.16e-5, #(Sedar 43, 2015) p. 64
-                             Weight_allometry=3.007, #(Sedar 43, 2015) p. 64
-                             Mref=0.3015598,                 #Reference M for constant or lorenzen. 
-                             M_pow=1.775641,                 #power for lorenzen M
-                             Mat_50=31.0, #(Sedar 43, 2015) p. 64
-                             Mat_slope=-0.065, #(Sedar 43, 2015) p. 64
-                             Sel_50=28.9, # logistic selectivity, not used
-                             Sel_slope=7, # logistic selectivity, not used
-                             B1=4.374691,                   #Double normal selectivity parameters
-                             B2=-3,                         #Nicks best approximation of trigger selectivity
-                             B3=1.214063,
-                             B4=1.582468,
-                             R0=exp(9.7608), #(Sedar 43, 2015) p. 64
-                             h=0.4593, #(Sedar 43, 2015) p. 64
-                             sd_rec=0.3582, #(Sedar 43, 2015) p. 64
-                             const_F=FALSE,
-                             fint=0.0021, #based on cumulative F withouth shrimp fleet (Sedar 43)
-                             fhigh=0.6917, #based on cumulative F withouth shrimp fleet (Sedar 43)
-                             flow=0.0008, #based on cumulative F withouth shrimp fleet (Sedar 43)
-                             F_man=TRUE,
-                             F_val=F_val_no_shrimp,
-                             stochastic=TRUE)
+                                fage=0,
+                                lage=10, #(Sedar 43, 2015)  p. 10
+                                fyear=1,
+                                #lyear=100,
+                                lyear=length(F_val_no_shrimp)+25,
+                                Linf=58.97, #(Sedar 43, 2015) p. 64
+                                a3=0.5, 
+                                L1=28.3, #(Sedar 43, 2015) p. 64
+                                BK=0.14, #(Sedar 43, 2015) p. 64
+                                CV_LAA=0.22,                     #(Sedar 43, 2015) p. 64
+                                Weight_scaling=2.16e-5, #(Sedar 43, 2015) p. 64
+                                Weight_allometry=3.007, #(Sedar 43, 2015) p. 64
+                                Mref=0.3015598,                 #Reference M for constant or lorenzen. 
+                                M_pow=1.775641,                 #power for lorenzen M
+                                Mat_50=31.0, #(Sedar 43, 2015) p. 64
+                                Mat_slope=-0.065, #(Sedar 43, 2015) p. 64
+                                Sel_50=28.9, # logistic selectivity, not used
+                                Sel_slope=7, # logistic selectivity, not used
+                                B1=4.374691,                   #Double normal selectivity parameters
+                                B2=-3,                         #Nicks best approximation of trigger selectivity
+                                B3=1.214063,
+                                B4=1.582468,
+                                R0=exp(9.7608), #(Sedar 43, 2015) p. 64
+                                h=0.4593, #(Sedar 43, 2015) p. 64
+                                sd_rec=0.3582, #(Sedar 43, 2015) p. 64
+                                const_F=FALSE,
+                                fint=0.0021, #based on cumulative F withouth shrimp fleet (Sedar 43)
+                                fhigh=0.6917, #based on cumulative F withouth shrimp fleet (Sedar 43)
+                                flow=0.0008, #based on cumulative F withouth shrimp fleet (Sedar 43)
+                                F_man=TRUE,
+                                F_val=F_val_no_shrimp,
+                                stochastic=TRUE)
 }
 
 save(Triggerfish_runs, file=paste0(wd,"/Output/Triggerfish_Base.RData"))
@@ -81,19 +84,9 @@ lines(1:95,apply(Triggerfish_Depl,2,quantile,probs=0.025),lty=2)
 lines(1:95,apply(Triggerfish_Depl,2,quantile,probs=0.875),lty=3)
 lines(1:95,apply(Triggerfish_Depl,2,quantile,probs=0.125),lty=3)
 
-#############################################################
-#TMB SCAAs fit to Fishery data
-#############################################################
-
-#TMB Section
-library(TMB)
-
-setwd(wd)
-#Compile and load model 
-compile("SCAA_forDerek_wAE.cpp") #multinomial
-#compile("SCAA_forDerek_wAE_wDM.cpp") #dirichlet 
-
+##########################
 #Ageing Error Definitions
+##########################
 #Need to refine and add in no bias but imprecision scenarios
 {
   AE_mat<-diag(length(Triggerfish_runs[[s]]$fage:Triggerfish_runs[[s]]$lage))
@@ -152,15 +145,15 @@ compile("SCAA_forDerek_wAE.cpp") #multinomial
   plot(AE_mat[,3],col="white")
   for (i in 1:nrow(AE_mat)) {
     for(j in 1:nrow(AE_mat)){
-     if(j==1){                      #if age=0 then integrate from 0.5 to 0
-      AE_mat_curvilinear[i,j]<-pnorm(ages[j]+0.5, mean = ((bias1*ages[i]^2)+(bias2*ages[i])-bias3), sd = sd_def[i])
-     }else if (j %in% 2:(nrow(AE_mat)-1)){        #integrate from age+0.5 to age-0.5
-       AE_mat_curvilinear[i,j]<-pnorm(ages[j]+0.5, mean = ((bias1*ages[i]^2)+(bias2*ages[i])-bias3), sd = sd_def[i])-pnorm(ages[j]-0.5, mean = ((bias1*ages[i]^2)+(bias2*ages[i])-bias3), sd = sd_def[i])
-     }else if (j==nrow(AE_mat)){    # if you are in plus group integrate from age-0.5 to infinity
-       AE_mat_curvilinear[i,j]<-1-pnorm(ages[j]-0.5, mean = ((bias1*ages[i]^2)+(bias2*ages[i])-bias3), sd = sd_def[i])
-     }
+      if(j==1){                      #if age=0 then integrate from 0.5 to 0
+        AE_mat_curvilinear[i,j]<-pnorm(ages[j]+0.5, mean = ((bias1*ages[i]^2)+(bias2*ages[i])-bias3), sd = sd_def[i])
+      }else if (j %in% 2:(nrow(AE_mat)-1)){        #integrate from age+0.5 to age-0.5
+        AE_mat_curvilinear[i,j]<-pnorm(ages[j]+0.5, mean = ((bias1*ages[i]^2)+(bias2*ages[i])-bias3), sd = sd_def[i])-pnorm(ages[j]-0.5, mean = ((bias1*ages[i]^2)+(bias2*ages[i])-bias3), sd = sd_def[i])
+      }else if (j==nrow(AE_mat)){    # if you are in plus group integrate from age-0.5 to infinity
+        AE_mat_curvilinear[i,j]<-1-pnorm(ages[j]-0.5, mean = ((bias1*ages[i]^2)+(bias2*ages[i])-bias3), sd = sd_def[i])
+      }
     }
-   lines(AE_mat_curvilinear[i,])
+    lines(AE_mat_curvilinear[i,])
   }
   
   #sd = 1
@@ -222,17 +215,29 @@ compile("SCAA_forDerek_wAE.cpp") #multinomial
   }
 }
 
+
+#############################################################
+#Running the functions that get the data
+#############################################################
+
 #OMs run with different ageing error scenarios
 {
   OM_Err(OM_text = "GT_OM_perf_wdat", AE_mat = AE_mat, N_sim = N_sim)
   OM_Err(OM_text = "GT_OM_constant_wdat", AE_mat = AE_mat_constant, N_sim = N_sim)
   OM_Err(OM_text = "GT_OM_linear_wdat", AE_mat = AE_mat_linear, N_sim = N_sim)
   OM_Err(OM_text = "GT_OM_curvilinear_wdat", AE_mat = AE_mat_curvilinear, N_sim = N_sim)
-
+  
   OM_Err(OM_text = "GT_OM_constant_over_wdat", AE_mat = AE_mat_constant_over, N_sim = N_sim)
   OM_Err(OM_text = "GT_OM_linear_over_wdat", AE_mat = AE_mat_linear_over, N_sim = N_sim)
   OM_Err(OM_text = "GT_OM_curvilinear_over_wdat", AE_mat = AE_mat_curvilinear_over, N_sim = N_sim)
 }
+
+#TMB Section
+library(TMB)
+
+#Compile and load model 
+compile("SCAA_forDerek_wAE.cpp") #multinomial
+#compile("SCAA_forDerek_wAE_wDM.cpp") #dirichlet 
 
 
 scenarios <- read.csv("Simulation Scenarios for model.csv") #data frame with columns Scenario #, OM_test, AE_mat
@@ -254,7 +259,7 @@ res_list_final <- list()
 
 res_list_final <- foreach(i=1:nrow(scenarios),.packages='TMB') %dopar% {
   sim_Fn(OM_text = as.character(scenarios[i,2]), 
-                                N_sim = N_sim, AE_mat = get(scenarios[i,3]), max_jitter =  max_jitter)
+         N_sim = N_sim, AE_mat = get(scenarios[i,3]), max_jitter =  max_jitter)
 }
 
 dir.create("Output", showWarnings = FALSE)

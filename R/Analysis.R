@@ -152,7 +152,9 @@ for (k in 1:length(res_list_final)) {
                       B4=res_list_final[[k]][[j]]$SD$par.fixed["B4"],
                       R0=exp(res_list_final[[k]][[j]]$SD$par.fixed["log_R0"]),
                       h=0.4593,
-                      sd_rec=res_list_final[[k]][[j]]$SD$par.fixed["log_sigma_rec"])  
+                      sd_rec=res_list_final[[k]][[j]]$SD$par.fixed["log_sigma_rec"],
+                      LAA=res_list_final[[k]][[j]]$Laa,
+                      MAT=res_list_final[[k]][[j]]$Mat)  
       MSY_re[[k]][[j]]$fratio_EM <- exp(res_list_final[[k]][[j]]$SD$par.fixed[9:77])/MSY_re[[k]][[j]]$fmsy 
       MSY_re[[k]][[j]]$bratio_EM <- res_list_final[[k]][[j]]$SD$value/MSY_re[[k]][[j]]$ssbmsy
       if (k >= 1 & k <= 4) {
@@ -275,8 +277,6 @@ for (i in 1:length(res_list_final)) {
       #M_R0_re[[i]][j,3]<-(exp(res_list_final[[i]][[j]]$SD$par.fixed["log_sigma_rec"]) - 0.3582)/0.3582
       
       }}}
-
-
 
 OM_Title <- c(rep("No AE", 4), rep("AE Constant Bias", 4), rep("AE Linear Bias", 4), rep("AE Curvilinear Bias", 4))
 EM_Title <- c(rep(c("No AE", "AE Constant Bias", "AE Linear Bias", "AE Curvilinear Bias"), 4))

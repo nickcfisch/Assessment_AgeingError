@@ -41,18 +41,21 @@ mtext(side=1, text="Year", line=3.5, font=2, cex=1.4)
 mtext(side=2, text="Fishing Mortality", line=2.5, font=2, cex=1.4)
 #dev.off()
 
+#Will have to have run code to read in models prior to this. 
+
 #Calculate RE in SSB
 SSB_re <- list()
 for (i in 1:nrow(scenarios)) {
   SSB_re[[i]] <- relative_error(get(scenarios[i , 2]),res_list_final[[i]]) #function on runs on hessian PD iterations
 }
 
-
 #Time series boxplots of RE in SSB
-#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/SSB_re.tiff"), height=35, width=50, units='cm', compression="lzw", res=500)
+#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/SSB_re_under.tiff"), height=35, width=50, units='cm', compression="lzw", res=500)
+#OM_Title <- c(rep("No AE", 4), rep("Constant Negative Bias", 4), rep("Linear Negative Bias", 4), rep("Curvilinear Negative Bias", 4))
+#EM_Title <- c(rep(c("No AE", "Constant Negative Bias", "Linear Negative Bias", "Curvilinear Negative Bias"), 4))
 #tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/SSB_re_over.tiff"), height=35, width=50, units='cm', compression="lzw", res=500)
-OM_Title <- c(rep("No AE", 4), rep("Constant Bias", 4), rep("Linear Bias", 4), rep("Curvilinear Bias", 4))
-EM_Title <- c(rep(c("No AE", "Constant Bias", "Linear Bias", "Curvilinear Bias"), 4))
+#OM_Title <- c(rep("No AE", 4), rep("Constant Positive Bias", 4), rep("Linear Positive Bias", 4), rep("Curvilinear Positive Bias", 4))
+#EM_Title <- c(rep(c("No AE", "Constant Positive Bias", "Linear Positive Bias", "Curvilinear Positive Bias"), 4))
 par(mfrow = c(4,4), mar = c(2,2, 1, 1), oma=c(4,4,2,2))
 for (i in 1:nrow(scenarios)) {
   boxplot(SSB_re[[i]], ylim = c(-0.75, 0.75), xlim = c(1, 70), axes = FALSE, 
@@ -72,7 +75,7 @@ mtext("   Year", side = 1, line = 2, cex = 1.85, outer = TRUE)
 mtext("Relative Error in SSB", side = 2, line = 2, cex = 1.75, outer = TRUE)
 #dev.off()
      
-#load("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/Output/MSY_re.rds")
+#load("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/Output/MSY_re_under.rds")
 
 #Getting it into usable format
 fratio_re<-bratio_re<-bratio_e<-fratio_e<-list()
@@ -90,10 +93,12 @@ for(i in 1:16){
 }
 
 #Time series boxplots of RE in Fratio and Bratio
-#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/F_ratio.tiff"), height=35, width=50, units='cm', compression="lzw", res=500)
+#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/F_ratio_under.tiff"), height=35, width=50, units='cm', compression="lzw", res=500)
+#OM_Title <- c(rep("No AE", 4), rep("Constant Negative Bias", 4), rep("Linear Negative Bias", 4), rep("Curvilinear Negative Bias", 4))
+#EM_Title <- c(rep(c("No AE", "Constant Negative Bias", "Linear Negative Bias", "Curvilinear Negative Bias"), 4))
 #tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/F_ratio_over.tiff"), height=35, width=50, units='cm', compression="lzw", res=500)
-OM_Title <- c(rep("No AE", 4), rep("Constant Bias", 4), rep("Linear Bias", 4), rep("Curvilinear Bias", 4))
-EM_Title <- c(rep(c("No AE", "Constant Bias", "Linear Bias", "Curvilinear Bias"), 4))
+#OM_Title <- c(rep("No AE", 4), rep("Constant Positive Bias", 4), rep("Linear Positive Bias", 4), rep("Curvilinear Positive Bias", 4))
+#EM_Title <- c(rep(c("No AE", "Constant Positive Bias", "Linear Positive Bias", "Curvilinear Positive Bias"), 4))
 par(mfrow = c(4,4), mar = c(2,2, 1, 1), oma=c(4,4,2,2))
 for (i in 1:nrow(scenarios)) {
   boxplot(fratio_re[[i]], ylim = c(-1.0, 1.0), xlim = c(1, 70), axes = FALSE, 
@@ -114,10 +119,12 @@ mtext("Relative Error in F-ratio", side = 2, line = 1, cex = 1.3, outer = TRUE)
 #dev.off()
 
 
-#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/B_ratio.tiff"), height=35, width=50, units='cm', compression="lzw", res=500)
+#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/B_ratio_under.tiff"), height=35, width=50, units='cm', compression="lzw", res=500)
+#OM_Title <- c(rep("No AE", 4), rep("Constant Negative Bias", 4), rep("Linear Negative Bias", 4), rep("Curvilinear Negative Bias", 4))
+#EM_Title <- c(rep(c("No AE", "Constant Negative Bias", "Linear Negative Bias", "Curvilinear Negative Bias"), 4))
 #tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/B_ratio_over.tiff"), height=35, width=50, units='cm', compression="lzw", res=500)
-OM_Title <- c(rep("No AE", 4), rep("Constant Bias", 4), rep("Linear Bias", 4), rep("Curvilinear Bias", 4))
-EM_Title <- c(rep(c("No AE", "Constant Bias", "Linear Bias", "Curvilinear Bias"), 4))
+#OM_Title <- c(rep("No AE", 4), rep("Constant Positive Bias", 4), rep("Linear Positive Bias", 4), rep("Curvilinear Positive Bias", 4))
+#EM_Title <- c(rep(c("No AE", "Constant Positive Bias", "Linear Positive Bias", "Curvilinear Positive Bias"), 4))
 par(mfrow = c(4,4), mar = c(2,2, 1, 1), oma=c(4,4,2,2))
 for (i in 1:nrow(scenarios)) {
   boxplot(bratio_re[[i]], ylim = c(-0.4, 0.4), xlim = c(1, 70), axes = FALSE, 
@@ -139,10 +146,12 @@ mtext("Relative Error in B-ratio", side = 2, line = 2, cex = 1.3, outer = TRUE)
 
 #Now Raw
 #Time series boxplots of E in Fratio and Bratio
-#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/F_ratio_raw.tiff"), height=35, width=50, units='cm', compression="lzw", res=500)
+#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/F_ratio_raw_under.tiff"), height=35, width=50, units='cm', compression="lzw", res=500)
+#OM_Title <- c(rep("No AE", 4), rep("Constant Negative Bias", 4), rep("Linear Negative Bias", 4), rep("Curvilinear Negative Bias", 4))
+#EM_Title <- c(rep(c("No AE", "Constant Negative Bias", "Linear Negative Bias", "Curvilinear Negative Bias"), 4))
 #tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/F_ratio_raw_over.tiff"), height=35, width=50, units='cm', compression="lzw", res=500)
-OM_Title <- c(rep("No AE", 4), rep("Constant Bias", 4), rep("Linear Bias", 4), rep("Curvilinear Bias", 4))
-EM_Title <- c(rep(c("No AE", "Constant Bias", "Linear Bias", "Curvilinear Bias"), 4))
+#OM_Title <- c(rep("No AE", 4), rep("Constant Positive Bias", 4), rep("Linear Positive Bias", 4), rep("Curvilinear Positive Bias", 4))
+#EM_Title <- c(rep(c("No AE", "Constant Positive Bias", "Linear Positive Bias", "Curvilinear Positive Bias"), 4))
 par(mfrow = c(4,4), mar = c(2,2, 1, 1), oma=c(4,4,2,2))
 for (i in 1:nrow(scenarios)) {
   boxplot(fratio_e[[i]], ylim = c(-1.0, 1.0), xlim = c(1, 70), axes = FALSE, 
@@ -163,10 +172,12 @@ mtext("Relative Error in F-ratio", side = 2, line = 1, cex = 1.3, outer = TRUE)
 #dev.off()
 
 
-#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/B_ratio_raw.tiff"), height=35, width=50, units='cm', compression="lzw", res=500)
+#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/B_ratio_raw_under.tiff"), height=35, width=50, units='cm', compression="lzw", res=500)
+#OM_Title <- c(rep("No AE", 4), rep("Constant Negative Bias", 4), rep("Linear Negative Bias", 4), rep("Curvilinear Negative Bias", 4))
+#EM_Title <- c(rep(c("No AE", "Constant Negative Bias", "Linear Negative Bias", "Curvilinear Negative Bias"), 4))
 #tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/B_ratio_raw_over.tiff"), height=35, width=50, units='cm', compression="lzw", res=500)
-OM_Title <- c(rep("No AE", 4), rep("Constant Bias", 4), rep("Linear Bias", 4), rep("Curvilinear Bias", 4))
-EM_Title <- c(rep(c("No AE", "Constant Bias", "Linear Bias", "Curvilinear Bias"), 4))
+#OM_Title <- c(rep("No AE", 4), rep("Constant Positive Bias", 4), rep("Linear Positive Bias", 4), rep("Curvilinear Positive Bias", 4))
+#EM_Title <- c(rep(c("No AE", "Constant Positive Bias", "Linear Positive Bias", "Curvilinear Positive Bias"), 4))
 par(mfrow = c(4,4), mar = c(2,2, 1, 1), oma=c(4,4,2,2))
 for (i in 1:nrow(scenarios)) {
   boxplot(bratio_e[[i]], ylim = c(-0.75, 0.75), xlim = c(1, 70), axes = FALSE, 
@@ -187,10 +198,12 @@ mtext("Relative Error in B-ratio", side = 2, line = 2, cex = 1.3, outer = TRUE)
 #dev.off()
 
 #Now only final year, raw ratio errors
-#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/fratio_bratio_raw_fy.tiff"), height=25, width=35, units='cm', compression="lzw", res=500)
+#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/fratio_bratio_raw_fy_under.tiff"), height=25, width=35, units='cm', compression="lzw", res=500)
+#OM_Title <- c(rep("No AE", 4), rep("Constant Negative Bias", 4), rep("Linear Negative Bias", 4), rep("Curvilinear Negative Bias", 4))
+#EM_Title <- c(rep(c("No AE", "Constant Negative Bias", "Linear Negative Bias", "Curvilinear Negative Bias"), 4))
 #tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/fratio_bratio_raw_fy_over.tiff"), height=25, width=35, units='cm', compression="lzw", res=500)
-OM_Title <- c(rep("No AE", 4), rep("Constant Bias", 4), rep("Linear Bias", 4), rep("Curvilinear Bias", 4))
-EM_Title <- c(rep(c("No AE", "Constant Bias", "Linear Bias", "Curvilinear Bias"), 4))
+#OM_Title <- c(rep("No AE", 4), rep("Constant Positive Bias", 4), rep("Linear Positive Bias", 4), rep("Curvilinear Positive Bias", 4))
+#EM_Title <- c(rep(c("No AE", "Constant Positive Bias", "Linear Positive Bias", "Curvilinear Positive Bias"), 4))
 par(mfrow = c(4,4), mar = c(2,2, 1, 1), oma=c(2.5,4,2,2))
 for (i in 1:nrow(scenarios)) {
   boxplot(cbind(fratio_e[[i]][,69],bratio_e[[i]][,70]), ylim = c(-1.0, 1.0), axes = FALSE, 
@@ -210,10 +223,12 @@ mtext("Error in Terminal Year", side = 2, line = 2, cex = 1.5, outer = TRUE)
 
 
 #M and R0
-#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/M_R0_re.tiff"), height=25, width=35, units='cm', compression="lzw", res=500)
+#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/M_R0_re_under.tiff"), height=25, width=35, units='cm', compression="lzw", res=500)
+#OM_Title <- c(rep("No AE", 4), rep("Constant Negative Bias", 4), rep("Linear Negative Bias", 4), rep("Curvilinear Negative Bias", 4))
+#EM_Title <- c(rep(c("No AE", "Constant Negative Bias", "Linear Negative Bias", "Curvilinear Negative Bias"), 4))
 #tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/M_R0_re_over.tiff"), height=25, width=35, units='cm', compression="lzw", res=500)
-OM_Title <- c(rep("No AE", 4), rep("Constant Bias", 4), rep("Linear Bias", 4), rep("Curvilinear Bias", 4))
-EM_Title <- c(rep(c("No AE", "Constant Bias", "Linear Bias", "Curvilinear Bias"), 4))
+#OM_Title <- c(rep("No AE", 4), rep("Constant Positive Bias", 4), rep("Linear Positive Bias", 4), rep("Curvilinear Positive Bias", 4))
+#EM_Title <- c(rep(c("No AE", "Constant Positive Bias", "Linear Positive Bias", "Curvilinear Positive Bias"), 4))
 par(mfrow = c(4,4), mar = c(2,2, 1, 1), oma=c(2.5,4,2,2))
 for (i in 1:nrow(scenarios)) {
   boxplot(M_R0_re[[i]], ylim = c(-1.0, 1.0), axes = FALSE, 
@@ -233,10 +248,12 @@ mtext("Relative Error", side = 2, line = 2, cex = 1.3, outer = TRUE)
 #dev.off()
 
 #msys
-#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/Fmsy_Bmsy_re.tiff"), height=25, width=35, units='cm', compression="lzw", res=500)
+#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/Fmsy_Bmsy_re_under.tiff"), height=25, width=35, units='cm', compression="lzw", res=500)
+#OM_Title <- c(rep("No AE", 4), rep("Constant Negative Bias", 4), rep("Linear Negative Bias", 4), rep("Curvilinear Negative Bias", 4))
+#EM_Title <- c(rep(c("No AE", "Constant Negative Bias", "Linear Negative Bias", "Curvilinear Negative Bias"), 4))
 #tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/Fmsy_Bmsy_re_over.tiff"), height=25, width=35, units='cm', compression="lzw", res=500)
-OM_Title <- c(rep("No AE", 4), rep("Constant Bias", 4), rep("Linear Bias", 4), rep("Curvilinear Bias", 4))
-EM_Title <- c(rep(c("No AE", "Constant Bias", "Linear Bias", "Curvilinear Bias"), 4))
+#OM_Title <- c(rep("No AE", 4), rep("Constant Positive Bias", 4), rep("Linear Positive Bias", 4), rep("Curvilinear Positive Bias", 4))
+#EM_Title <- c(rep(c("No AE", "Constant Positive Bias", "Linear Positive Bias", "Curvilinear Positive Bias"), 4))
 par(mfrow = c(4,4), mar = c(2,2, 1, 1), oma=c(2.5,4,2,2))
 for (i in 1:nrow(scenarios)) {
   boxplot(cbind(fmsy_re[[i]],bmsy_re[[i]]), ylim = c(-1.0, 1.0), axes = FALSE, 
@@ -254,10 +271,12 @@ for (i in 1:nrow(scenarios)) {
 mtext("Relative Error", side = 2, line = 2, cex = 1.3, outer = TRUE)
 #dev.off()
 
-#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/F_re.tiff"), height=35, width=50, units='cm', compression="lzw", res=500)
+#tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/F_re_under.tiff"), height=35, width=50, units='cm', compression="lzw", res=500)
+#OM_Title <- c(rep("No AE", 4), rep("Constant Negative Bias", 4), rep("Linear Negative Bias", 4), rep("Curvilinear Negative Bias", 4))
+#EM_Title <- c(rep(c("No AE", "Constant Negative Bias", "Linear Negative Bias", "Curvilinear Negative Bias"), 4))
 #tiff(filename=("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/figures/F_re_over.tiff"), height=35, width=50, units='cm', compression="lzw", res=500)
-OM_Title <- c(rep("No AE", 4), rep("Constant Bias", 4), rep("Linear Bias", 4), rep("Curvilinear Bias", 4))
-EM_Title <- c(rep(c("No AE", "Constant Bias", "Linear Bias", "Curvilinear Bias"), 4))
+#OM_Title <- c(rep("No AE", 4), rep("Constant Positive Bias", 4), rep("Linear Positive Bias", 4), rep("Curvilinear Positive Bias", 4))
+#EM_Title <- c(rep(c("No AE", "Constant Positive Bias", "Linear Positive Bias", "Curvilinear Positive Bias"), 4))
 par(mfrow = c(4,4), mar = c(2,2, 1, 1), oma=c(4,4,2,2))
 for (i in 1:nrow(scenarios)) {
   boxplot(f_re[[i]], ylim = c(-0.3, 0.3), xlim = c(1, 70), axes = FALSE, 

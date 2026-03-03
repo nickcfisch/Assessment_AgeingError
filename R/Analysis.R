@@ -5,37 +5,53 @@ library(matrixcalc)
 # change plot_re function to things other than SSB to be plotted
 # change grid_plot to allow y axes to be changed
 
-
 #Write where you would like your output
 #and .cpp file has to be in working directory
-wd<-"C:/Users/Derek.Chamberlin/Work/Research/Age_Err_Simulation/Assessment_AgeingError/"
-wd<-"C:/Users/fischn/Documents/GitHub/Assessment_AgeingError"
+wd <- "C:/Users/Derek.Chamberlin/Work/Research/Age_Err_Simulation/Assessment_AgeingError/"
+wd <- "C:/Users/fischn/Documents/GitHub/Assessment_AgeingError"
 
 setwd(wd)
 
-load("./Output/workspace.RData")
-#load("./Output/workspace_over.RData")
-load("./Output/GT_OM_perf_wdat.RData")
-GT_OM_perf_wdat <- OM_wdat
-load("./Output/GT_OM_constant_wdat.RData")
-#load("./Output/GT_OM_constant_over_wdat.RData")
-GT_OM_constant_wdat <- OM_wdat
-#GT_OM_constant_over_wdat <- OM_wdat
-load("./Output/GT_OM_linear_wdat.RData")
-#load("./Output/GT_OM_linear_over_wdat.RData")
-GT_OM_linear_wdat <- OM_wdat
-#GT_OM_linear_over_wdat <- OM_wdat
-load("./Output/GT_OM_curvilinear_wdat.RData")
-#load("./Output/GT_OM_curvilinear_over_wdat.RData")
-GT_OM_curvilinear_wdat <- OM_wdat
-#GT_OM_curvilinear_over_wdat <- OM_wdat
+OU <- "under"
+
+if(OU=="under"){
+ load("./Output/workspace_under.RData")
+ load("./Output/GT_OM_perf_wdat.RData")
+  GT_OM_perf_wdat <- OM_wdat
+ load("./Output/GT_OM_GT_wdat.RData")
+ GT_OM_GT_wdat <- OM_wdat
+ load("./Output/GT_OM_constant_wdat.RData")
+ GT_OM_constant_wdat <- OM_wdat
+ load("./Output/GT_OM_linear_wdat.RData")
+ GT_OM_linear_wdat <- OM_wdat
+ load("./Output/GT_OM_curvilinear_wdat.RData")
+ GT_OM_curvilinear_wdat <- OM_wdat
+}else if(OU=="over"){
+ load("./Output/workspace_over.RData")
+ load("./Output/GT_OM_perf_wdat.RData")
+ GT_OM_perf_wdat <- OM_wdat
+ load("./Output/GT_OM_GT_wdat.RData")
+ GT_OM_GT_wdat <- OM_wdat
+ load("./Output/GT_OM_constant_over_wdat.RData")
+ GT_OM_constant_over_wdat <- OM_wdat
+ load("./Output/GT_OM_linear_over_wdat.RData")
+ GT_OM_linear_over_wdat <- OM_wdat
+ load("./Output/GT_OM_curvilinear_over_wdat.RData")
+ GT_OM_curvilinear_over_wdat <- OM_wdat
+}
+
 rm(OM_wdat)
-wd<-"C:/Users/fischn/Documents/GitHub/Assessment_AgeingError"
-source(paste0(wd,"/R/Analysis_Functions.R"))
-source(paste0(wd,"/R/Functions.R"))
+wd <- "C:/Users/fischn/Documents/GitHub/Assessment_AgeingError"
+
+source(paste0(wd, "/R/Analysis_Functions.R"))
+source(paste0(wd, "/R/Functions.R"))
 
 scenarios <- read.csv("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/Simulation Scenarios for model.csv") #data frame with columns Scenario #, OM_test, AE_mat
-scenarios <- scenarios[c(17:32),] #adjust what scenarios are run
+if(OU=="under"){
+  scenarios <- scenarios[1:25, ] #adjust what scenarios are run
+}else if(OU=="over"){
+  scenarios <- scenarios[26:50, ] #adjust what scenarios are run
+}
 
 #Check Scenarios for Hessian Positive/Definite
 hessian_check <- list()
@@ -58,7 +74,11 @@ for (i in 1:length(res_list_final)) {
   }
 }
 
-summary_percent_true <- matrix(data = NA, nrow = length(hessian_check), ncol = 5)
+summary_percent_true <- matrix(
+  data = NA,
+  nrow = length(hessian_check),
+  ncol = 5
+)
 
 for (i in 1:length(hessian_check)) {
   results <- hessian_check[[i]]
@@ -66,9 +86,9 @@ for (i in 1:length(hessian_check)) {
   # Calculate the percentage of TRUE values
   num_results <- length(results)
   num_true <- sum(unlist(results) == TRUE, na.rm = TRUE)
-
+  
   percent_true <- (num_true / num_results) * 100
-
+  
   summary_percent_true[i, 4] <- percent_true
 }
 
@@ -80,7 +100,10 @@ for (i in 1:length(res_list_final)) {
   
   for (j in 1:length(res_list_final[[i]])) {
     # Check if convcounter exists and is numeric
-    if (!is.null(res_list_final[[i]][[j]]$convcounter) && is.numeric(res_list_final[[i]][[j]]$convcounter)) {
+    if (
+      !is.null(res_list_final[[i]][[j]]$convcounter) &&
+      is.numeric(res_list_final[[i]][[j]]$convcounter)
+    ) {
       convcounter_values[j] <- res_list_final[[i]][[j]]$convcounter
     }
   }
@@ -99,42 +122,50 @@ summary_percent_true[, 3] <- scenarios[, 3]
 print(summary_percent_true)
 
 
-
 #Calculate RE in SSB
 SSB_re <- list()
 for (i in 1:nrow(scenarios)) {
-  SSB_re[[i]] <- relative_error(get(scenarios[i , 2]),res_list_final[[i]]) #function on runs on hessian PD iterations
+  SSB_re[[i]] <- relative_error(get(scenarios[i, 2]), res_list_final[[i]]) #function on runs on hessian PD iterations
 }
 
 
 #Time series boxplots of RE in SSB
-OM_Title <- c(rep("No AE", 4), rep("AE Constant Bias", 4), rep("AE Linear Bias", 4), rep("AE Curvilinear Bias", 4))
-EM_Title <- c(rep(c("No AE", "AE Constant Bias", "AE Linear Bias", "AE Curvilinear Bias"), 4))
-par(mfrow = c(4,4), mar = c(4.1, 4.6, 2.1, 1.1))
+OM_Title <- c(rep("No AE", 5),
+              rep("AE GT", 5),
+              rep("AE Constant Bias", 5),
+              rep("AE Linear Bias", 5),
+              rep("AE Curvilinear Bias", 5))
+EM_Title <- c(rep(c("No AE",
+                    "AE GT",
+                    "AE Constant Bias",
+                    "AE Linear Bias",
+                    "AE Curvilinear Bias"),5))
+par(mfrow = c(5, 5), mar = c(4.1, 4.6, 2.1, 1.1))
 for (i in 1:nrow(scenarios)) {
-  boxplot(SSB_re[[i]], ylim = c(-1.0, 1.0), xlim = c(1, 70), axes = FALSE, 
-          frame = TRUE, 
+  boxplot(SSB_re[[i]],
+          ylim = c(-1.0, 1.0),
+          xlim = c(1, 70),
+          axes = FALSE,
+          frame = TRUE,
           main = paste0("TRUE = ", OM_Title[i], ", Model = ", EM_Title[i]),
-          cex.main = 1.0)
-  axis(1, at = seq(5, 70, by=5), labels = seq(5, 70, by=5), cex.axis = 1.1)
+          cex.main = 1.0)                
+  axis(1, at = seq(5, 70, by = 5), labels = seq(5, 70, by = 5), cex.axis = 1.1)
   axis(1, at = 1, labels = 1, cex.axis = 1.1)
-  axis(2, at = seq(-1.0, 1.0, by=0.5), labels = seq(-1.0, 1.0, by=0.5), cex.axis = 1.1)
+  axis(2,at = seq(-1.0, 1.0, by = 0.5),labels = seq(-1.0, 1.0, by = 0.5),cex.axis = 1.1)
   abline(0, 0, lwd = 2)
 }
 mtext("     Year", side = 1, line = -2, cex = 1.3, outer = TRUE)
 mtext("Relative Error in SSB", side = 2, line = -2, cex = 1.3, outer = TRUE)
 
-
-
-#Time series plots of RE in SSB
-grid_plot(SSB_re)
-
-
-
-
 #F-ratio
 #Finding fmsy for the true operating model
-MSY <- find_msy()  #Looks to be 0.349
+MSY <- find_msy(
+  LAA = Triggerfish_runs[[1]]$Laa,
+  MAT = Triggerfish_runs[[1]]$Mat
+) #Looks to be 0.349
+
+Est_LaaMat <- TRUE
+source(paste0(wd, "/R/RTMB_functions.R"))
 
 MSY_re <- vector("list", length(res_list_final))
 for (k in 1:length(res_list_final)) {
@@ -143,115 +174,166 @@ for (k in 1:length(res_list_final)) {
   for (j in 1:length(res_list_final[[1]])) {
     hessian <- res_list_final[[k]][[j]]$hessian
     
+    #Re-estimating bc I forgot to save
+    #Need to load data and AE for EM
+    load(paste0(wd,"/Output/",scenarios[k,2],".RData"))
+    Triggerfish_OM<-OM_wdat
+    OM<-Triggerfish_OM[[j]]
+    
+    if(Est_LaaMat==TRUE){
+      #Here re-estimating the LAA and mat
+      VB_fit<-get_VB(dat=list(age=OM$dat_wAErr$coded_age, length_cm=OM$dat_wAErr$length_cm, AE_mat=get(scenarios[k,3])))
+      mat_fit<-get_Mat(dat=list(age=OM$dat_wAErr$coded_age, maturity=OM$dat_wAErr$mat, AE_mat=get(scenarios[k,3])))
+
+      pred_Laa<-VB_fit$Est$pred_derived
+      pred_Mat<-c(0,0,0.5*mat_fit$Est$pred_derived[3:11]) #Forcing ages 0-1 to be zero
+    } else if(Est_LaaMat==FALSE){ #If you want the scenarios that dont est LAA and Mat
+      pred_Laa<-c(26.07617, 30.37348, 34.10938, 37.35722, 40.18075, 42.63541, 44.76939, 46.62458, 48.23741, 49.63953, 50.85848)
+      pred_Mat<-c(0.000, 0.000, 0.395, 0.455, 0.490, 0.495, 0.500, 0.500, 0.500, 0.500, 0.500) #Forcing ages 0-1 to be zero
+    }
+    
     # Check if the Hessian is positive definite
     if (!is.null(hessian)) {
-      MSY_re[[k]][[j]] <- find_msy(Mref=exp(res_list_final[[k]][[j]]$SD$par.fixed["log_M"]),                 
-                      B1=res_list_final[[k]][[j]]$SD$par.fixed["B1"],                   
-                      B2=res_list_final[[k]][[j]]$SD$par.fixed["B2"],                         
-                      B3=res_list_final[[k]][[j]]$SD$par.fixed["B3"],
-                      B4=res_list_final[[k]][[j]]$SD$par.fixed["B4"],
-                      R0=exp(res_list_final[[k]][[j]]$SD$par.fixed["log_R0"]),
-                      h=0.4593,
-                      sd_rec=res_list_final[[k]][[j]]$SD$par.fixed["log_sigma_rec"],
-                      LAA=res_list_final[[k]][[j]]$Laa,
-                      MAT=res_list_final[[k]][[j]]$Mat)  
-      MSY_re[[k]][[j]]$fratio_EM <- exp(res_list_final[[k]][[j]]$SD$par.fixed[9:77])/MSY_re[[k]][[j]]$fmsy 
-      MSY_re[[k]][[j]]$bratio_EM <- res_list_final[[k]][[j]]$SD$value/MSY_re[[k]][[j]]$ssbmsy
-      if (k >= 1 & k <= 4) {
-        MSY_re[[k]][[j]]$fratio_OM <- GT_OM_perf_wdat[[j]]$OM$F_int[26:94]/MSY$fmsy
-        MSY_re[[k]][[j]]$bratio_OM <- GT_OM_perf_wdat[[j]]$OM$SSB[26:95]/MSY$ssbmsy
-      } else if (k >= 5 & k <= 8) {
-        MSY_re[[k]][[j]]$fratio_OM <- GT_OM_constant_wdat[[j]]$OM$F_int[26:94]/MSY$fmsy
-        MSY_re[[k]][[j]]$bratio_OM <- GT_OM_constant_wdat[[j]]$OM$SSB[26:95]/MSY$ssbmsy
-#        MSY_re[[k]][[j]]$fratio_OM <- GT_OM_constant_over_wdat[[j]]$OM$F_int[26:94]/MSY$fmsy
-#        MSY_re[[k]][[j]]$bratio_OM <- GT_OM_constant_over_wdat[[j]]$OM$SSB[26:95]/MSY$ssbmsy
-      } else if (k >= 9 & k <= 12) {
-        MSY_re[[k]][[j]]$fratio_OM <- GT_OM_linear_wdat[[j]]$OM$F_int[26:94]/MSY$fmsy
-        MSY_re[[k]][[j]]$bratio_OM <- GT_OM_linear_wdat[[j]]$OM$SSB[26:95]/MSY$ssbmsy
-#        MSY_re[[k]][[j]]$fratio_OM <- GT_OM_linear_over_wdat[[j]]$OM$F_int[26:94]/MSY$fmsy
-#        MSY_re[[k]][[j]]$bratio_OM <- GT_OM_linear_over_wdat[[j]]$OM$SSB[26:95]/MSY$ssbmsy
-      } else if(k >= 13 & k <= 16) {
-        MSY_re[[k]][[j]]$fratio_OM <- GT_OM_curvilinear_wdat[[j]]$OM$F_int[26:94]/MSY$fmsy
-        MSY_re[[k]][[j]]$bratio_OM <- GT_OM_curvilinear_wdat[[j]]$OM$SSB[26:95]/MSY$ssbmsy #would ssb_msy or fmsy be different for different scenarios?
-#        MSY_re[[k]][[j]]$fratio_OM <- GT_OM_curvilinear_over_wdat[[j]]$OM$F_int[26:94]/MSY$fmsy
-#        MSY_re[[k]][[j]]$bratio_OM <- GT_OM_curvilinear_over_wdat[[j]]$OM$SSB[26:95]/MSY$ssbmsy #would ssb_msy or fmsy be different for different scenarios?
+      MSY_re[[k]][[j]] <- find_msy(Mref = exp(res_list_final[[k]][[j]]$SD$par.fixed["log_M"]),
+                                   B1 = res_list_final[[k]][[j]]$SD$par.fixed["B1"],
+                                   B2 = res_list_final[[k]][[j]]$SD$par.fixed["B2"],
+                                   B3 = res_list_final[[k]][[j]]$SD$par.fixed["B3"],
+                                   B4 = res_list_final[[k]][[j]]$SD$par.fixed["B4"],
+                                   R0 = exp(res_list_final[[k]][[j]]$SD$par.fixed["log_R0"]),
+                                   h = 0.4593,
+                                   sd_rec = res_list_final[[k]][[j]]$SD$par.fixed["log_sigma_rec"],
+                                   LAA = as.vector(pred_Laa),
+                                   MAT = as.vector(pred_Mat))
+      MSY_re[[k]][[j]]$fratio_EM <- exp(res_list_final[[k]][[j]]$SD$par.fixed[9:77]) / MSY_re[[k]][[j]]$fmsy
+      MSY_re[[k]][[j]]$bratio_EM <- res_list_final[[k]][[j]]$SD$value / MSY_re[[k]][[j]]$ssbmsy
+      if (k >= 1 & k <= 5) {
+        MSY_re[[k]][[j]]$fratio_OM <- GT_OM_perf_wdat[[j]]$OM$F_int[26:94] /  MSY$fmsy
+        MSY_re[[k]][[j]]$bratio_OM <- GT_OM_perf_wdat[[j]]$OM$SSB[26:95] /  MSY$ssbmsy
+      } else if (k >= 6 & k <= 10) {
+        MSY_re[[k]][[j]]$fratio_OM <- GT_OM_GT_wdat[[j]]$OM$F_int[26:94] / MSY$fmsy
+        MSY_re[[k]][[j]]$bratio_OM <- GT_OM_GT_wdat[[j]]$OM$SSB[26:95] /  MSY$ssbmsy
+      } else if (k >= 11 & k <= 15) {
+        if (OU == "under") {
+          MSY_re[[k]][[j]]$fratio_OM <- GT_OM_constant_wdat[[j]]$OM$F_int[26:94] / MSY$fmsy
+          MSY_re[[k]][[j]]$bratio_OM <- GT_OM_constant_wdat[[j]]$OM$SSB[26:95] / MSY$ssbmsy
+        } else if (OU == "over") {
+          MSY_re[[k]][[j]]$fratio_OM <- GT_OM_constant_over_wdat[[j]]$OM$F_int[26:94] / MSY$fmsy
+          MSY_re[[k]][[j]]$bratio_OM <- GT_OM_constant_over_wdat[[j]]$OM$SSB[26:95] / MSY$ssbmsy
+        }
+      } else if (k >= 16 & k <= 20) {
+        if (OU == "under") {
+          MSY_re[[k]][[j]]$fratio_OM <- GT_OM_linear_wdat[[j]]$OM$F_int[26:94] / MSY$fmsy
+          MSY_re[[k]][[j]]$bratio_OM <- GT_OM_linear_wdat[[j]]$OM$SSB[26:95] / MSY$ssbmsy
+        } else if (OU == "over") {
+          MSY_re[[k]][[j]]$fratio_OM <- GT_OM_linear_over_wdat[[j]]$OM$F_int[26:94] / MSY$fmsy
+          MSY_re[[k]][[j]]$bratio_OM <- GT_OM_linear_over_wdat[[j]]$OM$SSB[26:95] / MSY$ssbmsy
+        }
+      } else if (k >= 21 & k <= 25) {
+        if (OU == "under") {
+          MSY_re[[k]][[j]]$fratio_OM <- GT_OM_curvilinear_wdat[[j]]$OM$F_int[26:94] / MSY$fmsy
+          MSY_re[[k]][[j]]$bratio_OM <- GT_OM_curvilinear_wdat[[j]]$OM$SSB[26:95] /  MSY$ssbmsy #would ssb_msy or fmsy be different for different scenarios?
+        } else if (OU == "over") {
+          MSY_re[[k]][[j]]$fratio_OM <- GT_OM_curvilinear_over_wdat[[j]]$OM$F_int[26:94] / MSY$fmsy
+          MSY_re[[k]][[j]]$bratio_OM <- GT_OM_curvilinear_over_wdat[[j]]$OM$SSB[26:95] / MSY$ssbmsy #would ssb_msy or fmsy be different for different scenarios?
+        }
       }
       MSY_re[[k]][[j]]$fratio_re <- (MSY_re[[k]][[j]]$fratio_EM - MSY_re[[k]][[j]]$fratio_OM) / MSY_re[[k]][[j]]$fratio_OM
       MSY_re[[k]][[j]]$bratio_re <- (MSY_re[[k]][[j]]$bratio_EM - MSY_re[[k]][[j]]$bratio_OM) / MSY_re[[k]][[j]]$bratio_OM
       MSY_re[[k]][[j]]$fratio_e <- (MSY_re[[k]][[j]]$fratio_EM - MSY_re[[k]][[j]]$fratio_OM)
       MSY_re[[k]][[j]]$bratio_e <- (MSY_re[[k]][[j]]$bratio_EM - MSY_re[[k]][[j]]$bratio_OM)
       
-      MSY_re[[k]][[j]]$fmsy_re <- (MSY_re[[k]][[j]]$fmsy-MSY$fmsy)/MSY$fmsy
-      MSY_re[[k]][[j]]$bmsy_re <- (MSY_re[[k]][[j]]$ssbmsy-MSY$ssbmsy)/MSY$ssbmsy
-      MSY_re[[k]][[j]]$f_re <- (exp(res_list_final[[k]][[j]]$SD$par.fixed[9:77])-GT_OM_perf_wdat[[j]]$OM$F_int[26:94])/GT_OM_perf_wdat[[j]]$OM$F_int[26:94]
-      MSY_re[[k]][[j]]$fmsy_e <- (MSY_re[[k]][[j]]$fmsy-MSY$fmsy)
-      MSY_re[[k]][[j]]$bmsy_e <- (MSY_re[[k]][[j]]$ssbmsy-MSY$ssbmsy)
-      MSY_re[[k]][[j]]$f_e <- (exp(res_list_final[[k]][[j]]$SD$par.fixed[9:77])-GT_OM_perf_wdat[[j]]$OM$F_int[26:94])
-      
+      MSY_re[[k]][[j]]$fmsy_re <- (MSY_re[[k]][[j]]$fmsy - MSY$fmsy) / MSY$fmsy
+      MSY_re[[k]][[j]]$bmsy_re <- (MSY_re[[k]][[j]]$ssbmsy - MSY$ssbmsy) / MSY$ssbmsy
+      MSY_re[[k]][[j]]$f_re <- (exp(res_list_final[[k]][[j]]$SD$par.fixed[9:77]) - GT_OM_perf_wdat[[j]]$OM$F_int[26:94]) / GT_OM_perf_wdat[[j]]$OM$F_int[26:94]
+      MSY_re[[k]][[j]]$fmsy_e <- (MSY_re[[k]][[j]]$fmsy - MSY$fmsy)
+      MSY_re[[k]][[j]]$bmsy_e <- (MSY_re[[k]][[j]]$ssbmsy - MSY$ssbmsy)
+      MSY_re[[k]][[j]]$f_e <- (exp(res_list_final[[k]][[j]]$SD$par.fixed[9:77]) - GT_OM_perf_wdat[[j]]$OM$F_int[26:94])
     } else {
       MSY_re[[k]][[j]] <- NA
     }
   }
 }
 
-#save(MSY_re,file= "C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/Output/MSY_re.rds")
+#save(MSY_re,file= "C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/Output/MSY_re_under.rds")
 #save(MSY_re,file= "C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/Output/MSY_re_over.rds")
 
-#load("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/Output/MSY_re.rds")
+#load("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/Output/MSY_re_under.rds")
 #load("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/Output/MSY_re_over.rds")
 
 #Getting it into usable format
-fratio_re<-bratio_re<-bratio_e<-fratio_e<-fmsy_re<-bmsy_re<-f_re<-f_e<-fmsy_e<-bmsy_e<-list()
-for(i in 1:16){
-  fratio_re[[i]]<-fratio_e[[i]]<-matrix(NA,nrow=100,ncol=69)
-  bratio_re[[i]]<-bratio_e[[i]]<-matrix(NA,nrow=100,ncol=70)
-  f_re[[i]]<-f_e[[i]]<-matrix(NA,nrow=100,ncol=69)
-  fmsy_re[[i]]<-bmsy_re[[i]]<-fmsy_e[[i]]<-bmsy_e[[i]]<-NA
-  for(j in 1:100){
+fratio_re <- bratio_re <- bratio_e <- fratio_e <- fmsy_re <- bmsy_re <- f_re <- f_e <- fmsy_e <- bmsy_e <- list()
+for (i in 1:25) {
+  fratio_re[[i]] <- fratio_e[[i]] <- matrix(NA, nrow = 100, ncol = 69)
+  bratio_re[[i]] <- bratio_e[[i]] <- matrix(NA, nrow = 100, ncol = 70)
+  f_re[[i]] <- f_e[[i]] <- matrix(NA, nrow = 100, ncol = 69)
+  fmsy_re[[i]] <- bmsy_re[[i]] <- fmsy_e[[i]] <- bmsy_e[[i]] <- NA
+  for (j in 1:100) {
     if (!is.null(res_list_final[[i]][[j]]$hessian)) {
-    fratio_re[[i]][j,] <- MSY_re[[i]][[j]]$fratio_re
-    bratio_re[[i]][j,] <- MSY_re[[i]][[j]]$bratio_re
-    fratio_e[[i]][j,] <- MSY_re[[i]][[j]]$fratio_e
-    bratio_e[[i]][j,] <- MSY_re[[i]][[j]]$bratio_e
-    fmsy_re[[i]][j] <- MSY_re[[i]][[j]]$fmsy_re
-    bmsy_re[[i]][j] <- MSY_re[[i]][[j]]$bmsy_re
-    f_re[[i]][j,] <- MSY_re[[i]][[j]]$f_re
-    f_e[[i]][j,] <- MSY_re[[i]][[j]]$f_e
-    fmsy_e[[i]][j] <- MSY_re[[i]][[j]]$fmsy_e
-    bmsy_e[[i]][j] <- MSY_re[[i]][[j]]$bmsy_e
+      fratio_re[[i]][j, ] <- MSY_re[[i]][[j]]$fratio_re
+      bratio_re[[i]][j, ] <- MSY_re[[i]][[j]]$bratio_re
+      fratio_e[[i]][j, ] <- MSY_re[[i]][[j]]$fratio_e
+      bratio_e[[i]][j, ] <- MSY_re[[i]][[j]]$bratio_e
+      fmsy_re[[i]][j] <- MSY_re[[i]][[j]]$fmsy_re
+      bmsy_re[[i]][j] <- MSY_re[[i]][[j]]$bmsy_re
+      f_re[[i]][j, ] <- MSY_re[[i]][[j]]$f_re
+      f_e[[i]][j, ] <- MSY_re[[i]][[j]]$f_e
+      fmsy_e[[i]][j] <- MSY_re[[i]][[j]]$fmsy_e
+      bmsy_e[[i]][j] <- MSY_re[[i]][[j]]$bmsy_e
     }
   }
 }
 
 #Time series boxplots of RE in Fratio and Bratio
-OM_Title <- c(rep("No AE", 4), rep("AE Constant Bias", 4), rep("AE Linear Bias", 4), rep("AE Curvilinear Bias", 4))
-EM_Title <- c(rep(c("No AE", "AE Constant Bias", "AE Linear Bias", "AE Curvilinear Bias"), 4))
-par(mfrow = c(4,4), mar = c(4.1, 4.6, 2.1, 1.1))
+OM_Title <- c(rep("No AE", 5),
+              rep("AE GT", 5),
+              rep("AE Constant Bias", 5),
+              rep("AE Linear Bias", 5),
+              rep("AE Curvilinear Bias", 5))
+EM_Title <- c(rep(c("No AE",
+                    "AE GT",
+                    "AE Constant Bias",
+                    "AE Linear Bias",
+                    "AE Curvilinear Bias"),5))
+par(mfrow = c(5, 5), mar = c(4.1, 4.6, 2.1, 1.1))
 for (i in 1:nrow(scenarios)) {
-  boxplot(fratio_re[[i]], ylim = c(-1.0, 1.0), xlim = c(1, 70), axes = FALSE, 
-          frame = TRUE, 
+  boxplot(fratio_re[[i]],
+          ylim = c(-1.0, 1.0),
+          xlim = c(1, 70),
+          axes = FALSE,
+          frame = TRUE,
           main = paste0("TRUE = ", OM_Title[i], ", Model = ", EM_Title[i]),
           cex.main = 1.0)
-  axis(1, at = seq(5, 70, by=5), labels = seq(5, 70, by=5), cex.axis = 1.1)
+  axis(1, at = seq(5, 70, by = 5), labels = seq(5, 70, by = 5), cex.axis = 1.1)
   axis(1, at = 1, labels = 1, cex.axis = 1.1)
-  axis(2, at = seq(-1.0, 1.0, by=0.5), labels = seq(-1.0, 1.0, by=0.5), cex.axis = 1.1)
+  axis(2,at = seq(-1.0, 1.0, by = 0.5),labels = seq(-1.0, 1.0, by = 0.5),cex.axis = 1.1)
   abline(0, 0, lwd = 2)
 }
 mtext("     Year", side = 1, line = -2, cex = 1.3, outer = TRUE)
 mtext("Relative Error in Fratio", side = 2, line = -2, cex = 1.3, outer = TRUE)
 
 
-OM_Title <- c(rep("No AE", 4), rep("AE Constant Bias", 4), rep("AE Linear Bias", 4), rep("AE Curvilinear Bias", 4))
-EM_Title <- c(rep(c("No AE", "AE Constant Bias", "AE Linear Bias", "AE Curvilinear Bias"), 4))
-par(mfrow = c(4,4), mar = c(4.1, 4.6, 2.1, 1.1))
+OM_Title <- c(rep("No AE", 5),
+              rep("AE GT", 5),
+              rep("AE Constant Bias", 5),
+              rep("AE Linear Bias", 5),
+              rep("AE Curvilinear Bias", 5))
+EM_Title <- c(rep(c("No AE",
+                    "AE GT",
+                    "AE Constant Bias",
+                    "AE Linear Bias",
+                    "AE Curvilinear Bias"),5))
+par(mfrow = c(5, 5), mar = c(4.1, 4.6, 2.1, 1.1))
 for (i in 1:nrow(scenarios)) {
-  boxplot(bratio_e[[i]], ylim = c(-1.0, 1.0), xlim = c(1, 70), axes = FALSE, 
-          frame = TRUE, 
+  boxplot(bratio_e[[i]],
+          ylim = c(-1.0, 1.0),
+          xlim = c(1, 70),
+          axes = FALSE,
+          frame = TRUE,
           main = paste0("TRUE = ", OM_Title[i], ", Model = ", EM_Title[i]),
           cex.main = 1.0)
-  axis(1, at = seq(5, 70, by=5), labels = seq(5, 70, by=5), cex.axis = 1.1)
+  axis(1, at = seq(5, 70, by = 5), labels = seq(5, 70, by = 5), cex.axis = 1.1)
   axis(1, at = 1, labels = 1, cex.axis = 1.1)
-  axis(2, at = seq(-1.0, 1.0, by=0.5), labels = seq(-1.0, 1.0, by=0.5), cex.axis = 1.1)
+  axis(2,at = seq(-1.0, 1.0, by = 0.5),labels = seq(-1.0, 1.0, by = 0.5),cex.axis = 1.1)
   abline(0, 0, lwd = 2)
 }
 mtext("     Year", side = 1, line = -2, cex = 1.3, outer = TRUE)
@@ -263,67 +345,94 @@ mtext("Relative Error in Bratio", side = 2, line = -2, cex = 1.3, outer = TRUE)
 M_R0_re <- vector("list", length(res_list_final))
 for (i in 1:length(res_list_final)) {
   #add in if/else statement to skip over nonconverged iteration where res_list_final[[k]][[j]]$SD$par doesn't exist
-  M_R0_re[[i]]<-matrix(NA, nrow=100,ncol=2)
-#  M_R0_re[[i]]<-matrix(NA, nrow=100,ncol=3)
-  colnames( M_R0_re[[i]])<-c("M_re", "R0_re")
-#  colnames( M_R0_re[[i]])<-c("M_re", "R0_re", "rSD_re")
+  M_R0_re[[i]] <- matrix(NA, nrow = 100, ncol = 2)
+  #  M_R0_re[[i]]<-matrix(NA, nrow=100,ncol=3)
+  colnames(M_R0_re[[i]]) <- c("M_re", "R0_re")
+  #  colnames( M_R0_re[[i]])<-c("M_re", "R0_re", "rSD_re")
   for (j in 1:length(res_list_final[[1]])) {
     hessian <- res_list_final[[i]][[j]]$hessian
     # Check if the Hessian is positive definite
     if (!is.null(hessian)) {
-
-      M_R0_re[[i]][j,1]<-(exp(res_list_final[[i]][[j]]$SD$par.fixed["log_M"]) - 0.3015598)/0.3015598
-      M_R0_re[[i]][j,2]<-(exp(res_list_final[[i]][[j]]$SD$par.fixed["log_R0"]) - exp(9.7608))/exp(9.7608)
+      M_R0_re[[i]][j, 1] <- (exp(res_list_final[[i]][[j]]$SD$par.fixed["log_M"]) - 0.3015598) / 0.3015598
+      M_R0_re[[i]][j, 2] <- (exp(res_list_final[[i]][[j]]$SD$par.fixed["log_R0"]) - exp(9.7608)) / exp(9.7608)
       #M_R0_re[[i]][j,3]<-(exp(res_list_final[[i]][[j]]$SD$par.fixed["log_sigma_rec"]) - 0.3582)/0.3582
-      
-      }}}
+    }
+  }
+}
 
-OM_Title <- c(rep("No AE", 4), rep("AE Constant Bias", 4), rep("AE Linear Bias", 4), rep("AE Curvilinear Bias", 4))
-EM_Title <- c(rep(c("No AE", "AE Constant Bias", "AE Linear Bias", "AE Curvilinear Bias"), 4))
-par(mfrow = c(4,4), mar = c(4.1, 4.6, 2.1, 1.1))
+OM_Title <- c(rep("No AE", 5),
+              rep("AE GT", 5),
+              rep("AE Constant Bias", 5),
+              rep("AE Linear Bias", 5),
+              rep("AE Curvilinear Bias", 5))
+EM_Title <- c(rep(c("No AE",
+                    "AE GT",
+                    "AE Constant Bias",
+                    "AE Linear Bias",
+                    "AE Curvilinear Bias"),5))
+par(mfrow = c(5, 5), mar = c(4.1, 4.6, 2.1, 1.1))
 for (i in 1:nrow(scenarios)) {
-  boxplot(M_R0_re[[i]], ylim = c(-1.0, 1.0), axes = FALSE, 
-          frame = TRUE, 
+  boxplot(M_R0_re[[i]],
+          ylim = c(-1.0, 1.0),
+          axes = FALSE,
+          frame = TRUE,
           main = paste0("TRUE = ", OM_Title[i], ", Model = ", EM_Title[i]),
           cex.main = 1.0)
   axis(1, at = 1:2, labels = c("M", "R0"), cex.axis = 1.1)
-  axis(2, at = seq(-1.0, 1.0, by=0.5), labels = seq(-1.0, 1.0, by=0.5), cex.axis = 1.1)
+  axis(2,at = seq(-1.0, 1.0, by = 0.5),labels = seq(-1.0, 1.0, by = 0.5),cex.axis = 1.1)
   abline(0, 0, lwd = 2)
 }
-mtext("Relative Error in M and R0", side = 2, line = -2, cex = 1.3, outer = TRUE)
-
+mtext("Relative Error in M and R0", side = 2, line = -2,cex = 1.3,outer = TRUE)
 
 #Fmsy, bmsy,
-OM_Title <- c(rep("No AE", 4), rep("AE Constant Bias", 4), rep("AE Linear Bias", 4), rep("AE Curvilinear Bias", 4))
-EM_Title <- c(rep(c("No AE", "AE Constant Bias", "AE Linear Bias", "AE Curvilinear Bias"), 4))
-par(mfrow = c(4,4), mar = c(4.1, 4.6, 2.1, 1.1))
+OM_Title <- c(rep("No AE", 5),
+              rep("AE GT", 5),
+              rep("AE Constant Bias", 5),
+              rep("AE Linear Bias", 5),
+              rep("AE Curvilinear Bias", 5))
+EM_Title <- c(rep(c("No AE",
+                    "AE GT",
+                    "AE Constant Bias",
+                    "AE Linear Bias",
+                    "AE Curvilinear Bias"),5))
+par(mfrow = c(5, 5), mar = c(4.1, 4.6, 2.1, 1.1))
 for (i in 1:nrow(scenarios)) {
-  boxplot(cbind(fmsy_re[[i]],bmsy_re[[i]]), ylim = c(-1.0, 1.0), axes = FALSE, 
-          frame = TRUE, 
+  boxplot(cbind(fmsy_re[[i]], bmsy_re[[i]]),
+          ylim = c(-1.0, 1.0),
+          axes = FALSE,
+          frame = TRUE,
           main = paste0("TRUE = ", OM_Title[i], ", Model = ", EM_Title[i]),
           cex.main = 1.0)
   axis(1, at = 1:2, labels = c("Fmsy", "SSBmsy"), cex.axis = 1.1)
-  axis(2, at = seq(-1.0, 1.0, by=0.5), labels = seq(-1.0, 1.0, by=0.5), cex.axis = 1.1)
+  axis(2, at = seq(-1.0, 1.0, by = 0.5), labels = seq(-1.0, 1.0, by = 0.5), cex.axis = 1.1)
   abline(0, 0, lwd = 2)
 }
 mtext("Relative Error", side = 2, line = -2, cex = 1.3, outer = TRUE)
 
 #Fs
-OM_Title <- c(rep("No AE", 4), rep("AE Constant Bias", 4), rep("AE Linear Bias", 4), rep("AE Curvilinear Bias", 4))
-EM_Title <- c(rep(c("No AE", "AE Constant Bias", "AE Linear Bias", "AE Curvilinear Bias"), 4))
-par(mfrow = c(4,4), mar = c(4.1, 4.6, 2.1, 1.1))
+OM_Title <- c(rep("No AE", 5),
+              rep("AE GT", 5),
+              rep("AE Constant Bias", 5),
+              rep("AE Linear Bias", 5),
+              rep("AE Curvilinear Bias", 5))
+EM_Title <- c(rep(c("No AE",
+                    "AE GT",
+                    "AE Constant Bias",
+                    "AE Linear Bias",
+                    "AE Curvilinear Bias"),5))
+par(mfrow = c(5, 5), mar = c(4.1, 4.6, 2.1, 1.1))
 for (i in 1:nrow(scenarios)) {
-  boxplot(f_re[[i]], ylim = c(-0.3, 0.3), xlim = c(1, 70), axes = FALSE, 
-          frame = TRUE, 
+  boxplot(f_re[[i]],
+          ylim = c(-0.3, 0.3),
+          xlim = c(1, 70),
+          axes = FALSE,
+          frame = TRUE,
           main = paste0("TRUE = ", OM_Title[i], ", Model = ", EM_Title[i]),
           cex.main = 1.0)
-  axis(1, at = seq(5, 70, by=5), labels = seq(5, 70, by=5), cex.axis = 1.1)
+  axis(1, at = seq(5, 70, by = 5), labels = seq(5, 70, by = 5), cex.axis = 1.1)
   axis(1, at = 1, labels = 1, cex.axis = 1.1)
-  axis(2, at = seq(-0.3, 0.3, by=0.1), labels = seq(-0.3, 0.3, by=0.1), cex.axis = 1.1)
+  axis(2, at = seq(-0.3, 0.3, by = 0.1),labels = seq(-0.3, 0.3, by = 0.1), cex.axis = 1.1)
   abline(0, 0, lwd = 2)
 }
 mtext("     Year", side = 1, line = -2, cex = 1.3, outer = TRUE)
 mtext("Relative Error in F", side = 2, line = -2, cex = 1.3, outer = TRUE)
-
-
-

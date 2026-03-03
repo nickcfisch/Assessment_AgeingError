@@ -10,6 +10,7 @@ SimPop<-function(seed=1,                         #seed to start random number ge
                  a3=0.5,                         #SS-like parameterization of growth, a3 parameter
                  L1=10,                          #ditto^ L1 param
                  BK=0.4,                         #brody growth coefficient
+                 tnot=-1.66,                    #VB t0 parameter
                  CV_LAA=0.22,                    #CV of mean length at age 
                  Weight_scaling=1.7e-5,          #Weight-length a
                  Weight_allometry=2.9,           #Weight-length b
@@ -46,6 +47,7 @@ SimPop<-function(seed=1,                         #seed to start random number ge
   #  Laa[2:lage]<-Linf+(L1-Linf)*exp(-BK*((1:(lage-1))-a3))
   #  Laa[lage+1]<-Linf
   Laa[1]<-uniroot(f=function(x) x+(x-Linf)*(exp(-BK)-1)-Laa[2], interval=c(0.01,100))$root
+#  Laa<-Linf*(1-exp(-BK*(fage:lage-tnot)))
   
   #Weight at age
   Waa<-Weight_scaling*Laa^Weight_allometry
@@ -145,7 +147,6 @@ SimPop<-function(seed=1,                         #seed to start random number ge
 #########################################################################
 #Data simulator, function which simulates data from a population model
 #########################################################################
-source("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/R/RTMB_functions.R")
 Get_Data<-function(OM=NA,              #Operating model from which to model
                    dat_seed=1,         #seed to start random number generation for reproducibility
                    fyear_dat=26,       #first year that has data
@@ -186,44 +187,24 @@ Get_Data<-function(OM=NA,              #Operating model from which to model
   
   #Ok now getting new VB parameters and maturity given ageing error matrix
   #Creating a new dataset with true age, coded age, length, and maturity
-  dat_wAErr<-data.frame(true_age=NA, coded_age=NA, length=NA, mat=NA)
+  dat_wAErr<-data.frame(true_age=NA, coded_age=NA, length_cm=NA, mat=NA)
   for (a in 1:length(OM$fage:OM$lage)){
     for (i in 1:100){
       dat_wAErr<-rbind.data.frame(dat_wAErr, data.frame(true_age=a-1,
                                                         coded_age=which(rmultinom(1, size=1, prob=AE_mat[a,])==1)-1,
-                                                        length=rnorm(1, mean=OM$Laa[a], sd=OM$Laa[a]*OM$CV_LAA),
+                                                        length_cm=rnorm(1, mean=OM$Laa[a], sd=OM$Laa[a]*OM$CV_LAA),
                                                         mat=rbinom(1, 1, prob=OM$Mat[a]*2)))
     }
   }
   dat_wAErr<-dat_wAErr[-1,] #Getting rid of first row of NAs
-  
-  #Now need to re-estimate parameters for VB and maturity
-  library(RTMB)
-  VB_fit<-get_VB(dat=data.frame(age=dat_wAErr$coded_age, length=dat_wAErr$length))
-  if(sum(AE_mat==diag(11))==121){
-   pred_Laa<-OM$Laa
-  }else {
-   pred_Laa<-VB_fit$Est$pred_derived
-  }
-  
-  mat_fit<-get_Mat(dat=data.frame(age=dat_wAErr$coded_age, maturity=dat_wAErr$mat))
-  if(sum(AE_mat==diag(11))==121){
-    pred_mat<-OM$Mat
-  }else{
-    pred_mat<-0.5*mat_fit$Est$pred_derived
-  }
   
   return(list(OM=OM,dat_seed=dat_seed,sd_catch=sd_catch,N_Comp=N_Comp,q_index=q_index,sd_index=sd_index,fyear_dat=fyear_dat,lyear_dat=lyear_dat,
               Obs_Catch=Obs_Catch,
               Obs_Catch_CompnoAE=Obs_Catch_Comp_noAE,
               Obs_Catch_Comp=Obs_Catch_Comp,
               Obs_Index=Obs_Index,
-              pred_Laa=pred_Laa,
-              pred_Waa=OM$Weight_scaling*pred_Laa^OM$Weight_allometry,
-              pred_Mat=pred_mat,
-              pred_Fec=51.357*pred_Laa^2.8538))
+              dat_wAErr=dat_wAErr))
 }
-
 
 ####################################################################
 #Getting Data from OM and applying Age Error the composition data

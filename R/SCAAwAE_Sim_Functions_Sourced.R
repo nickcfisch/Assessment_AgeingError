@@ -89,7 +89,8 @@ lines(1:95,apply(Triggerfish_Depl,2,quantile,probs=0.125),lty=3)
 ##########################
 #Need to refine and add in no bias but imprecision scenarios
 {
-  AE_mat<-diag(length(Triggerfish_runs[[s]]$fage:Triggerfish_runs[[s]]$lage))
+  AE_mat<-diag(length(Triggerfish_runs[[1]]$fage:Triggerfish_runs[[1]]$lage))
+  AE_mat_GT <- AE_mat
   AE_mat_constant <- AE_mat
   AE_mat_linear <- AE_mat
   AE_mat_curvilinear <- AE_mat
@@ -97,6 +98,20 @@ lines(1:95,apply(Triggerfish_Depl,2,quantile,probs=0.125),lty=3)
   AE_mat_linear_over <- AE_mat
   AE_mat_curvilinear_over <- AE_mat
   ages<-(1:nrow(AE_mat))-1
+  
+  #From GT Assessment
+  SD = c(0.116583173,0.117800351,0.050899592,0.035505388,0.031268275,0.042083964,0.123381818,0.173561797,0.525247604,0.780147043,0.780147043)
+  for (i in 1:nrow(AE_mat)) {
+    for(j in 1:nrow(AE_mat)){
+      if(j==1){                      #if age=0 then integrate from 0.5 to 0
+        AE_mat_GT[i,j]<-pnorm(ages[j]+0.5, mean = ages[i], sd = SD[i])
+      }else if (j %in% 2:(nrow(AE_mat)-1)){        #integrate from age+0.5 to age-0.5
+        AE_mat_GT[i,j]<-pnorm(ages[j]+0.5, mean = ages[i], sd = SD[i])-pnorm(ages[j]-0.5, mean = ages[i], sd = SD[i])
+      }else if (j==nrow(AE_mat)){    # if you are in plus group integrate from age-0.5 to infinity
+        AE_mat_GT[i,j]<-1-pnorm(ages[j]-0.5, mean = ages[i], sd = SD[i])
+      }
+    }
+  }
   
   #sd = 1
   sd = 0.2
@@ -132,7 +147,6 @@ lines(1:95,apply(Triggerfish_Depl,2,quantile,probs=0.125),lty=3)
     }
     lines(AE_mat_linear[i,])
   }
-  
   
   
   #From GT Oto, Old-spine comparison
@@ -223,6 +237,7 @@ lines(1:95,apply(Triggerfish_Depl,2,quantile,probs=0.125),lty=3)
 #OMs run with different ageing error scenarios
 {
   OM_Err(OM_text = "GT_OM_perf_wdat", AE_mat = AE_mat, N_sim = N_sim)
+  OM_Err(OM_text = "GT_OM_GT_wdat", AE_mat = AE_mat_GT, N_sim = N_sim)
   OM_Err(OM_text = "GT_OM_constant_wdat", AE_mat = AE_mat_constant, N_sim = N_sim)
   OM_Err(OM_text = "GT_OM_linear_wdat", AE_mat = AE_mat_linear, N_sim = N_sim)
   OM_Err(OM_text = "GT_OM_curvilinear_wdat", AE_mat = AE_mat_curvilinear, N_sim = N_sim)
@@ -232,7 +247,9 @@ lines(1:95,apply(Triggerfish_Depl,2,quantile,probs=0.125),lty=3)
   OM_Err(OM_text = "GT_OM_curvilinear_over_wdat", AE_mat = AE_mat_curvilinear_over, N_sim = N_sim)
 }
 
+###################################
 #TMB Section
+###################################
 library(TMB)
 
 #Compile and load model 

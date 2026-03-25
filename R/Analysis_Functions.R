@@ -1,6 +1,6 @@
 relative_error <- function(OM, EM) {
   relative_error_all <- matrix(data = NA, nrow = length(OM), ncol = 70)
-  for (i in 1:length(OM)) {
+  for (i in 1:length(EM)) {
     if (!is.null(EM[[i]]$hessian)) {
       if (is.positive.definite(EM[[i]]$hessian)) {
         true_values <- OM[[i]]$OM$SSB[26:95]

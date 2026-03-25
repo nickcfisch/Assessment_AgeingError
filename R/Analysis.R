@@ -15,29 +15,31 @@ setwd(wd)
 OU <- "under"
 
 if(OU=="under"){
- load("./Output/workspace_under.RData")
- load("./Output/GT_OM_perf_wdat.RData")
+  #  load("./Output/workspace_under.RData")
+  load("./Output/workspace_under2.RData")
+  load("./Output/GT_OM_perf_wdat.RData")
   GT_OM_perf_wdat <- OM_wdat
- load("./Output/GT_OM_GT_wdat.RData")
- GT_OM_GT_wdat <- OM_wdat
- load("./Output/GT_OM_constant_wdat.RData")
- GT_OM_constant_wdat <- OM_wdat
- load("./Output/GT_OM_linear_wdat.RData")
- GT_OM_linear_wdat <- OM_wdat
- load("./Output/GT_OM_curvilinear_wdat.RData")
- GT_OM_curvilinear_wdat <- OM_wdat
+  load("./Output/GT_OM_GT_wdat.RData")
+  GT_OM_GT_wdat <- OM_wdat
+  load("./Output/GT_OM_constant_wdat.RData")
+  GT_OM_constant_wdat <- OM_wdat
+  load("./Output/GT_OM_linear_wdat.RData")
+  GT_OM_linear_wdat <- OM_wdat
+  load("./Output/GT_OM_curvilinear_wdat.RData")
+  GT_OM_curvilinear_wdat <- OM_wdat
 }else if(OU=="over"){
- load("./Output/workspace_over.RData")
- load("./Output/GT_OM_perf_wdat.RData")
- GT_OM_perf_wdat <- OM_wdat
- load("./Output/GT_OM_GT_wdat.RData")
- GT_OM_GT_wdat <- OM_wdat
- load("./Output/GT_OM_constant_over_wdat.RData")
- GT_OM_constant_over_wdat <- OM_wdat
- load("./Output/GT_OM_linear_over_wdat.RData")
- GT_OM_linear_over_wdat <- OM_wdat
- load("./Output/GT_OM_curvilinear_over_wdat.RData")
- GT_OM_curvilinear_over_wdat <- OM_wdat
+  # load("./Output/workspace_over.RData")
+  load("./Output/workspace_over2.RData")
+  load("./Output/GT_OM_perf_wdat.RData")
+  GT_OM_perf_wdat <- OM_wdat
+  load("./Output/GT_OM_GT_wdat.RData")
+  GT_OM_GT_wdat <- OM_wdat
+  load("./Output/GT_OM_constant_over_wdat.RData")
+  GT_OM_constant_over_wdat <- OM_wdat
+  load("./Output/GT_OM_linear_over_wdat.RData")
+  GT_OM_linear_over_wdat <- OM_wdat
+  load("./Output/GT_OM_curvilinear_over_wdat.RData")
+  GT_OM_curvilinear_over_wdat <- OM_wdat
 }
 
 rm(OM_wdat)
@@ -46,11 +48,14 @@ wd <- "C:/Users/fischn/Documents/GitHub/Assessment_AgeingError"
 source(paste0(wd, "/R/Analysis_Functions.R"))
 source(paste0(wd, "/R/Functions.R"))
 
-scenarios <- read.csv("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/Simulation Scenarios for model.csv") #data frame with columns Scenario #, OM_test, AE_mat
+#scenarios <- read.csv("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/Simulation Scenarios for model.csv") #data frame with columns Scenario #, OM_test, AE_mat
+scenarios <- read.csv("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/Simulation Scenarios for model_2.csv") #data frame with columns Scenario #, OM_test, AE_mat
 if(OU=="under"){
-  scenarios <- scenarios[1:25, ] #adjust what scenarios are run
+  #  scenarios <- scenarios[1:25, ] #adjust what scenarios are run
+  scenarios <- scenarios[1:30, ] #adjust what scenarios are run
 }else if(OU=="over"){
-  scenarios <- scenarios[26:50, ] #adjust what scenarios are run
+  #  scenarios <- scenarios[26:50, ] #adjust what scenarios are run
+  scenarios <- scenarios[31:60, ] #adjust what scenarios are run
 }
 
 #Check Scenarios for Hessian Positive/Definite
@@ -164,7 +169,7 @@ MSY <- find_msy(
   MAT = Triggerfish_runs[[1]]$Mat
 ) #Looks to be 0.349
 
-Est_LaaMat <- TRUE
+Est_LaaMat <- TRUE   #Are you estimating VB growth before the model is fit?
 source(paste0(wd, "/R/RTMB_functions.R"))
 
 MSY_re <- vector("list", length(res_list_final))
@@ -181,10 +186,14 @@ for (k in 1:length(res_list_final)) {
     OM<-Triggerfish_OM[[j]]
     
     if(Est_LaaMat==TRUE){
-      #Here re-estimating the LAA and mat
-      VB_fit<-get_VB(dat=list(age=OM$dat_wAErr$coded_age, length_cm=OM$dat_wAErr$length_cm, AE_mat=get(scenarios[k,3])))
-      mat_fit<-get_Mat(dat=list(age=OM$dat_wAErr$coded_age, maturity=OM$dat_wAErr$mat, AE_mat=get(scenarios[k,3])))
-
+      if(scenarios[k,3] != "AE_est"){        #Is the ageing error matrix estimated within the model? 
+        #Here re-estimating the LAA and mat
+        VB_fit<-get_VB(dat=list(age=OM$dat_wAErr$coded_age, length_cm=OM$dat_wAErr$length_cm, AE_mat=get(scenarios[k,3])))
+        mat_fit<-get_Mat(dat=list(age=OM$dat_wAErr$coded_age, maturity=OM$dat_wAErr$mat, AE_mat=get(scenarios[k,3])))
+      }else if (scenarios[k,3] == "AE_est"){       #Is the ageing error matrix estimated within the model? If so, do not re-estimated growth and mat
+        VB_fit<-get_VB(dat=list(age=OM$dat_wAErr$coded_age, length_cm=OM$dat_wAErr$length_cm, AE_mat=diag(11)))
+        mat_fit<-get_Mat(dat=list(age=OM$dat_wAErr$coded_age, maturity=OM$dat_wAErr$mat, AE_mat=diag(11)))
+      }
       pred_Laa<-VB_fit$Est$pred_derived
       pred_Mat<-c(0,0,0.5*mat_fit$Est$pred_derived[3:11]) #Forcing ages 0-1 to be zero
     } else if(Est_LaaMat==FALSE){ #If you want the scenarios that dont est LAA and Mat
@@ -206,37 +215,10 @@ for (k in 1:length(res_list_final)) {
                                    MAT = as.vector(pred_Mat))
       MSY_re[[k]][[j]]$fratio_EM <- exp(res_list_final[[k]][[j]]$SD$par.fixed[9:77]) / MSY_re[[k]][[j]]$fmsy
       MSY_re[[k]][[j]]$bratio_EM <- res_list_final[[k]][[j]]$SD$value / MSY_re[[k]][[j]]$ssbmsy
-      if (k >= 1 & k <= 5) {
-        MSY_re[[k]][[j]]$fratio_OM <- GT_OM_perf_wdat[[j]]$OM$F_int[26:94] /  MSY$fmsy
-        MSY_re[[k]][[j]]$bratio_OM <- GT_OM_perf_wdat[[j]]$OM$SSB[26:95] /  MSY$ssbmsy
-      } else if (k >= 6 & k <= 10) {
-        MSY_re[[k]][[j]]$fratio_OM <- GT_OM_GT_wdat[[j]]$OM$F_int[26:94] / MSY$fmsy
-        MSY_re[[k]][[j]]$bratio_OM <- GT_OM_GT_wdat[[j]]$OM$SSB[26:95] /  MSY$ssbmsy
-      } else if (k >= 11 & k <= 15) {
-        if (OU == "under") {
-          MSY_re[[k]][[j]]$fratio_OM <- GT_OM_constant_wdat[[j]]$OM$F_int[26:94] / MSY$fmsy
-          MSY_re[[k]][[j]]$bratio_OM <- GT_OM_constant_wdat[[j]]$OM$SSB[26:95] / MSY$ssbmsy
-        } else if (OU == "over") {
-          MSY_re[[k]][[j]]$fratio_OM <- GT_OM_constant_over_wdat[[j]]$OM$F_int[26:94] / MSY$fmsy
-          MSY_re[[k]][[j]]$bratio_OM <- GT_OM_constant_over_wdat[[j]]$OM$SSB[26:95] / MSY$ssbmsy
-        }
-      } else if (k >= 16 & k <= 20) {
-        if (OU == "under") {
-          MSY_re[[k]][[j]]$fratio_OM <- GT_OM_linear_wdat[[j]]$OM$F_int[26:94] / MSY$fmsy
-          MSY_re[[k]][[j]]$bratio_OM <- GT_OM_linear_wdat[[j]]$OM$SSB[26:95] / MSY$ssbmsy
-        } else if (OU == "over") {
-          MSY_re[[k]][[j]]$fratio_OM <- GT_OM_linear_over_wdat[[j]]$OM$F_int[26:94] / MSY$fmsy
-          MSY_re[[k]][[j]]$bratio_OM <- GT_OM_linear_over_wdat[[j]]$OM$SSB[26:95] / MSY$ssbmsy
-        }
-      } else if (k >= 21 & k <= 25) {
-        if (OU == "under") {
-          MSY_re[[k]][[j]]$fratio_OM <- GT_OM_curvilinear_wdat[[j]]$OM$F_int[26:94] / MSY$fmsy
-          MSY_re[[k]][[j]]$bratio_OM <- GT_OM_curvilinear_wdat[[j]]$OM$SSB[26:95] /  MSY$ssbmsy #would ssb_msy or fmsy be different for different scenarios?
-        } else if (OU == "over") {
-          MSY_re[[k]][[j]]$fratio_OM <- GT_OM_curvilinear_over_wdat[[j]]$OM$F_int[26:94] / MSY$fmsy
-          MSY_re[[k]][[j]]$bratio_OM <- GT_OM_curvilinear_over_wdat[[j]]$OM$SSB[26:95] / MSY$ssbmsy #would ssb_msy or fmsy be different for different scenarios?
-        }
-      }
+      
+      MSY_re[[k]][[j]]$fratio_OM <- get(scenarios[k,2])[[j]]$OM$F_int[26:94] /  MSY$fmsy
+      MSY_re[[k]][[j]]$bratio_OM <- get(scenarios[k,2])[[j]]$OM$SSB[26:95] /  MSY$ssbmsy
+      
       MSY_re[[k]][[j]]$fratio_re <- (MSY_re[[k]][[j]]$fratio_EM - MSY_re[[k]][[j]]$fratio_OM) / MSY_re[[k]][[j]]$fratio_OM
       MSY_re[[k]][[j]]$bratio_re <- (MSY_re[[k]][[j]]$bratio_EM - MSY_re[[k]][[j]]$bratio_OM) / MSY_re[[k]][[j]]$bratio_OM
       MSY_re[[k]][[j]]$fratio_e <- (MSY_re[[k]][[j]]$fratio_EM - MSY_re[[k]][[j]]$fratio_OM)
@@ -254,21 +236,23 @@ for (k in 1:length(res_list_final)) {
   }
 }
 
-#save(MSY_re,file= "C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/Output/MSY_re_under.rds")
-#save(MSY_re,file= "C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/Output/MSY_re_over.rds")
+#save(MSY_re,file= "C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/Output/MSY_re_under2.rds")
+#save(MSY_re,file= "C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/Output/MSY_re_over2.rds")
 
-#load("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/Output/MSY_re_under.rds")
-#load("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/Output/MSY_re_over.rds")
+#load("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/Output/MSY_re_under2.rds")
+#load("C:/Users/fischn/Documents/GitHub/Assessment_AgeingError/Output/MSY_re_over2.rds")
 
 #Getting it into usable format
 fratio_re <- bratio_re <- bratio_e <- fratio_e <- fmsy_re <- bmsy_re <- f_re <- f_e <- fmsy_e <- bmsy_e <- list()
-for (i in 1:25) {
+#for (i in 1:25) {
+for (i in 1:30) {
   fratio_re[[i]] <- fratio_e[[i]] <- matrix(NA, nrow = 100, ncol = 69)
   bratio_re[[i]] <- bratio_e[[i]] <- matrix(NA, nrow = 100, ncol = 70)
   f_re[[i]] <- f_e[[i]] <- matrix(NA, nrow = 100, ncol = 69)
   fmsy_re[[i]] <- bmsy_re[[i]] <- fmsy_e[[i]] <- bmsy_e[[i]] <- NA
-  for (j in 1:100) {
+  for (j in 1:length(res_list_final[[i]])) {
     if (!is.null(res_list_final[[i]][[j]]$hessian)) {
+     if(length(MSY_re[[i]][[j]])>1){
       fratio_re[[i]][j, ] <- MSY_re[[i]][[j]]$fratio_re
       bratio_re[[i]][j, ] <- MSY_re[[i]][[j]]$bratio_re
       fratio_e[[i]][j, ] <- MSY_re[[i]][[j]]$fratio_e
@@ -279,9 +263,10 @@ for (i in 1:25) {
       f_e[[i]][j, ] <- MSY_re[[i]][[j]]$f_e
       fmsy_e[[i]][j] <- MSY_re[[i]][[j]]$fmsy_e
       bmsy_e[[i]][j] <- MSY_re[[i]][[j]]$bmsy_e
+     }
     }
+   }
   }
-}
 
 #Time series boxplots of RE in Fratio and Bratio
 OM_Title <- c(rep("No AE", 5),
@@ -349,7 +334,7 @@ for (i in 1:length(res_list_final)) {
   #  M_R0_re[[i]]<-matrix(NA, nrow=100,ncol=3)
   colnames(M_R0_re[[i]]) <- c("M_re", "R0_re")
   #  colnames( M_R0_re[[i]])<-c("M_re", "R0_re", "rSD_re")
-  for (j in 1:length(res_list_final[[1]])) {
+  for (j in 1:length(res_list_final[[i]])) {
     hessian <- res_list_final[[i]][[j]]$hessian
     # Check if the Hessian is positive definite
     if (!is.null(hessian)) {
